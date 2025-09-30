@@ -7,3 +7,9 @@
 
 
 **LangLint** is a scalable, domain-agnostic platform for automated translation and standardization of structured text in scientific collaboration, designed to eliminate language barriers.
+
+### Installation
+
+```bash
+pip install langlint
+```
