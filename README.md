@@ -393,8 +393,8 @@ results = await asyncio.gather(*tasks)
 **5. Language Code Standards**
 
 ```python
-# ✅ Recommended: Use standard language codes
-"zh-CN"  # Simplified Chinese
+# ✅ Recommended: Use standard language codes with region specifiers
+"zh-CN"  # Simplified Chinese (REQUIRED - use this instead of "zh")
 "zh-TW"  # Traditional Chinese
 "en"     # English
 "fr"     # French
@@ -403,10 +403,14 @@ results = await asyncio.gather(*tasks)
 "ja"     # Japanese
 "ko"     # Korean
 
+# ⚠️ Warning: Ambiguous codes (will show warnings)
+"zh"     # Ambiguous! Will be auto-converted to zh-CN with a warning
+
 # ❌ Avoid: Non-standard codes
-"zh"     # Will be auto-converted to zh-CN, but better to specify
-"chinese" # Not supported
+"chinese" # Not supported - use "zh-CN" or "zh-TW"
 ```
+
+**重要提示**：对于中文翻译，请务必使用 `zh-CN`（简体中文）或 `zh-TW`（繁体中文），而不是单独的 `zh`。虽然系统会自动将 `zh` 转换为 `zh-CN`，但会显示警告信息。
 
 </details>
 
