@@ -1,12 +1,12 @@
 # LangLint
 
-> **Breaking Language Barriers in Research Collaboration** 🚀 | As Fast as Ruff, Integrate into Your CI/CD Pipeline
+> **Breaking Language Barriers in Global Collaboration** 🚀 | As Fast as Ruff, Integrate into Your CI/CD Pipeline
 
 [![PyPI](https://badge.fury.io/py/langlint.svg)](https://badge.fury.io/py/langlint)
 [![Python](https://img.shields.io/pypi/pyversions/langlint.svg)](https://pypi.org/project/langlint/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**LangLint** is an extensible automated translation and standardization platform designed to eliminate language barriers in structured text for research collaboration.
+**LangLint** is an extensible automated translation and standardization platform designed to eliminate language barriers in structured text across software development, documentation, and international collaboration.
 
 ## 🚀 Quick Start
 
