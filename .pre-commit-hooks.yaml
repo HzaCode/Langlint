@@ -1,0 +1,26 @@
+# Pre-commit hooks for LangLint
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+
+- id: langlint-scan
+  name: LangLint Scan
+  description: Scan for translatable content in code and documentation
+  entry: langlint scan
+  language: python
+  types: [python, markdown]
+  pass_filenames: true
+  verbose: true
+  require_serial: false
+  additional_dependencies: ['langlint']
+
+- id: langlint-fix
+  name: LangLint Auto-fix
+  description: Automatically translate code comments and documentation
+  entry: langlint fix
+  language: python
+  types: [python, markdown]
+  pass_filenames: true
+  stages: [manual]
+  require_serial: false
+  additional_dependencies: ['langlint']
+

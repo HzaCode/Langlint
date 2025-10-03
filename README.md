@@ -503,9 +503,10 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pip'
       
       - name: Install LangLint
         run: |
@@ -606,13 +607,17 @@ jobs:
       
       - name: Check for non-English content
         run: |
-          # Scan for Chinese content
+          # Scan for translatable content
           langlint scan . -o report.json --format json
           
-          # Fail if Chinese content found
-          if grep -q '"zh-CN"' report.json; then
-            echo "❌ Found Chinese content. Please translate before committing."
+          # Check if any non-English content exists
+          # This checks for common non-English language codes
+          if grep -qE '"(zh-CN|zh-TW|ja|ko|fr|de|es|it|pt|ru|ar|hi|th|vi)"' report.json; then
+            echo "❌ Found non-English content. Please translate before committing."
             echo "Run: langlint fix ."
+            echo ""
+            echo "Detected languages:"
+            grep -oE '"(zh-CN|zh-TW|ja|ko|fr|de|es|it|pt|ru|ar|hi|th|vi)"' report.json | sort -u
             exit 1
           fi
           
@@ -680,6 +685,30 @@ pip install pre-commit
 
 #### Configure `.pre-commit-config.yaml`
 
+**Option 1: Remote Hook (Recommended)** - Automatically installs LangLint when needed:
+
+```yaml
+repos:
+  # LangLint - Check translatable content
+  - repo: https://github.com/HzaCode/Langlint
+    rev: main  # Or use a specific tag when available
+    hooks:
+      - id: langlint-scan
+      
+      # Optional: Auto-translate (use with caution)
+      - id: langlint-fix
+        stages: [manual]  # Manual trigger only
+  
+  # Ruff - Code checking (for comparison)
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.1.0
+    hooks:
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+```
+
+**Option 2: Local Hook** - Uses your locally installed LangLint:
+
 ```yaml
 repos:
   # LangLint - Check translatable content
@@ -709,6 +738,10 @@ repos:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix]
 ```
+
+**Note**: 
+- **Remote hook**: pre-commit will automatically install LangLint in an isolated environment. No manual installation needed!
+- **Local hook**: Requires `pip install langlint` first, but gives you control over the version.
 
 #### Use pre-commit
 
@@ -851,13 +884,15 @@ Upcoming VS Code extension will provide:
 langlint scan . -o report.json --format json
 
 # Phase 2: Generate warnings
-if grep -q '"zh-CN"' report.json; then
-  echo "⚠️ Warning: Found translatable content"
+if grep -qE '"(zh-CN|zh-TW|ja|ko|fr|de|es|it|pt|ru|ar|hi|th|vi)"' report.json; then
+  echo "⚠️ Warning: Found non-English content"
+  grep -oE '"(zh-CN|zh-TW|ja|ko|fr|de|es|it|pt|ru|ar|hi|th|vi)"' report.json | sort -u
 fi
 
 # Phase 3: Block commits (strict mode)
-if grep -q '"zh-CN"' report.json; then
-  echo "❌ Error: Must translate before merging"
+if grep -qE '"(zh-CN|zh-TW|ja|ko|fr|de|es|it|pt|ru|ar|hi|th|vi)"' report.json; then
+  echo "❌ Error: Non-English content found. Must translate before merging"
+  grep -oE '"(zh-CN|zh-TW|ja|ko|fr|de|es|it|pt|ru|ar|hi|th|vi)"' report.json | sort -u
   exit 1
 fi
 ```
@@ -865,11 +900,13 @@ fi
 #### 2️⃣ Translate Only New Content
 
 ```bash
-# Get changed files
-git diff --name-only origin/main... > changed_files.txt
+# Get changed files (handles filenames with spaces)
+git diff -z --name-only origin/main... | xargs -0 langlint fix
 
-# Translate only changed files
-cat changed_files.txt | xargs langlint fix
+# Or using a loop for more control
+git diff --name-only origin/main... | while IFS= read -r file; do
+  langlint fix "$file"
+done
 ```
 
 #### 3️⃣ Cache Optimization
