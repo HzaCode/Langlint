@@ -1,6 +1,6 @@
 # LangLint
 
-> **Breaking Language Barriers in Research Collaboration** 🚀 | As Simple as Ruff, Integrate into Your CI/CD Pipeline
+> **Breaking Language Barriers in Research Collaboration** 🚀 | As Fast as Ruff, Integrate into Your CI/CD Pipeline
 
 [![PyPI](https://badge.fury.io/py/langlint.svg)](https://badge.fury.io/py/langlint)
 [![Python](https://img.shields.io/pypi/pyversions/langlint.svg)](https://pypi.org/project/langlint/)
@@ -18,10 +18,10 @@ pip install langlint
 langlint scan src/
 
 # Translate (preserve original files)
-langlint translate src/ -t google -l en -o output/
+langlint translate src/ -o output/
 
 # In-place translation (auto backup)
-langlint fix src/ -t google -l en
+langlint fix src/
 ```
 
 ### Core Commands
@@ -29,10 +29,10 @@ langlint fix src/ -t google -l en
 | Command | Function | Example |
 |---------|----------|---------|
 | `scan` | Scan translatable content | `langlint scan .` |
-| `translate` | Translate to new directory | `langlint translate . -t google -l en -o output/` |
-| `fix` | In-place translate + backup | `langlint fix . -t google -l en` |
+| `translate` | Translate to new directory | `langlint translate . -o output/` |
+| `fix` | In-place translate + backup | `langlint fix .` |
 
-**Default: Google Translate** (Free, no API Key required)
+**Default: Google Translate, Auto-detect → English** (Free, no API Key required)
 
 <details>
 <summary>Other Translators (OpenAI, DeepL, Azure)</summary>
@@ -53,14 +53,14 @@ langlint fix src/ -t google -l en
 - ✅ **High-Performance Concurrency**: Batch translation for multiple files
 
 ```bash
-# Basic usage (Chinese → English)
-langlint fix src/ -t google -s zh-CN -l en
+# Basic usage (auto-detect → English)
+langlint fix src/
 
-# European languages (French → English, must specify -s)
-langlint fix french_code.py -t google -s fr -l en
+# European languages (French → English, specify source to avoid misdetection)
+langlint fix french_code.py -s fr
 
-# Cross-language families (German → Chinese)
-langlint fix german_code.py -t google -s de -l zh-CN
+# Translate to other languages (German → Chinese)
+langlint fix german_code.py -s de -l zh-CN
 ```
 
 <details>
@@ -92,10 +92,10 @@ Concurrent processing is **10-20x faster** than serial 🚀
 langlint scan path/to/files
 
 # Translate to new directory
-langlint translate path/to/files -t google -s zh-CN -l en -o output/
+langlint translate path/to/files -o output/
 
 # In-place translation (auto backup)
-langlint fix path/to/files -t google -s zh-CN -l en
+langlint fix path/to/files
 ```
 
 ### Multilingual Translation Scenarios
@@ -103,15 +103,15 @@ langlint fix path/to/files -t google -s zh-CN -l en
 ```bash
 # Scenario 1: Translate French project to English
 langlint scan french_project/ -o report.json --format json
-langlint translate french_project/ -t google -s fr -l en -o english_project/
+langlint translate french_project/ -s fr -o english_project/
 
 # Scenario 2: Generate multilingual documentation
-langlint translate docs/ -t google -s en -l zh-CN -o docs_zh/
-langlint translate docs/ -t google -s en -l ja -o docs_ja/
-langlint translate docs/ -t google -s en -l fr -o docs_fr/
+langlint translate docs/ -s en -l zh-CN -o docs_zh/
+langlint translate docs/ -s en -l ja -o docs_ja/
+langlint translate docs/ -s en -l fr -o docs_fr/
 
 # Scenario 3: Internationalize codebase
-langlint fix src/ -t google -s zh-CN -l en
+langlint fix src/
 pytest tests/  # Verify functionality
 ```
 
@@ -119,14 +119,14 @@ pytest tests/  # Verify functionality
 
 ```bash
 # Exclude specific files
-langlint translate src/ -t google -s zh-CN -l en -o output/ -e "**/test_*" -e "**/__pycache__/"
+langlint translate src/ -o output/ -e "**/test_*" -e "**/__pycache__/"
 
 # Dry-run preview
-langlint translate src/ -t google -s fr -l en --dry-run
+langlint translate src/ -s fr --dry-run
 
 # Use other translators
-langlint translate src/ -t openai -s zh-CN -l en  # Requires OPENAI_API_KEY
-langlint translate src/ -t deepl -s zh -l en-US   # Requires DEEPL_API_KEY
+langlint translate src/ -t openai  # Requires OPENAI_API_KEY
+langlint translate src/ -t deepl   # Requires DEEPL_API_KEY
 ```
 
 </details>
@@ -435,6 +435,19 @@ translator = "deepl"
 
 Supports: GitHub Actions ✅ | GitLab CI ✅ | Azure Pipelines ✅ | Pre-commit Hooks ✅ | Docker ✅
 
+### 🎯 Best Practice: Use with Ruff
+
+```bash
+# First, check code quality with Ruff
+ruff check . --fix
+
+# Then, translate with LangLint (auto-detects non-English, translates to English)
+langlint fix .
+
+# Finally, run Ruff again to ensure translated code meets standards
+ruff check .
+```
+
 <details>
 <summary>📋 View Complete CI/CD Integration Configuration (Click to expand)</summary>
 
@@ -517,7 +530,7 @@ jobs:
       
       - name: Translate code
         run: |
-          langlint translate src/ -t google -s zh-CN -l en -o src_en/
+          langlint translate src/ -o src_en/
       
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
@@ -571,7 +584,7 @@ jobs:
           # Fail if Chinese content found
           if grep -q '"zh-CN"' report.json; then
             echo "❌ Found Chinese content. Please translate before committing."
-            echo "Run: langlint fix . -t google -s zh-CN -l en"
+            echo "Run: langlint fix ."
             exit 1
           fi
           
@@ -608,16 +621,16 @@ jobs:
       - name: Translate to multiple languages
         run: |
           # Translate to Chinese
-          langlint translate docs/ -t google -s en -l zh-CN -o docs_zh/
+          langlint translate docs/ -s en -l zh-CN -o docs_zh/
           
           # Translate to Japanese
-          langlint translate docs/ -t google -s en -l ja -o docs_ja/
+          langlint translate docs/ -s en -l ja -o docs_ja/
           
           # Translate to French
-          langlint translate docs/ -t google -s en -l fr -o docs_fr/
+          langlint translate docs/ -s en -l fr -o docs_fr/
           
           # Translate to Spanish
-          langlint translate docs/ -t google -s en -l es -o docs_es/
+          langlint translate docs/ -s en -l es -o docs_es/
       
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
@@ -656,7 +669,6 @@ repos:
       - id: langlint-fix
         name: LangLint Auto-fix
         entry: langlint fix
-        args: [-t, google, -s, zh-CN, -l, en]
         language: system
         types: [python]
         pass_filenames: true
@@ -718,7 +730,7 @@ langlint-translate:
     - main
   script:
     - pip install langlint
-    - langlint translate src/ -t google -s zh-CN -l en -o src_en/
+    - langlint translate src/ -o src_en/
   artifacts:
     paths:
       - src_en/
@@ -790,7 +802,7 @@ services:
     command: >
       sh -c "
         pip install langlint &&
-        langlint translate src/ -t google -s zh-CN -l en -o src_en/
+        langlint translate src/ -o src_en/
       "
 ```
 
@@ -822,30 +834,17 @@ if grep -q '"zh-CN"' report.json; then
 fi
 ```
 
-#### 2️⃣ Use with Ruff
-
-```bash
-# First, check code quality with Ruff
-ruff check . --fix
-
-# Then, translate with LangLint
-langlint fix . -t google -s zh-CN -l en
-
-# Finally, run Ruff again to ensure translated code meets standards
-ruff check .
-```
-
-#### 3️⃣ Translate Only New Content
+#### 2️⃣ Translate Only New Content
 
 ```bash
 # Get changed files
 git diff --name-only origin/main... > changed_files.txt
 
 # Translate only changed files
-cat changed_files.txt | xargs langlint fix -t google -s zh-CN -l en
+cat changed_files.txt | xargs langlint fix
 ```
 
-#### 4️⃣ Cache Optimization
+#### 3️⃣ Cache Optimization
 
 ```yaml
 # Enable cache in GitHub Actions
@@ -871,7 +870,7 @@ jobs:
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: |
-          langlint translate src/ -t openai -s zh-CN -l en -o src_en/
+          langlint translate src/ -t openai -o src_en/
 ```
 
 #### Secrets Management
