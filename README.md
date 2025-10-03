@@ -24,6 +24,30 @@ langlint translate src/ -o output/
 langlint fix src/
 ```
 
+### 📸 Translation Effect
+
+**Before** (Japanese code with comments):
+```python
+def calculate_total(items):
+    """商品の合計金額を計算する"""
+    total = 0
+    for item in items:
+        total += item.price  # 価格を累積
+    return total
+```
+
+**After** (One command: `langlint fix example.py`):
+```python
+def calculate_total(items):
+    """Calculate the total price of the product"""
+    total = 0
+    for item in items:
+        total += item.price  # Accumulate prices
+    return total
+```
+
+✨ **Code still works perfectly!** Only comments and docstrings are translated.
+
 ### Core Commands
 
 | Command | Function | Example |
