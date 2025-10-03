@@ -908,4 +908,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ---
 
-⭐ If you find this useful, please give the project a Star!
+⭐ **LLM too slow? Try LangLint!**
