@@ -103,7 +103,7 @@ langlint fix german_code.py -s de -l zh-CN
 ### 🔌 Supported File Types
 Python • Jupyter Notebook • JavaScript/TypeScript • Go • Rust • Java • C/C++ • Config files (YAML/TOML/JSON) • 20+ types
 
-**What gets translated**: Comments and docstrings in code files, markdown cells in Jupyter notebooks. String literals and configuration values are preserved.
+**What gets translated**: Comments and docstrings in code files. String literals and configuration values are preserved.
 
 ### ⚡ High Performance
 Concurrent processing is **10-20x faster** than serial 🚀
