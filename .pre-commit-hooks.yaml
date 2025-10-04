@@ -4,7 +4,7 @@
 
 - id: langlint-scan
   name: LangLint Scan
-  description: Scan for translatable content in code and documentation
+  description: Scan for translatable content (comments, docstrings) in code files while preserving format
   entry: langlint scan
   language: python
   types: [python, markdown]
@@ -15,7 +15,7 @@
 
 - id: langlint-fix
   name: LangLint Auto-fix
-  description: Automatically translate code comments and documentation
+  description: Automatically translate code comments and docstrings while preserving quote styles and inline comment positions
   entry: langlint fix
   language: python
   types: [python, markdown]
