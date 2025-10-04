@@ -6,7 +6,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/langlint.svg)](https://pypi.org/project/langlint/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**LangLint** is an extensible automated translation and standardization platform designed to eliminate language barriers in structured text across software development, documentation, and international collaboration.
+**LangLint** is an extensible automated translation platform designed to eliminate language barriers in code comments and docstrings across software development and international collaboration.
 
 ## 🚀 Quick Start
 
@@ -101,7 +101,9 @@ langlint fix german_code.py -s de -l zh-CN
 </details>
 
 ### 🔌 Supported File Types
-Python • Markdown • Jupyter Notebook • JavaScript/TypeScript • Go • Rust • Java • C/C++ • Config files (YAML/TOML/JSON) • 20+ types
+Python • Jupyter Notebook • JavaScript/TypeScript • Go • Rust • Java • C/C++ • Config files (YAML/TOML/JSON) • 20+ types
+
+**What gets translated**: Comments and docstrings in code files, markdown cells in Jupyter notebooks. String literals and configuration values are preserved.
 
 ### ⚡ High Performance
 Concurrent processing is **10-20x faster** than serial 🚀
@@ -125,18 +127,16 @@ langlint fix path/to/files
 ### Multilingual Translation Scenarios
 
 ```bash
-# Scenario 1: Translate French project to English
+# Scenario 1: Translate French code comments to English
 langlint scan french_project/ -o report.json --format json
 langlint translate french_project/ -s fr -o english_project/
 
-# Scenario 2: Generate multilingual documentation
-langlint translate docs/ -s en -l zh-CN -o docs_zh/
-langlint translate docs/ -s en -l ja -o docs_ja/
-langlint translate docs/ -s en -l fr -o docs_fr/
-
-# Scenario 3: Internationalize codebase
+# Scenario 2: Internationalize codebase
 langlint fix src/
-pytest tests/  # Verify functionality
+pytest tests/  # Verify code still works
+
+# Scenario 3: Translate Jupyter Notebook
+langlint fix notebooks/ -s zh-CN -l en
 ```
 
 ### Advanced Parameters
@@ -450,8 +450,8 @@ target_lang = "en"
 source_lang = ["zh-CN", "ja", "ko"]
 exclude = ["**/test_*", "**/data/"]
 
-# Path-specific settings
-[tool.langlint."docs/**/*.md"]
+# Path-specific settings (example for different code directories)
+[tool.langlint."backend/**/*.py"]
 translator = "deepl"
 ```
 
@@ -624,53 +624,49 @@ jobs:
           echo "✅ All content is in English."
 ```
 
-#### 4️⃣ Multilingual Documentation Auto-Publish
+#### 4️⃣ Batch Translate Project Code
 
-Automatically translate documentation to multiple languages:
+Automatically translate all code comments in a project:
 
 ```yaml
-name: Translate Docs
+name: Translate Project
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'docs/**'
+  workflow_dispatch:  # Manual trigger
 
 jobs:
-  translate-docs:
+  translate-project:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pip'
       
       - name: Install LangLint
         run: pip install langlint
       
-      - name: Translate to multiple languages
+      - name: Translate all code comments
         run: |
-          # Translate to Chinese
-          langlint translate docs/ -s en -l zh-CN -o docs_zh/
+          # Translate Python files
+          langlint fix src/ -s zh-CN -l en
           
-          # Translate to Japanese
-          langlint translate docs/ -s en -l ja -o docs_ja/
+          # Translate JavaScript files
+          langlint fix frontend/ -s zh-CN -l en
           
-          # Translate to French
-          langlint translate docs/ -s en -l fr -o docs_fr/
-          
-          # Translate to Spanish
-          langlint translate docs/ -s en -l es -o docs_es/
+          # Translate Jupyter Notebooks
+          langlint fix notebooks/ -s zh-CN -l en
       
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v5
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./
-          keep_files: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'chore: translate code comments to English'
+          title: '🌐 Translated code comments'
+          branch: translate-comments
 ```
 
 ### Pre-commit Hooks Integration
@@ -718,7 +714,7 @@ repos:
         name: LangLint Scan
         entry: langlint scan
         language: system
-        types: [python, markdown]
+        types: [python]
         pass_filenames: true
         verbose: true
       
