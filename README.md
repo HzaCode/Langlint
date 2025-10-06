@@ -5,6 +5,8 @@
 [![PyPI](https://badge.fury.io/py/langlint.svg)](https://badge.fury.io/py/langlint)
 [![Python](https://img.shields.io/pypi/pyversions/langlint.svg)](https://pypi.org/project/langlint/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Downloads](https://static.pepy.tech/badge/langlint)](https://pepy.tech/project/langlint)
+
 
 **LangLint** is an extensible automated translation platform designed to eliminate language barriers in code comments and docstrings across software development and international collaboration.
 
