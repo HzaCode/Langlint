@@ -8,6 +8,7 @@
 [![Rust](https://img.shields.io/badge/rust-1.90%2B-orange.svg)](https://www.rust-lang.org/)
 [![Tests](https://img.shields.io/badge/tests-143+-brightgreen.svg)](https://github.com/HzaCode/Langlint)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/HzaCode/Langlint)
+[![Downloads](https://static.pepy.tech/badge/langLint?style=flat-square)](https://pepy.tech/project/langLint)
 
 **LangLint** is a high-performance, extensible automated translation platform **powered by Rust**, designed to eliminate language barriers in code comments and docstrings across software development and international collaboration.
 
@@ -87,12 +88,7 @@ def apply_discount(price, rate):
     return round(discounted, 2)
 ```
 
-**Result**:
-- ✅ **9 units translated in <10ms** (Rust) vs ~100ms (Python)
-- ✅ **13x faster processing time**
-- ✅ Code structure preserved
-- ✅ Syntax remains valid
-- ✅ Automatic backup created
+
 
 ✨ **Code still works perfectly!** Only comments and docstrings are translated.
 
@@ -290,9 +286,8 @@ print(f"Scanned in {elapsed*1000:.2f}ms (Rust-powered!)")
 <details>
 <summary>⚙️ Configuration File (Click to expand)</summary>
 
-LangLint supports multiple configuration formats. Create one of these files in your project root:
 
-**Option 1: `.langlint.yml` (Recommended)**
+Just put the **`.langlint.yml`** file in the root directory of your project.
 
 ```yaml
 # Global settings
@@ -323,20 +318,7 @@ path_configs:
     target_lang: "en"
 ```
 
-**Option 2: `pyproject.toml`**
 
-```toml
-[tool.langlint]
-translator = "google"
-target_lang = "en"
-source_lang = ["zh-CN", "ja", "ko"]
-backup = true
-exclude = ["**/test_*", "**/data/"]
-
-# Path-specific settings
-[tool.langlint."backend/**/*.py"]
-translator = "google"
-```
 
 **Backup Control**
 
