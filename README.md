@@ -286,7 +286,7 @@ print(f"Scanned in {elapsed*1000:.2f}ms (Rust-powered!)")
 <summary>⚙️ Configuration File (Click to expand)</summary>
 
 
-**`.langlint.yml`**
+Just put the **`.langlint.yml`** file in the root directory of your project.
 
 ```yaml
 # Global settings
