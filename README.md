@@ -8,6 +8,7 @@
 [![Rust](https://img.shields.io/badge/rust-1.90%2B-orange.svg)](https://www.rust-lang.org/)
 [![Tests](https://img.shields.io/badge/tests-143+-brightgreen.svg)](https://github.com/HzaCode/Langlint)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/HzaCode/Langlint)
+[![Downloads](https://static.pepy.tech/badge/langLint?style=flat-square)](https://pepy.tech/project/langLint)
 
 **LangLint** is a high-performance, extensible automated translation platform **powered by Rust**, designed to eliminate language barriers in code comments and docstrings across software development and international collaboration.
 
