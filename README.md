@@ -87,12 +87,7 @@ def apply_discount(price, rate):
     return round(discounted, 2)
 ```
 
-**Result**:
-- ✅ **9 units translated in <10ms** (Rust) vs ~100ms (Python)
-- ✅ **13x faster processing time**
-- ✅ Code structure preserved
-- ✅ Syntax remains valid
-- ✅ Automatic backup created
+
 
 ✨ **Code still works perfectly!** Only comments and docstrings are translated.
 
