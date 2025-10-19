@@ -1,18 +1,21 @@
 # LangLint
 
-> **Breaking Language Barriers in Global Collaboration** 🚀 | **Now 10-50x Faster with Rust**
+> **Breaking Language Barriers in Global Collaboration** 🚀 · **Now 10–50× Faster with Rust**
 
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/HzaCode/Langlint)
-[![Python](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/)
+[![PyPI](https://img.shields.io/pypi/v/langlint.svg)](https://pypi.org/project/langlint/)
+[![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rust](https://img.shields.io/badge/rust-1.90%2B-orange.svg)](https://www.rust-lang.org/)
-[![Tests](https://img.shields.io/badge/tests-143+-brightgreen.svg)](https://github.com/HzaCode/Langlint)
-[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/HzaCode/Langlint)
-[![Downloads](https://static.pepy.tech/badge/langLint?style=flat-square)](https://pepy.tech/project/langLint)
+[![Tests](https://img.shields.io/badge/tests-143%2B-brightgreen.svg)](https://github.com/HzaCode/LangLint)
+[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/HzaCode/LangLint)
+[![Downloads](https://static.pepy.tech/badge/langlint?style=flat-square)](https://pepy.tech/project/langlint)
+[![Status: Pre-submission to pyOpenSci](https://img.shields.io/badge/pyOpenSci-pre--submission-yellow?style=flat-square)](https://github.com/pyOpenSci/software-submission/issues)
 
-**LangLint** is a high-performance, extensible automated translation platform **powered by Rust**, designed to eliminate language barriers in code comments and docstrings across software development and international collaboration.
+**LangLint** is a high-performance, extensible linting and translation-quality toolkit powered by Rust. It detects and fixes cross-language inconsistencies in code comments and documentation to improve readability, collaboration, and research reproducibility. LangLint enforces multilingual consistency in scientific software, which strengthens documentation quality and aligns with FAIR and open-science practices—reducing barriers to peer review, code reuse, and replication.
 
-> 🎉 **v1.0.0 Stable Release**: Production-ready! **10-50x faster**, 143 tests passing, **100% code coverage**.
+> 🎉 **v1.0.0 Stable Release:** Production-ready; **10–50× faster**, 143+ tests, **100% coverage**.
+
+
 
 ## 🚀 Quick Start
 
