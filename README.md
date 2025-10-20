@@ -5,7 +5,7 @@
 
 # LangLint
 
-> **Breaking Language Barriers in Global Collaboration** 🚀 · **Now 10–50× Faster with Rust**
+**Breaking Language Barriers in Global Collaboration** 🚀 · **Now 10–50× Faster with Rust**
 
 [![PyPI](https://img.shields.io/pypi/v/langlint.svg)](https://pypi.org/project/langlint/)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
@@ -17,9 +17,9 @@
 
 </div>
 
-> **LangLint** is a high-performance, extensible, **Rust-powered, code-aware translation and linting toolkit** for code comments and documentation. It keeps multilingual scientific software docs consistent and reproducible, supporting **FAIR** and open-science practices.
+ **LangLint** is a high-performance, extensible, **Rust-powered, code-aware translation and linting toolkit** for code comments and documentation. It keeps multilingual scientific software docs consistent and reproducible, supporting **FAIR** and open-science practices.
 
-> 🎉 **v1.0.0 Stable Release:** Production-ready; **10–50× faster**, 143+ tests, **100% coverage**.
+🎉 **v1.0.0 Stable Release:** Production-ready; **10–50× faster**, 143+ tests, **100% coverage**.
 
 
 
