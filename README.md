@@ -9,7 +9,7 @@
 [![Tests](https://img.shields.io/badge/tests-143%2B-brightgreen.svg)](https://github.com/HzaCode/LangLint)
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/HzaCode/LangLint)
 [![Downloads](https://static.pepy.tech/badge/langlint?style=flat-square)](https://pepy.tech/project/langlint)
-[![Status: Pre-submission to pyOpenSci](https://img.shields.io/badge/pyOpenSci-pre--submission-yellow?style=flat-square)](https://github.com/pyOpenSci/software-submission/issues)
+
 
 **LangLint** is a high-performance, extensible linting and translation-quality toolkit powered by Rust. It detects and fixes cross-language inconsistencies in code comments and documentation to improve readability, collaboration, and research reproducibility. LangLint enforces multilingual consistency in scientific software, which strengthens documentation quality and aligns with FAIR and open-science practices—reducing barriers to peer review, code reuse, and replication.
 
