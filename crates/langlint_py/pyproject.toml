@@ -6,7 +6,7 @@ build-backend = "maturin"
 name = "langlint"
 version = "1.0.0"
 description = "High-performance automated translation platform powered by Rust"
-authors = [{name = "LangLint Team", email = "ang@hezhiang.com"}]
+authors = [{name = "Zhiang He", email = "ang@hezhiang.com"}]
 license = {text = "MIT"}
 readme = "../../README.md"
 requires-python = ">=3.8"
