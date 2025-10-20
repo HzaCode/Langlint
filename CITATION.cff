@@ -6,7 +6,7 @@ authors:
     email: "ang@hezhiang.com"
 title: "LangLint: A scalable, domain-agnostic platform for automated translation and standardization of structured text in scientific collaboration"
 version: 1.0.0
-date-released: 2024-01-01
+date-released: 2025-01-01
 url: "https://github.com/HzaCode/Langlint"
 license: MIT
 keywords:
@@ -27,7 +27,7 @@ preferred-citation:
     - family-names: "He"
       given-names: "Zhiang"
       email: "ang@hezhiang.com"
-  year: 2024
+  year: 2025
   url: "https://github.com/HzaCode/Langlint"
   license: MIT
   version: 1.0.0
