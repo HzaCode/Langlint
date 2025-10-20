@@ -11,7 +11,8 @@
 [![Downloads](https://static.pepy.tech/badge/langlint?style=flat-square)](https://pepy.tech/project/langlint)
 
 
-**LangLint** is a high-performance, extensible linting and translation-quality toolkit powered by Rust. It detects and fixes cross-language inconsistencies in code comments and documentation to improve readability, collaboration, and research reproducibility. LangLint enforces multilingual consistency in scientific software, which strengthens documentation quality and aligns with FAIR and open-science practices—reducing barriers to peer review, code reuse, and replication.
+
+> **LangLint** is a high-performance, extensible, **Rust-powered, code-aware translation and linting toolkit** for code comments and documentation. It keeps multilingual scientific software docs consistent and reproducible, supporting **FAIR** and open-science practices.
 
 > 🎉 **v1.0.0 Stable Release:** Production-ready; **10–50× faster**, 143+ tests, **100% coverage**.
 
