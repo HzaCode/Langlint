@@ -1,0 +1,21 @@
+[package]
+name = "langlint_py"
+version = "1.0.0"
+edition = "2021"
+
+[lib]
+name = "langlint_py"
+crate-type = ["cdylib"]
+
+[dependencies]
+pyo3 = { version = "0.20", features = ["extension-module"] }
+langlint_core = { path = "../langlint_core" }
+langlint_parsers = { path = "../langlint_parsers" }
+langlint_translators = { path = "../langlint_translators" }
+tokio = { version = "1.0", features = ["rt-multi-thread", "macros"] }
+anyhow = "1.0"
+serde_json = "1.0"
+walkdir = "2.5"
+
+[dev-dependencies]
+tempfile = "3.8"

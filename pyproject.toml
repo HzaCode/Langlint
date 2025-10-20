@@ -1,0 +1,101 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "langlint"
+version = "1.0.0"
+description = "A scalable, domain-agnostic platform for automated translation and standardization of structured text in scientific collaboration"
+authors = [{name = "LangLint Team", email = "ang@hezhiang.com"}]
+maintainers = [{name = "LangLint Team", email = "ang@hezhiang.com"}]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.8"
+keywords = ["translation", "internationalization", "scientific-collaboration", "parsing", "i18n"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Internationalization",
+    "Topic :: Text Processing :: Linguistic",
+    "Operating System :: OS Independent",
+]
+
+dependencies = [
+    "mistune>=3.0.0",
+    "nbformat>=5.7.0",
+    "openai>=1.0.0",
+    "deepl>=1.12.0",
+    "aiohttp>=3.8.0",
+    "aiofiles>=23.0.0",
+    "pyyaml>=6.0",
+    "toml>=0.10.2",
+    "click>=8.0.0",
+    "rich>=13.0.0",
+    "tqdm>=4.65.0",
+    "regex>=2023.0.0",
+    "deep-translator>=1.11.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+    "bandit>=1.7.0",
+    "pip-audit>=2.4.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/HzaCode/Langlint"
+Documentation = "https://github.com/HzaCode/Langlint"
+Repository = "https://github.com/HzaCode/Langlint.git"
+Issues = "https://github.com/HzaCode/Langlint/issues"
+Changelog = "https://github.com/HzaCode/Langlint/blob/main/CHANGELOG.md"
+
+[project.scripts]
+langlint = "langlint.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["langlint*"]
+exclude = ["tests*", "examples*", "docs*"]
+
+[tool.black]
+line-length = 100
+target-version = ['py38', 'py39', 'py310', 'py311', 'py312']
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[tool.ruff]
+line-length = 100
+target-version = "py38"
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false

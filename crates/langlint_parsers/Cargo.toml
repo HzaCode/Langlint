@@ -1,0 +1,14 @@
+[package]
+name = "langlint_parsers"
+version = "1.0.0"
+edition = "2021"
+
+[dependencies]
+langlint_core = { path = "../langlint_core" }
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tree-sitter = { workspace = true }
+tree-sitter-python = { workspace = true }
+regex = { workspace = true }

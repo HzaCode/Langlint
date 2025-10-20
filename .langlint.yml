@@ -1,0 +1,65 @@
+# LangLint Configuration File
+# This file configures how LangLint processes and translates files
+
+# Global settings
+translator: "google"  # openai, deepl, google, mock
+target_lang: "en"
+source_lang: ["zh", "ja", "ko"]
+backup: true  # Create backup files before in-place translation (default: true)
+
+# File processing
+include:
+  - "**/*.py"
+  - "**/*.r"
+  - "**/*.R"
+  - "**/*.js"
+  - "**/*.ts"
+  - "**/*.md"
+
+exclude:
+  - "**/node_modules/**"
+  - "**/__pycache__/**"
+  - "**/data/**"
+  - "**/secrets.yml"
+  - "**/*.min.js"
+  - "**/*.lock"
+  - "**/demo_files/**"
+  - "**/examples/**"
+  - "**/figures/**"
+  - "**/submission_patterns/**"
+
+# Translation rules
+translation_rules:
+  comments: "medium_priority"
+  error_messages: "high_priority"
+  user_interface: "high_priority"
+  technical_terms: "ignore"
+  color_codes: "ignore"
+  file_paths: "ignore"
+  identifiers: "ignore"
+
+# Output settings
+output:
+  format: "summary"  # summary, detailed, json, yaml, csv
+  show_ignored: false
+  group_by_priority: true
+
+# Performance settings
+performance:
+  max_workers: 4
+  cache_enabled: true
+  cache_ttl: 3600  # 1 hour
+
+# Path-specific overrides
+path_configs:
+  "**/tests/**":
+    translator: "mock"
+    target_lang: "en"
+    enabled: true
+  
+  "**/docs/**":
+    translator: "openai"
+    target_lang: "en"
+    enabled: true
+    additional_params:
+      model: "gpt-4"
