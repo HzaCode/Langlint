@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: "LangLint Team"
+    given-names: ""
+    orcid: "https://orcid.org/0000-0000-0000-0000"
+title: "LangLint: A scalable, domain-agnostic platform for automated translation and standardization of structured text in scientific collaboration"
+version: 1.0.0
+date-released: 2024-01-01
+url: "https://github.com/HzaCode/Langlint"
+license: MIT
+keywords:
+  - translation
+  - internationalization
+  - scientific-collaboration
+  - parsing
+  - i18n
+  - automation
+  - text-processing
+  - multilingual
+  - research
+  - open-source
+preferred-citation:
+  type: software
+  title: "LangLint: A scalable, domain-agnostic platform for automated translation and standardization of structured text in scientific collaboration"
+  authors:
+    - family-names: "LangLint Team"
+      given-names: ""
+  year: 2024
+  url: "https://github.com/HzaCode/Langlint"
+  license: MIT
+  version: 1.0.0
+
+
+
+
+
+
+
+
+
+

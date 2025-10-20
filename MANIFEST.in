@@ -1,0 +1,79 @@
+# Include essential documentation
+include README.md
+include LICENSE
+include pyproject.toml
+include setup.py
+
+# Exclude this file itself
+exclude MANIFEST.in
+
+# Exclude tests - not needed in distribution
+prune tests
+
+# Exclude unnecessary files
+global-exclude *.pyc
+global-exclude *.pyo
+global-exclude *.pyd
+global-exclude __pycache__
+global-exclude .DS_Store
+global-exclude .git*
+global-exclude *.so
+global-exclude *.egg-info
+
+# Exclude development and testing files
+exclude .pre-commit-config.yaml
+exclude create_test_files.py
+exclude create_translated_files.py
+exclude debug_translation.py
+exclude demo_*.py
+exclude generate_translated.py
+exclude performance_*.py
+exclude show_*.py
+exclude simple_*.py
+exclude test_*.py
+exclude translate_files.py
+
+# Exclude development directories
+prune .github
+prune cli_output
+prune concurrent_demo
+prune concurrent_demo_en
+prune demo_files
+prune dist
+prune build
+prune docs
+prune examples
+prune figures
+prune performance_results
+prune performance_test_data
+prune scripts
+prune submission_patterns
+prune test_100_files
+prune test_demo
+prune src
+
+# Exclude unnecessary markdown files
+exclude CHANGELOG.md
+exclude CODE_OF_CONDUCT.md
+exclude CONTRIBUTING.md
+exclude FINAL_SUMMARY.md
+exclude PRIVACY.md
+exclude PROJECT_SUMMARY.md
+exclude QUICKSTART_CN.md
+exclude README_CN_translated.md
+exclude README_EN.md
+exclude ROADMAP.md
+exclude code_statistics_report.md
+exclude test_multi_content.md
+
+# Exclude config files
+exclude package.json
+exclude tsconfig.json
+exclude requirements-dev.txt
+
+# Exclude translated test directories
+prune simple_chinese_test_translated.py
+prune simple_test_translated.py
+prune test_cli_simple_translated.py
+prune test_script_translated.py
+prune README_CN_translated.md

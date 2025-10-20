@@ -1,0 +1,55 @@
+[workspace]
+members = [
+    "crates/langlint_core",
+    "crates/langlint_parsers",
+    "crates/langlint_translators",
+    "crates/langlint_cli",
+    "crates/langlint_py",
+]
+resolver = "2"
+
+[workspace.package]
+version = "1.0.0"
+authors = ["Langlint Team"]
+edition = "2021"
+license = "MIT"
+repository = "https://github.com/HzaCode/Langlint"
+
+[workspace.dependencies]
+# Core dependencies
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.35", features = ["full"] }
+anyhow = "1.0"
+thiserror = "1.0"
+
+# Performance
+rayon = "1.8"
+dashmap = "5.5"
+parking_lot = "0.12"
+
+# Parsing
+tree-sitter = "0.20"
+tree-sitter-python = "0.20"
+regex = "1.10"
+
+# Network/Translation
+reqwest = { version = "0.11", features = ["json", "rustls-tls"], default-features = false }
+async-trait = "0.1"
+
+# CLI
+clap = { version = "4.4", features = ["derive"] }
+indicatif = "0.17"
+console = "0.15"
+
+# Config formats
+toml = "0.8"
+serde_yaml = "0.9"
+
+# Python bindings
+pyo3 = { version = "0.20", features = ["extension-module"] }
+
+# Utilities
+rand = "0.8"
+bytes = "1.5"
+

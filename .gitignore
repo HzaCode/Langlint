@@ -1,0 +1,119 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+.pytest_cache/
+.hypothesis/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.bak
+*.tmp
+*.log
+
+# Development
+.env
+.venv
+env/
+venv/
+
+# Rust
+target/
+Cargo.lock
+
+# Backup files
+*.backup
+
+# Test output files
+demo_test_output.py
+test_temp.py
+cli_scan.json
+scan_report.json
+
+# Python package builds
+*.egg-info/
+langlint.egg-info/
+python_wrapper/
+
+# Coverage reports
+.coverage
+.coverage.*
+htmlcov/
+
+# Manuscript files (for academic submission)
+manuscript/
+
+# Changelog (Chinese version - keep local only)
+CHANGELOG.md
+
+# Demo and example files (optional - can be included for demonstration)
+demo_files/
+examples/
+figures/
+
+# Documentation that might contain sensitive info
+docs/
+
+# Build artifacts
+target/
+*.pyd
+*.dll
+*.exe
+*.pdb
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# pytype static type analyzer
+.pytype/
+
+# Cython debug symbols
+cython_debug/
+
+# Local development files
+*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
