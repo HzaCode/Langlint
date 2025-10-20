@@ -1,3 +1,8 @@
+<div align="center">
+
+<img src="langlint_lightning_logo.png" alt="LangLint Logo" width="200"/>
+
+
 # LangLint
 
 > **Breaking Language Barriers in Global Collaboration** 🚀 · **Now 10–50× Faster with Rust**
@@ -10,7 +15,7 @@
 [![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/HzaCode/LangLint)
 [![Downloads](https://static.pepy.tech/badge/langlint?style=flat-square)](https://pepy.tech/project/langlint)
 
-
+</div>
 
 > **LangLint** is a high-performance, extensible, **Rust-powered, code-aware translation and linting toolkit** for code comments and documentation. It keeps multilingual scientific software docs consistent and reproducible, supporting **FAIR** and open-science practices.
 
