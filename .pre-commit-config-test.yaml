@@ -1,0 +1,27 @@
+# 测试远程 hook 配置（模拟其他用户使用）
+repos:
+  # 本地测试（模拟远程仓库）
+  - repo: local
+    hooks:
+      - id: langlint-scan
+        name: LangLint Scan
+        description: Scan for translatable content (comments, docstrings) in code files while preserving format
+        entry: langlint scan
+        language: python
+        types: [python, markdown]
+        pass_filenames: true
+        verbose: true
+        require_serial: false
+
+      - id: langlint-fix
+        name: LangLint Auto-fix
+        description: Automatically translate code comments and docstrings while preserving quote styles and inline comment positions
+        entry: langlint fix
+        language: python
+        types: [python, markdown]
+        pass_filenames: true
+        stages: [manual]
+        require_serial: false
+
+
+

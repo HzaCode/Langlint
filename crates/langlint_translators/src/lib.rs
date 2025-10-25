@@ -8,11 +8,11 @@ use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use thiserror::Error;
 
-pub mod mock;
 pub mod google;
+pub mod mock;
 
-pub use mock::MockTranslator;
 pub use google::GoogleTranslator;
+pub use mock::MockTranslator;
 
 /// Translation status enum
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -72,7 +72,7 @@ impl TranslationResult {
     ) -> Self {
         let mut metadata = HashMap::new();
         metadata.insert("error".to_string(), error_msg);
-        
+
         Self {
             original_text: original_text.clone(),
             translated_text: original_text, // Fallback to original
@@ -98,23 +98,23 @@ impl TranslationResult {
 pub enum TranslationError {
     #[error("Language '{0}' is not supported")]
     UnsupportedLanguage(String),
-    
+
     #[error("Translation failed: {message}")]
     TranslationFailed {
         message: String,
         translator_name: String,
         error_code: Option<String>,
     },
-    
+
     #[error("Network error: {0}")]
     NetworkError(#[from] reqwest::Error),
-    
+
     #[error("Invalid input: {0}")]
     InvalidInput(String),
-    
+
     #[error("Rate limit exceeded")]
     RateLimitExceeded,
-    
+
     #[error("Other error: {0}")]
     Other(#[from] anyhow::Error),
 }
@@ -124,10 +124,10 @@ pub enum TranslationError {
 pub trait Translator: Send + Sync {
     /// Return the name of this translator
     fn name(&self) -> &'static str;
-    
+
     /// Return a list of supported language codes
     fn supported_languages(&self) -> Vec<String>;
-    
+
     /// Check if a language code is supported
     fn is_language_supported(&self, language_code: &str) -> bool {
         let normalized = self.normalize_language_code(language_code);
@@ -135,12 +135,12 @@ pub trait Translator: Send + Sync {
             .iter()
             .any(|lang| lang == &normalized)
     }
-    
+
     /// Normalize a language code to the format expected by this translator
     fn normalize_language_code(&self, language_code: &str) -> String {
         language_code.to_lowercase()
     }
-    
+
     /// Validate that both source and target languages are supported
     fn validate_languages(&self, source: &str, target: &str) -> Result<(), TranslationError> {
         if !self.is_language_supported(source) {
@@ -151,7 +151,7 @@ pub trait Translator: Send + Sync {
         }
         Ok(())
     }
-    
+
     /// Translate text from source language to target language
     async fn translate(
         &self,
@@ -159,7 +159,7 @@ pub trait Translator: Send + Sync {
         source_language: &str,
         target_language: &str,
     ) -> Result<TranslationResult, TranslationError>;
-    
+
     /// Translate multiple texts in a single batch operation
     async fn translate_batch(
         &self,
@@ -167,19 +167,22 @@ pub trait Translator: Send + Sync {
         source_language: &str,
         target_language: &str,
     ) -> Result<Vec<TranslationResult>, TranslationError>;
-    
+
     /// Estimate the cost of translating the given text
     fn estimate_cost(&self, text: &str, _source: &str, _target: &str) -> f64 {
         // Default implementation: free
         let _ = text; // Suppress unused warning
         0.0
     }
-    
+
     /// Get usage information for this translator
     fn get_usage_info(&self) -> HashMap<String, String> {
         let mut info = HashMap::new();
         info.insert("name".to_string(), self.name().to_string());
-        info.insert("languages".to_string(), format!("{}", self.supported_languages().len()));
+        info.insert(
+            "languages".to_string(),
+            format!("{}", self.supported_languages().len()),
+        );
         info
     }
 }
@@ -197,7 +200,7 @@ mod tests {
             "zh".to_string(),
             0.95,
         );
-        
+
         assert_eq!(result.original_text, "Hello");
         assert_eq!(result.translated_text, "你好");
         assert_eq!(result.status, TranslationStatus::Success);
@@ -212,7 +215,7 @@ mod tests {
             "zh".to_string(),
             "Network error".to_string(),
         );
-        
+
         assert_eq!(result.status, TranslationStatus::Failed);
         assert_eq!(result.confidence, 0.0);
         assert!(result.metadata.is_some());
@@ -228,7 +231,7 @@ mod tests {
             0.95,
         )
         .with_metadata("translator".to_string(), "Test".to_string());
-        
+
         assert!(result.metadata.is_some());
         assert_eq!(
             result.metadata.unwrap().get("translator"),

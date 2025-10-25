@@ -54,12 +54,7 @@ pub struct TranslatableUnit {
 }
 
 impl TranslatableUnit {
-    pub fn new(
-        content: String,
-        unit_type: UnitType,
-        line_number: u32,
-        column_number: u32,
-    ) -> Self {
+    pub fn new(content: String, unit_type: UnitType, line_number: u32, column_number: u32) -> Self {
         Self {
             content,
             unit_type,
@@ -101,12 +96,12 @@ impl TranslatableUnit {
 /// Detect the language of text content
 pub fn detect_language(text: &str) -> Option<String> {
     use whatlang::detect;
-    
+
     // Skip very short text (likely not enough for detection)
     if text.trim().len() < 3 {
         return None;
     }
-    
+
     // Detect language
     if let Some(info) = detect(text) {
         let lang_code = match info.lang() {
@@ -134,13 +129,13 @@ pub fn detect_language(text: &str) -> Option<String> {
             whatlang::Lang::Pes => "fa",
             _ => return None, // Unsupported language
         };
-        
+
         // Only return if confidence is reasonable
         if info.confidence() > 0.7 {
             return Some(lang_code.to_string());
         }
     }
-    
+
     None
 }
 
@@ -202,14 +197,9 @@ mod tests {
 
     #[test]
     fn test_translatable_unit_creation() {
-        let unit = TranslatableUnit::new(
-            "test content".to_string(),
-            UnitType::Comment,
-            10,
-            5,
-        )
-        .with_context("test context".to_string())
-        .with_priority(Priority::High);
+        let unit = TranslatableUnit::new("test content".to_string(), UnitType::Comment, 10, 5)
+            .with_context("test context".to_string())
+            .with_priority(Priority::High);
 
         assert_eq!(unit.content, "test content");
         assert_eq!(unit.line_number, 10);
@@ -221,20 +211,13 @@ mod tests {
     #[test]
     fn test_parse_result() {
         let mut result = ParseResult::new("python", "utf-8", 100);
-        
-        let unit = TranslatableUnit::new(
-            "test".to_string(),
-            UnitType::Comment,
-            1,
-            1,
-        );
-        
+
+        let unit = TranslatableUnit::new("test".to_string(), UnitType::Comment, 1, 1);
+
         result.add_unit(unit);
-        
+
         assert_eq!(result.len(), 1);
         assert!(!result.is_empty());
         assert_eq!(result.file_type, "python");
     }
 }
-
-

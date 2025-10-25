@@ -1,6 +1,6 @@
 //! Mock translator for testing and development
 
-use crate::{Translator, TranslationError, TranslationResult};
+use crate::{TranslationError, TranslationResult, Translator};
 use async_trait::async_trait;
 use rand::Rng;
 use std::collections::HashMap;
@@ -21,8 +21,8 @@ pub struct MockConfig {
 impl Default for MockConfig {
     fn default() -> Self {
         Self {
-            delay_range: (100, 500),  // 100-500ms
-            error_rate: 0.0,          // No errors by default
+            delay_range: (100, 500), // 100-500ms
+            error_rate: 0.0,         // No errors by default
             confidence_range: (0.8, 1.0),
         }
     }
@@ -43,7 +43,7 @@ impl MockTranslator {
     /// Create a new mock translator with custom config
     pub fn with_config(config: MockConfig) -> Self {
         let mut language_mapping = HashMap::new();
-        
+
         // Add language mappings
         let languages = [
             ("en", "English"),
@@ -62,11 +62,11 @@ impl MockTranslator {
             ("vi", "Vietnamese"),
             ("id", "Indonesian"),
         ];
-        
+
         for (code, name) in &languages {
             language_mapping.insert(code.to_string(), name.to_string());
         }
-        
+
         Self {
             config,
             language_mapping,
@@ -80,7 +80,8 @@ impl MockTranslator {
         }
 
         // Get language name for prefix
-        let target_name = self.language_mapping
+        let target_name = self
+            .language_mapping
             .get(target)
             .map(|s| s.as_str())
             .unwrap_or(target);
@@ -141,10 +142,11 @@ impl Translator for MockTranslator {
             let mut rng = rand::thread_rng();
             let delay = rng.gen_range(self.config.delay_range.0..=self.config.delay_range.1);
             let random = rng.gen::<f64>();
-            let conf = rng.gen_range(self.config.confidence_range.0..=self.config.confidence_range.1);
+            let conf =
+                rng.gen_range(self.config.confidence_range.0..=self.config.confidence_range.1);
             (delay, random, conf)
         };
-        
+
         // Simulate API delay
         sleep(Duration::from_millis(delay_ms)).await;
 
@@ -197,7 +199,7 @@ impl Translator for MockTranslator {
             let random = rng.gen::<f64>();
             (delay, random)
         };
-        
+
         // Simulate API delay
         sleep(Duration::from_millis(delay_ms)).await;
 
@@ -270,11 +272,20 @@ impl Translator for MockTranslator {
     fn get_usage_info(&self) -> HashMap<String, String> {
         let mut info = HashMap::new();
         info.insert("name".to_string(), self.name().to_string());
-        info.insert("languages".to_string(), self.supported_languages().len().to_string());
+        info.insert(
+            "languages".to_string(),
+            self.supported_languages().len().to_string(),
+        );
         info.insert("cost_per_character".to_string(), "0.0".to_string());
         info.insert("max_batch_size".to_string(), "1000".to_string());
         info.insert("rate_limit".to_string(), "None (mock)".to_string());
-        info.insert("delay_range".to_string(), format!("{}-{}ms", self.config.delay_range.0, self.config.delay_range.1));
+        info.insert(
+            "delay_range".to_string(),
+            format!(
+                "{}-{}ms",
+                self.config.delay_range.0, self.config.delay_range.1
+            ),
+        );
         info.insert("error_rate".to_string(), self.config.error_rate.to_string());
         info
     }
@@ -320,7 +331,7 @@ mod tests {
     fn test_supported_languages() {
         let translator = MockTranslator::new();
         let languages = translator.supported_languages();
-        
+
         assert!(!languages.is_empty());
         assert!(languages.contains(&"en".to_string()));
         assert!(languages.contains(&"zh".to_string()));
@@ -348,10 +359,7 @@ mod tests {
     #[tokio::test]
     async fn test_mock_translate_same_language() {
         let translator = MockTranslator::new();
-        let result = translator
-            .translate("Hello", "en", "en")
-            .await
-            .unwrap();
+        let result = translator.translate("Hello", "en", "en").await.unwrap();
 
         assert_eq!(result.original_text, "Hello");
         assert_eq!(result.translated_text, "Hello");
@@ -360,13 +368,18 @@ mod tests {
     #[tokio::test]
     async fn test_mock_translate_different_languages() {
         let translator = MockTranslator::new();
-        
+
         let lang_pairs = vec![
-            ("en", "zh"), ("en", "ja"), ("en", "ko"),
-            ("zh", "en"), ("ja", "en"), ("ko", "en"),
-            ("fr", "de"), ("es", "it"),
+            ("en", "zh"),
+            ("en", "ja"),
+            ("en", "ko"),
+            ("zh", "en"),
+            ("ja", "en"),
+            ("ko", "en"),
+            ("fr", "de"),
+            ("es", "it"),
         ];
-        
+
         for (source, target) in lang_pairs {
             let result = translator.translate("test", source, target).await.unwrap();
             assert_eq!(result.status, TranslationStatus::Success);
@@ -378,11 +391,7 @@ mod tests {
     #[tokio::test]
     async fn test_mock_translate_batch() {
         let translator = MockTranslator::new();
-        let texts = vec![
-            "Hello".to_string(),
-            "World".to_string(),
-            "Test".to_string(),
-        ];
+        let texts = vec!["Hello".to_string(), "World".to_string(), "Test".to_string()];
 
         let results = translator
             .translate_batch(&texts, "en", "zh")
@@ -434,7 +443,7 @@ mod tests {
 
         let result = translator.translate("Hello", "en", "zh").await;
         assert!(result.is_err());
-        
+
         match result {
             Err(TranslationError::TranslationFailed { message, .. }) => {
                 assert!(message.contains("simulated error"));
@@ -474,7 +483,7 @@ mod tests {
     #[test]
     fn test_normalize_language_code() {
         let translator = MockTranslator::new();
-        
+
         assert_eq!(translator.normalize_language_code("en-US"), "en");
         assert_eq!(translator.normalize_language_code("en-GB"), "en");
         assert_eq!(translator.normalize_language_code("zh-CN"), "zh");
@@ -485,11 +494,11 @@ mod tests {
         assert_eq!(translator.normalize_language_code("de-DE"), "de");
         assert_eq!(translator.normalize_language_code("pt-BR"), "pt");
         assert_eq!(translator.normalize_language_code("pt-PT"), "pt");
-        
+
         // Case insensitive
         assert_eq!(translator.normalize_language_code("EN-US"), "en");
         assert_eq!(translator.normalize_language_code("ZH-CN"), "zh");
-        
+
         // Unknown codes should be returned as-is (lowercased)
         assert_eq!(translator.normalize_language_code("xyz"), "xyz");
     }
@@ -497,7 +506,7 @@ mod tests {
     #[test]
     fn test_estimate_cost() {
         let translator = MockTranslator::new();
-        
+
         assert_eq!(translator.estimate_cost("test", "en", "zh"), 0.0);
         assert_eq!(translator.estimate_cost("long text here", "zh", "en"), 0.0);
         assert_eq!(translator.estimate_cost("", "en", "zh"), 0.0);
@@ -507,7 +516,7 @@ mod tests {
     fn test_get_usage_info() {
         let translator = MockTranslator::new();
         let info = translator.get_usage_info();
-        
+
         assert_eq!(info.get("name").unwrap(), "Mock");
         assert_eq!(info.get("cost_per_character").unwrap(), "0.0");
         assert_eq!(info.get("max_batch_size").unwrap(), "1000");
@@ -520,20 +529,20 @@ mod tests {
     #[test]
     fn test_generate_mock_translation() {
         let translator = MockTranslator::new();
-        
+
         // Test different target languages
         let text = "Hello";
-        
+
         let en = translator.generate_mock_translation(text, "zh", "en");
         assert!(en.contains("[EN]"));
         assert!(en.contains(text));
-        
+
         let zh = translator.generate_mock_translation(text, "en", "zh");
         assert!(zh.contains("[中文]"));
-        
+
         let ja = translator.generate_mock_translation(text, "en", "ja");
         assert!(ja.contains("[日本語]"));
-        
+
         let ko = translator.generate_mock_translation(text, "en", "ko");
         assert!(ko.contains("[한국어]"));
     }
@@ -550,7 +559,7 @@ mod tests {
     async fn test_translation_metadata() {
         let translator = MockTranslator::new();
         let result = translator.translate("test", "en", "zh").await.unwrap();
-        
+
         let metadata = result.metadata.as_ref().unwrap();
         assert_eq!(metadata.get("mock"), Some(&"true".to_string()));
         assert_eq!(metadata.get("translator"), Some(&"Mock".to_string()));
@@ -561,8 +570,11 @@ mod tests {
     async fn test_batch_translation_metadata() {
         let translator = MockTranslator::new();
         let texts = vec!["test1".to_string(), "test2".to_string()];
-        let results = translator.translate_batch(&texts, "en", "zh").await.unwrap();
-        
+        let results = translator
+            .translate_batch(&texts, "en", "zh")
+            .await
+            .unwrap();
+
         for (i, result) in results.iter().enumerate() {
             let metadata = result.metadata.as_ref().unwrap();
             assert_eq!(metadata.get("mock"), Some(&"true".to_string()));
@@ -578,7 +590,7 @@ mod tests {
             confidence_range: (0.5, 0.6),
         };
         let translator = MockTranslator::with_config(config);
-        
+
         let result = translator.translate("test", "en", "zh").await.unwrap();
         assert!(result.confidence >= 0.5 && result.confidence <= 0.6);
     }
@@ -591,7 +603,7 @@ mod tests {
             confidence_range: (0.8, 1.0),
         };
         let translator = MockTranslator::with_config(config);
-        
+
         let result = translator.translate("test", "en", "zh").await.unwrap();
         assert_eq!(result.status, TranslationStatus::Success);
     }
@@ -600,9 +612,8 @@ mod tests {
     async fn test_empty_text() {
         let translator = MockTranslator::new();
         let result = translator.translate("", "en", "zh").await.unwrap();
-        
+
         assert_eq!(result.original_text, "");
         assert!(result.translated_text.contains(""));
     }
 }
-

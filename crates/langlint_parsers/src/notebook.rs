@@ -1,7 +1,7 @@
 //! Jupyter Notebook parser (.ipynb files)
 
 use anyhow::Result;
-use langlint_core::{ParseResult, TranslatableUnit, UnitType, Priority};
+use langlint_core::{ParseResult, Priority, TranslatableUnit, UnitType};
 use regex::Regex;
 use serde_json::Value;
 
@@ -161,7 +161,12 @@ impl Parser for NotebookParser {
         })
     }
 
-    fn reconstruct(&self, original: &str, units: &[TranslatableUnit], _path: &str) -> Result<String> {
+    fn reconstruct(
+        &self,
+        original: &str,
+        units: &[TranslatableUnit],
+        _path: &str,
+    ) -> Result<String> {
         // Parse original notebook
         let mut notebook: Value = serde_json::from_str(original)?;
 
@@ -235,7 +240,8 @@ mod tests {
     #[test]
     fn test_extract_markdown_cell() {
         let parser = NotebookParser::new();
-        let notebook_json = r#"{"cells":[{"cell_type":"markdown","source":["This is markdown text content"]}]}"#;
+        let notebook_json =
+            r#"{"cells":[{"cell_type":"markdown","source":["This is markdown text content"]}]}"#;
         let result = parser.extract_units(notebook_json, "test.ipynb").unwrap();
         assert_eq!(result.file_type, "jupyter_notebook");
     }
@@ -280,4 +286,3 @@ mod tests {
         assert!(result.is_err());
     }
 }
-

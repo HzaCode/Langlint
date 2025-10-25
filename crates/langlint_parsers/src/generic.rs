@@ -1,5 +1,5 @@
 use anyhow::Result;
-use langlint_core::{ParseResult, TranslatableUnit, UnitType, Priority};
+use langlint_core::{ParseResult, Priority, TranslatableUnit, UnitType};
 use regex::Regex;
 
 use crate::Parser;
@@ -16,28 +16,22 @@ impl GenericCodeParser {
     /// Get comment patterns for different languages
     fn get_comment_patterns(&self, extension: &str) -> CommentStyle {
         match extension {
-            ".js" | ".ts" | ".jsx" | ".tsx" | ".java" | ".c" | ".cpp" | ".h" | ".hpp" | 
-            ".cs" | ".go" | ".rs" | ".swift" | ".kt" | ".scala" => {
-                CommentStyle {
-                    single_line: vec!["//"],
-                    multi_line_start: Some("/*"),
-                    multi_line_end: Some("*/"),
-                }
-            }
-            ".r" | ".R" | ".sh" | ".bash" | ".py" => {
-                CommentStyle {
-                    single_line: vec!["#"],
-                    multi_line_start: None,
-                    multi_line_end: None,
-                }
-            }
-            ".lua" | ".sql" => {
-                CommentStyle {
-                    single_line: vec!["--"],
-                    multi_line_start: Some("/*"),
-                    multi_line_end: Some("*/"),
-                }
-            }
+            ".js" | ".ts" | ".jsx" | ".tsx" | ".java" | ".c" | ".cpp" | ".h" | ".hpp" | ".cs"
+            | ".go" | ".rs" | ".swift" | ".kt" | ".scala" => CommentStyle {
+                single_line: vec!["//"],
+                multi_line_start: Some("/*"),
+                multi_line_end: Some("*/"),
+            },
+            ".r" | ".R" | ".sh" | ".bash" | ".py" => CommentStyle {
+                single_line: vec!["#"],
+                multi_line_start: None,
+                multi_line_end: None,
+            },
+            ".lua" | ".sql" => CommentStyle {
+                single_line: vec!["--"],
+                multi_line_start: Some("/*"),
+                multi_line_end: Some("*/"),
+            },
             _ => {
                 // Default to C-style comments
                 CommentStyle {
@@ -52,7 +46,7 @@ impl GenericCodeParser {
     /// Check if text should be translated
     fn is_translatable(&self, text: &str) -> bool {
         let text = text.trim();
-        
+
         // Skip empty or very short text
         if text.len() < 3 {
             return false;
@@ -71,11 +65,22 @@ impl GenericCodeParser {
 
         // Skip common technical terms
         let technical_terms = [
-            "TODO", "FIXME", "NOTE", "HACK", "XXX", "BUG",
-            "DEPRECATED", "WARNING", "ERROR",
+            "TODO",
+            "FIXME",
+            "NOTE",
+            "HACK",
+            "XXX",
+            "BUG",
+            "DEPRECATED",
+            "WARNING",
+            "ERROR",
         ];
-        
-        if technical_terms.iter().any(|term| text.to_uppercase().contains(term)) && text.len() < 20 {
+
+        if technical_terms
+            .iter()
+            .any(|term| text.to_uppercase().contains(term))
+            && text.len() < 20
+        {
             return false;
         }
 
@@ -103,28 +108,30 @@ impl Parser for GenericCodeParser {
     fn supported_extensions(&self) -> &'static [&'static str] {
         &[
             ".js", ".ts", ".jsx", ".tsx",  // JavaScript/TypeScript
-            ".go",                           // Go
-            ".rs",                           // Rust
-            ".java",                         // Java
-            ".c", ".cpp", ".h", ".hpp",     // C/C++
-            ".cs",                           // C#
-            ".php",                          // PHP
-            ".rb",                           // Ruby
-            ".sh", ".bash",                  // Shell
-            ".sql",                          // SQL
-            ".r", ".R",                      // R
-            ".m",                            // MATLAB/Objective-C
-            ".scala",                        // Scala
-            ".kt",                           // Kotlin
-            ".swift",                        // Swift
-            ".dart",                         // Dart
-            ".lua",                          // Lua
-            ".vim",                          // Vim script
+            ".go",   // Go
+            ".rs",   // Rust
+            ".java", // Java
+            ".c", ".cpp", ".h", ".hpp", // C/C++
+            ".cs",  // C#
+            ".php", // PHP
+            ".rb",  // Ruby
+            ".sh", ".bash", // Shell
+            ".sql",  // SQL
+            ".r", ".R",     // R
+            ".m",     // MATLAB/Objective-C
+            ".scala", // Scala
+            ".kt",    // Kotlin
+            ".swift", // Swift
+            ".dart",  // Dart
+            ".lua",   // Lua
+            ".vim",   // Vim script
         ]
     }
 
     fn can_parse(&self, path: &str, _content: Option<&str>) -> bool {
-        self.supported_extensions().iter().any(|ext| path.ends_with(ext))
+        self.supported_extensions()
+            .iter()
+            .any(|ext| path.ends_with(ext))
     }
 
     fn extract_units(&self, content: &str, path: &str) -> Result<ParseResult> {
@@ -158,7 +165,7 @@ impl Parser for GenericCodeParser {
                         // Extract content after start marker
                         if let Some(start_pos) = line.find(start_marker) {
                             let after_start = &line[start_pos + start_marker.len()..];
-                            
+
                             // Check if comment ends on same line
                             if let Some(end_pos) = after_start.find(end_marker) {
                                 let comment_text = after_start[..end_pos].trim();
@@ -169,7 +176,10 @@ impl Parser for GenericCodeParser {
                                         line_num,
                                         1,
                                     )
-                                    .with_context(format!("Multi-line comment at line {}", line_num))
+                                    .with_context(format!(
+                                        "Multi-line comment at line {}",
+                                        line_num
+                                    ))
                                     .with_priority(Priority::Medium);
 
                                     // Detect language
@@ -187,7 +197,7 @@ impl Parser for GenericCodeParser {
                         if let Some(end_pos) = line.find(end_marker) {
                             // End of multi-line comment
                             multi_line_content.push_str(line[..end_pos].trim());
-                            
+
                             if self.is_translatable(&multi_line_content) {
                                 let mut unit = TranslatableUnit::new(
                                     multi_line_content.trim().to_string(),
@@ -195,7 +205,10 @@ impl Parser for GenericCodeParser {
                                     multi_line_start,
                                     1,
                                 )
-                                .with_context(format!("Multi-line comment at lines {}-{}", multi_line_start, line_num))
+                                .with_context(format!(
+                                    "Multi-line comment at lines {}-{}",
+                                    multi_line_start, line_num
+                                ))
                                 .with_priority(Priority::Medium);
 
                                 // Detect language
@@ -203,7 +216,7 @@ impl Parser for GenericCodeParser {
 
                                 units.push(unit);
                             }
-                            
+
                             in_multi_line_comment = false;
                             multi_line_content.clear();
                         } else {
@@ -219,7 +232,7 @@ impl Parser for GenericCodeParser {
                 for marker in &comment_style.single_line {
                     if let Some(pos) = line.find(marker) {
                         let comment_text = line[pos + marker.len()..].trim();
-                        
+
                         if self.is_translatable(comment_text) {
                             let mut unit = TranslatableUnit::new(
                                 comment_text.to_string(),
@@ -254,7 +267,12 @@ impl Parser for GenericCodeParser {
         Ok(result)
     }
 
-    fn reconstruct(&self, original: &str, units: &[TranslatableUnit], path: &str) -> Result<String> {
+    fn reconstruct(
+        &self,
+        original: &str,
+        units: &[TranslatableUnit],
+        path: &str,
+    ) -> Result<String> {
         let mut result = original.to_string();
 
         // Sort units by line number (reverse order for safe replacement)
@@ -284,7 +302,7 @@ impl Parser for GenericCodeParser {
                 if let Some(pos) = line.find(marker) {
                     let before_comment = &line[..pos];
                     let new_line = format!("{}{} {}", before_comment, marker, unit.content);
-                    
+
                     let old_line_pattern = regex::escape(line);
                     if let Ok(re) = Regex::new(&old_line_pattern) {
                         result = re.replace(&result, new_line.as_str()).to_string();
@@ -305,7 +323,7 @@ mod tests {
     #[test]
     fn test_generic_parser_supported_extensions() {
         let parser = GenericCodeParser::new();
-        
+
         assert!(parser.can_parse("test.js", None));
         assert!(parser.can_parse("test.go", None));
         assert!(parser.can_parse("test.rs", None));
@@ -322,7 +340,7 @@ function foo() {
     return 42;
 }
 "#;
-        
+
         let result = parser.extract_units(content, "test.js").unwrap();
         assert!(!result.units.is_empty());
         assert!(result.units[0].content.contains("This is a comment"));
@@ -338,7 +356,7 @@ function foo() {
     return 42;
 }
 "#;
-        
+
         let result = parser.extract_units(content, "test.js").unwrap();
         assert!(!result.units.is_empty());
     }
@@ -346,11 +364,11 @@ function foo() {
     #[test]
     fn test_is_translatable() {
         let parser = GenericCodeParser::new();
-        
+
         assert!(parser.is_translatable("This is a normal comment"));
         assert!(!parser.is_translatable("TODO"));
         assert!(!parser.is_translatable("http://example.com"));
-        assert!(!parser.is_translatable("a"));  // Too short
+        assert!(!parser.is_translatable("a")); // Too short
     }
 
     #[test]
@@ -432,8 +450,9 @@ int main() {
         if let Some(unit) = result.units.first_mut() {
             unit.content = "New".to_string();
         }
-        let reconstructed = parser.reconstruct(original, &result.units, "test.js").unwrap();
+        let reconstructed = parser
+            .reconstruct(original, &result.units, "test.js")
+            .unwrap();
         assert!(reconstructed.contains("New"));
     }
 }
-

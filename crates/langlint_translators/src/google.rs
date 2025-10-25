@@ -1,6 +1,6 @@
 //! Google Translate translator using the free API
 
-use crate::{Translator, TranslationError, TranslationResult};
+use crate::{TranslationError, TranslationResult, Translator};
 use async_trait::async_trait;
 use rand::Rng;
 use serde::Deserialize;
@@ -70,7 +70,7 @@ impl GoogleTranslator {
             .map_err(TranslationError::NetworkError)?;
 
         let mut language_mapping = HashMap::new();
-        
+
         // Add supported languages (subset for now, can be expanded)
         let languages = [
             ("en", "english"),
@@ -126,7 +126,7 @@ impl GoogleTranslator {
     ) -> Result<String, TranslationError> {
         // Use Google Translate's free endpoint
         let url = "https://translate.googleapis.com/translate_a/single";
-        
+
         let params = [
             ("client", "gtx"),
             ("sl", source_lang),
@@ -135,7 +135,8 @@ impl GoogleTranslator {
             ("q", text),
         ];
 
-        let response = self.client
+        let response = self
+            .client
             .get(url)
             .query(&params)
             .send()
@@ -151,12 +152,15 @@ impl GoogleTranslator {
         }
 
         // Parse response as JSON
-        let json: serde_json::Value = response.json().await
-            .map_err(|e| TranslationError::TranslationFailed {
-                message: format!("Failed to parse response: {}", e),
-                translator_name: "Google Translate".to_string(),
-                error_code: Some("PARSE_ERROR".to_string()),
-            })?;
+        let json: serde_json::Value =
+            response
+                .json()
+                .await
+                .map_err(|e| TranslationError::TranslationFailed {
+                    message: format!("Failed to parse response: {}", e),
+                    translator_name: "Google Translate".to_string(),
+                    error_code: Some("PARSE_ERROR".to_string()),
+                })?;
 
         // Extract translation from nested array structure
         // Response format: [[[translated_text, original_text, null, null, ...]], ...]
@@ -199,7 +203,9 @@ impl Translator for GoogleTranslator {
     ) -> Result<TranslationResult, TranslationError> {
         // Validate input
         if text.trim().is_empty() {
-            return Err(TranslationError::InvalidInput("Text cannot be empty".to_string()));
+            return Err(TranslationError::InvalidInput(
+                "Text cannot be empty".to_string(),
+            ));
         }
 
         // Validate languages
@@ -247,11 +253,13 @@ impl Translator for GoogleTranslator {
         }
 
         // All retries failed
-        Err(last_error.unwrap_or_else(|| TranslationError::TranslationFailed {
-            message: "Unknown error".to_string(),
-            translator_name: "Google Translate".to_string(),
-            error_code: None,
-        }))
+        Err(
+            last_error.unwrap_or_else(|| TranslationError::TranslationFailed {
+                message: "Unknown error".to_string(),
+                translator_name: "Google Translate".to_string(),
+                error_code: None,
+            }),
+        )
     }
 
     async fn translate_batch(
@@ -265,8 +273,8 @@ impl Translator for GoogleTranslator {
 
         // Translate texts concurrently with limited concurrency
         // Use tokio semaphore to limit to 3 concurrent requests
-        use tokio::sync::Semaphore;
         use std::sync::Arc;
+        use tokio::sync::Semaphore;
 
         let semaphore = Arc::new(Semaphore::new(3));
         let mut tasks = Vec::new();
@@ -280,7 +288,7 @@ impl Translator for GoogleTranslator {
 
             let task = async move {
                 let _permit = semaphore.acquire().await.unwrap();
-                
+
                 match translator.translate(&text, &source, &target).await {
                     Ok(mut result) => {
                         result = result.with_metadata("batch_index".to_string(), index.to_string());
@@ -340,12 +348,21 @@ impl Translator for GoogleTranslator {
     fn get_usage_info(&self) -> HashMap<String, String> {
         let mut info = HashMap::new();
         info.insert("name".to_string(), self.name().to_string());
-        info.insert("languages".to_string(), self.supported_languages().len().to_string());
+        info.insert(
+            "languages".to_string(),
+            self.supported_languages().len().to_string(),
+        );
         info.insert("cost_per_character".to_string(), "0.0".to_string());
         info.insert("max_batch_size".to_string(), "100".to_string());
-        info.insert("rate_limit".to_string(), "Limited (delays added)".to_string());
+        info.insert(
+            "rate_limit".to_string(),
+            "Limited (delays added)".to_string(),
+        );
         info.insert("timeout".to_string(), format!("{}s", self.config.timeout));
-        info.insert("retry_count".to_string(), self.config.retry_count.to_string());
+        info.insert(
+            "retry_count".to_string(),
+            self.config.retry_count.to_string(),
+        );
         info
     }
 }
@@ -373,11 +390,7 @@ mod tests {
     #[ignore] // Ignore by default as it requires network access
     async fn test_google_translate_batch() {
         let translator = GoogleTranslator::new().unwrap();
-        let texts = vec![
-            "Hello".to_string(),
-            "World".to_string(),
-            "Test".to_string(),
-        ];
+        let texts = vec!["Hello".to_string(), "World".to_string(), "Test".to_string()];
 
         let results = translator
             .translate_batch(&texts, "en", "zh")
@@ -398,4 +411,3 @@ mod tests {
         assert_eq!(translator.normalize_language_code("zh-CN"), "zh-cn");
     }
 }
-
