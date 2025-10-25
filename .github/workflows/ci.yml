@@ -54,14 +54,16 @@ jobs:
     - name: Run clippy
       run: cargo clippy --all-targets --all-features --workspace --exclude langlint_py -- -D warnings
     
-    - name: Build Python bindings
-      run: cargo build --release -p langlint_py
+    - name: Install maturin
+      run: pip install maturin
+    
+    - name: Build and install Python bindings with Rust extension
+      run: |
+        cd crates/langlint_py
+        maturin develop --release
     
     - name: Install Python dependencies
-      run: pip install pytest pytest-cov click
-    
-    - name: Install package
-      run: pip install -e .
+      run: pip install pytest pytest-cov pytest-timeout click
     
     - name: Run Python tests with coverage
       run: pytest tests/ --cov=langlint --cov-report=term --cov-report=xml
