@@ -49,7 +49,7 @@ impl PythonParser {
             "return", "def", "class", "import",
         ];
         
-        if technical_terms.iter().any(|term| text == *term) {
+        if technical_terms.contains(&text) {
             return false;
         }
 
@@ -326,7 +326,7 @@ mod tests {
 
     #[test]
     fn test_python_parser_default() {
-        let parser = PythonParser::default();
+        let parser = PythonParser;
         assert_eq!(parser.name(), "PythonParser");
     }
 

@@ -67,7 +67,7 @@ impl GoogleTranslator {
         let client = reqwest::Client::builder()
             .timeout(Duration::from_secs(config.timeout))
             .build()
-            .map_err(|e| TranslationError::NetworkError(e))?;
+            .map_err(TranslationError::NetworkError)?;
 
         let mut language_mapping = HashMap::new();
         
@@ -140,7 +140,7 @@ impl GoogleTranslator {
             .query(&params)
             .send()
             .await
-            .map_err(|e| TranslationError::NetworkError(e))?;
+            .map_err(TranslationError::NetworkError)?;
 
         if !response.status().is_success() {
             return Err(TranslationError::TranslationFailed {
