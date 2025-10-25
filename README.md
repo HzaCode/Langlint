@@ -11,6 +11,7 @@
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rust](https://img.shields.io/badge/rust-1.90%2B-orange.svg)](https://www.rust-lang.org/)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 [![CI](https://github.com/HzaCode/Langlint/workflows/CI/badge.svg)](https://github.com/HzaCode/Langlint/actions)
 [![codecov](https://codecov.io/gh/HzaCode/Langlint/branch/main/graph/badge.svg)](https://codecov.io/gh/HzaCode/Langlint)
 [![Documentation](https://img.shields.io/badge/docs-passing-brightgreen.svg)](https://hzacode.github.io/Langlint/)

@@ -30,7 +30,10 @@ except ImportError as e:
     HAS_RUST = False
     scan = None
     translate = None
-    version = lambda: __version__
+    
+    def version():
+        """Return version string"""
+        return __version__
 
 # Import CLI main function
 from .cli import main

@@ -1,20 +1,20 @@
-"""データ处理ユーティリティ"""
+"""Data processing utility"""
 
 
 def process_data(data):
-    """データを处理する 引数: 数据: 处理するデータ 戻り値: 处理されたデータ"""
-    # データを検证
+    """Process data Argument: Number: Data to be processed Return value: Processed data"""
+    # Verify the data
     if not data:
         return None
     
-    # データを変换
+    # Transform data
     result = [x * 2 for x in data]
     return result
 
 
 def validate_input(value):
-    """入力値を検证する"""
-    # 値が正の数かチェック
+    """Validate input value"""
+    # Check if value is positive
     if value > 0:
         return True
     return False

@@ -1,7 +1,6 @@
 """Test fallback when Rust module is not available"""
 import pytest
 import sys
-import importlib
 
 
 def test_import_error_fallback():
@@ -23,7 +22,7 @@ def test_import_error_fallback():
             import langlint
             
             # Verify fallback values
-            assert langlint.HAS_RUST == False
+            assert not langlint.HAS_RUST
             assert langlint.scan is None
             assert langlint.translate is None
             assert langlint.version() == "1.0.0"
@@ -37,5 +36,5 @@ def test_import_error_fallback():
 def test_has_rust_true():
     """Test that HAS_RUST is True when module is available"""
     import langlint
-    assert langlint.HAS_RUST == True
+    assert langlint.HAS_RUST
 

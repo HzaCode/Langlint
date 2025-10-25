@@ -1,9 +1,7 @@
 """Test CLI wrapper that calls Rust binary"""
-import subprocess
 import pytest
-from unittest.mock import patch, MagicMock, Mock
+from unittest.mock import patch
 from pathlib import Path
-import sys
 
 
 def test_find_rust_cli_development():
@@ -28,7 +26,7 @@ def test_find_rust_cli_not_found():
 
 def test_scan_command_calls_rust():
     """Test that scan command calls Rust CLI"""
-    from langlint.cli import scan, find_rust_cli
+    from langlint.cli import find_rust_cli
     
     # Verify Rust CLI can be found
     rust_cli = find_rust_cli()
@@ -37,7 +35,7 @@ def test_scan_command_calls_rust():
 
 def test_translate_command_calls_rust():
     """Test that translate command calls Rust CLI"""  
-    from langlint.cli import translate, find_rust_cli
+    from langlint.cli import find_rust_cli
     
     # Verify Rust CLI can be found
     rust_cli = find_rust_cli()
@@ -46,7 +44,7 @@ def test_translate_command_calls_rust():
 
 def test_fix_command_calls_rust():
     """Test that fix command calls Rust CLI"""
-    from langlint.cli import fix, find_rust_cli
+    from langlint.cli import find_rust_cli
     
     # Verify Rust CLI can be found
     rust_cli = find_rust_cli()
@@ -170,7 +168,7 @@ def test_translate_with_mock():
         try:
             import shutil
             shutil.rmtree('test_output.py', ignore_errors=True)
-        except:
+        except Exception:
             pass
 
 
@@ -180,7 +178,6 @@ def test_fix_with_mock():
     from click.testing import CliRunner
     from langlint.cli import cli
     import tempfile
-    import shutil
     
     # Create temp file
     with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False, encoding='utf-8') as f:
