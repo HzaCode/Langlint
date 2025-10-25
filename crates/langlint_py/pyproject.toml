@@ -10,6 +10,7 @@ authors = [{name = "Zhiang He", email = "ang@hezhiang.com"}]
 license = {text = "MIT"}
 readme = "../../README.md"
 requires-python = ">=3.8"
+keywords = ["translation", "i18n", "localization", "rust", "cli", "automation", "markdown", "glossary"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
