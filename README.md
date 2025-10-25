@@ -13,8 +13,7 @@
 [![Rust](https://img.shields.io/badge/rust-1.90%2B-orange.svg)](https://www.rust-lang.org/)
 [![CI](https://github.com/HzaCode/Langlint/workflows/CI/badge.svg)](https://github.com/HzaCode/Langlint/actions)
 [![codecov](https://codecov.io/gh/HzaCode/Langlint/branch/main/graph/badge.svg)](https://codecov.io/gh/HzaCode/Langlint)
-[![Documentation](https://img.shields.io/badge/docs-passing-brightgreen.svg)](https://langlint.readthedocs.io/)
-[![Read the Docs](https://readthedocs.org/projects/langlint/badge/?version=latest)](https://langlint.readthedocs.io/en/latest/)
+[![Documentation](https://img.shields.io/badge/docs-passing-brightgreen.svg)](https://hzacode.github.io/Langlint/)
 [![Downloads](https://static.pepy.tech/badge/langlint?style=flat-square)](https://pepy.tech/project/langlint)
 
 </div>
