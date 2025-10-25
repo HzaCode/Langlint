@@ -10,6 +10,7 @@ use std::fs;
 use std::path::Path;
 
 /// Execute the translate command
+#[allow(clippy::too_many_arguments)]
 pub async fn execute(
     path: &str,
     source: &str,

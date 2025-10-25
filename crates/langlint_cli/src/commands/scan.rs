@@ -9,6 +9,7 @@ use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
 /// Execute the scan command
+#[allow(clippy::too_many_arguments)]
 pub async fn execute(
     path: &str,
     include: Option<Vec<String>>,
