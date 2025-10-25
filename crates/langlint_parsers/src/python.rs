@@ -1,5 +1,5 @@
 use anyhow::Result;
-use langlint_core::{ParseResult, TranslatableUnit, UnitType, Priority};
+use langlint_core::{ParseResult, Priority, TranslatableUnit, UnitType};
 use regex::Regex;
 use std::sync::OnceLock;
 
@@ -16,7 +16,7 @@ impl PythonParser {
     /// Check if text should be translated
     fn is_translatable(&self, text: &str) -> bool {
         let text = text.trim();
-        
+
         // Skip empty or very short text
         if text.len() < 3 {
             return false;
@@ -30,26 +30,28 @@ impl PythonParser {
         // Skip text that's mostly code or symbols
         // Count alphabetic chars AND CJK characters (Chinese, Japanese, Korean)
         let char_count = text.chars().count();
-        let meaningful_count = text.chars().filter(|c| {
-            c.is_alphabetic() || 
+        let meaningful_count = text
+            .chars()
+            .filter(|c| {
+                c.is_alphabetic() ||
             ('\u{4E00}'..='\u{9FFF}').contains(c) ||  // CJK Unified Ideographs
             ('\u{3400}'..='\u{4DBF}').contains(c) ||  // CJK Extension A
             ('\u{3040}'..='\u{30FF}').contains(c) ||  // Hiragana + Katakana
-            ('\u{AC00}'..='\u{D7AF}').contains(c)     // Hangul
-        }).count();
-        
+            ('\u{AC00}'..='\u{D7AF}').contains(c) // Hangul
+            })
+            .count();
+
         if meaningful_count < char_count / 3 {
             return false;
         }
 
         // Skip common technical terms
         let technical_terms = [
-            "TODO", "FIXME", "NOTE", "HACK", "XXX",
-            "self", "cls", "args", "kwargs",
-            "return", "def", "class", "import",
+            "TODO", "FIXME", "NOTE", "HACK", "XXX", "self", "cls", "args", "kwargs", "return",
+            "def", "class", "import",
         ];
-        
-        if technical_terms.iter().any(|term| text == *term) {
+
+        if technical_terms.contains(&text) {
             return false;
         }
 
@@ -74,7 +76,11 @@ impl Parser for PythonParser {
 
     fn can_parse(&self, path: &str, content: Option<&str>) -> bool {
         // Check extension
-        if self.supported_extensions().iter().any(|ext| path.ends_with(ext)) {
+        if self
+            .supported_extensions()
+            .iter()
+            .any(|ext| path.ends_with(ext))
+        {
             return true;
         }
 
@@ -97,15 +103,13 @@ impl Parser for PythonParser {
 
         // Regex for docstrings (simplified)
         static DOCSTRING_RE: OnceLock<Regex> = OnceLock::new();
-        let docstring_re = DOCSTRING_RE.get_or_init(|| {
-            Regex::new(r#"^\s*["']{3}(.+?)["']{3}"#).unwrap()
-        });
-        
+        let docstring_re =
+            DOCSTRING_RE.get_or_init(|| Regex::new(r#"^\s*["']{3}(.+?)["']{3}"#).unwrap());
+
         // Regex for multi-line docstring start
         static DOCSTRING_START_RE: OnceLock<Regex> = OnceLock::new();
-        let docstring_start_re = DOCSTRING_START_RE.get_or_init(|| {
-            Regex::new(r#"^\s*(["']{3})\s*(.*)$"#).unwrap()
-        });
+        let docstring_start_re =
+            DOCSTRING_START_RE.get_or_init(|| Regex::new(r#"^\s*(["']{3})\s*(.*)$"#).unwrap());
 
         let mut i = 0;
         while i < lines.len() {
@@ -117,14 +121,10 @@ impl Parser for PythonParser {
                 if let Some(comment_text) = caps.get(1) {
                     let text = comment_text.as_str().trim();
                     if self.is_translatable(text) {
-                        let mut unit = TranslatableUnit::new(
-                            text.to_string(),
-                            UnitType::Comment,
-                            line_num,
-                            1,
-                        )
-                        .with_context(format!("Line {}: {}", line_num, line.trim()))
-                        .with_priority(Priority::Medium);
+                        let mut unit =
+                            TranslatableUnit::new(text.to_string(), UnitType::Comment, line_num, 1)
+                                .with_context(format!("Line {}: {}", line_num, line.trim()))
+                                .with_priority(Priority::Medium);
 
                         // Detect language
                         unit.detect_language();
@@ -139,12 +139,20 @@ impl Parser for PythonParser {
                 if let Some(docstring_text) = caps.get(1) {
                     let text = docstring_text.as_str().trim();
                     if self.is_translatable(text) {
+                        // Detect quote style
+                        let quote_style = if line.trim_start().starts_with(r#"""""#) {
+                            r#"""""#
+                        } else {
+                            "'''"
+                        };
+
                         let mut unit = TranslatableUnit::new(
                             text.to_string(),
                             UnitType::Docstring,
                             line_num,
                             1,
                         )
+                        .with_metadata(serde_json::json!({"quote_style": quote_style}))
                         .with_context(format!("Docstring at line {}", line_num))
                         .with_priority(Priority::High);
 
@@ -157,34 +165,34 @@ impl Parser for PythonParser {
                 i += 1;
                 continue;
             }
-            
+
             // Extract multi-line docstrings
             if let Some(caps) = docstring_start_re.captures(line) {
                 let quote = caps.get(1).unwrap().as_str();
                 let first_line_content = caps.get(2).map(|m| m.as_str().trim()).unwrap_or("");
-                
+
                 // Check if it's actually a single-line docstring (ends on same line)
                 if !first_line_content.is_empty() && line.trim_end().ends_with(quote) {
                     i += 1;
                     continue;
                 }
-                
+
                 // Multi-line docstring
                 let start_line = line_num;
                 let mut docstring_lines = Vec::new();
-                
+
                 if !first_line_content.is_empty() {
                     docstring_lines.push(first_line_content.to_string());
                 }
-                
+
                 i += 1;
                 let mut found_end = false;
                 let mut end_line = start_line;
-                
+
                 while i < lines.len() {
                     let current_line = lines[i];
                     end_line = (i + 1) as u32;
-                    
+
                     if current_line.contains(quote) {
                         // Found closing quotes
                         if let Some(end_pos) = current_line.find(quote) {
@@ -204,7 +212,7 @@ impl Parser for PythonParser {
                     }
                     i += 1;
                 }
-                
+
                 if found_end {
                     let docstring_content = docstring_lines.join(" ");
                     if self.is_translatable(&docstring_content) {
@@ -213,10 +221,17 @@ impl Parser for PythonParser {
                             docstring_content,
                             UnitType::Docstring,
                             start_line,
-                            1,  // column
+                            1, // column
                         )
-                        .with_metadata(serde_json::json!({"span": span, "end_line": end_line}))
-                        .with_context(format!("Multi-line docstring at lines {}-{}", start_line, end_line))
+                        .with_metadata(serde_json::json!({
+                            "span": span,
+                            "end_line": end_line,
+                            "quote_style": quote
+                        }))
+                        .with_context(format!(
+                            "Multi-line docstring at lines {}-{}",
+                            start_line, end_line
+                        ))
                         .with_priority(Priority::High);
 
                         // Detect language
@@ -242,11 +257,17 @@ impl Parser for PythonParser {
         Ok(result)
     }
 
-    fn reconstruct(&self, original: &str, units: &[TranslatableUnit], _path: &str) -> Result<String> {
+    fn reconstruct(
+        &self,
+        original: &str,
+        units: &[TranslatableUnit],
+        _path: &str,
+    ) -> Result<String> {
         // Build a map of line numbers to translated content
-        let mut line_replacements: std::collections::HashMap<u32, String> = std::collections::HashMap::new();
+        let mut line_replacements: std::collections::HashMap<u32, String> =
+            std::collections::HashMap::new();
         let mut lines_to_skip: std::collections::HashSet<u32> = std::collections::HashSet::new();
-        
+
         let lines: Vec<&str> = original.lines().collect();
 
         for unit in units {
@@ -267,24 +288,46 @@ impl Parser for PythonParser {
             }
             // Replace docstrings
             else if unit.unit_type == UnitType::Docstring {
-                let quote_style = if line.contains(r#"""""#) { r#"""""# } else { "'''" };
-                let indent = line.chars().take_while(|c| c.is_whitespace()).collect::<String>();
-                
+                // Get quote style from metadata, or detect from line
+                let quote_style = unit
+                    .metadata
+                    .as_ref()
+                    .and_then(|m| m.get("quote_style"))
+                    .and_then(|q| q.as_str())
+                    .map(|s| s.to_string())
+                    .unwrap_or_else(|| {
+                        // Fallback: detect from line
+                        if line.contains(r#"""""#) {
+                            r#"""""#.to_string()
+                        } else {
+                            "'''".to_string()
+                        }
+                    });
+
+                let indent = line
+                    .chars()
+                    .take_while(|c| c.is_whitespace())
+                    .collect::<String>();
+
                 // Check if it's multi-line (has span metadata)
-                let span = unit.metadata.as_ref()
+                let span = unit
+                    .metadata
+                    .as_ref()
                     .and_then(|m| m.get("span"))
                     .and_then(|s| s.as_u64())
                     .unwrap_or(1) as u32;
-                
+
                 if span == 1 {
                     // Single-line docstring
-                    let new_line = format!("{}{}{}{}", indent, quote_style, unit.content, quote_style);
+                    let new_line =
+                        format!("{}{}{}{}", indent, quote_style, unit.content, quote_style);
                     line_replacements.insert(unit.line_number, new_line);
                 } else {
                     // Multi-line docstring: collapse to single line
-                    let new_line = format!("{}{}{}{}", indent, quote_style, unit.content, quote_style);
+                    let new_line =
+                        format!("{}{}{}{}", indent, quote_style, unit.content, quote_style);
                     line_replacements.insert(unit.line_number, new_line);
-                    
+
                     // Mark other lines for skipping
                     for offset in 1..span {
                         lines_to_skip.insert(unit.line_number + offset);
@@ -297,12 +340,12 @@ impl Parser for PythonParser {
         let mut result_lines = Vec::new();
         for (i, line) in lines.iter().enumerate() {
             let line_num = (i + 1) as u32;
-            
+
             if lines_to_skip.contains(&line_num) {
                 // Skip this line (part of multi-line docstring)
                 continue;
             }
-            
+
             if let Some(new_line) = line_replacements.get(&line_num) {
                 result_lines.push(new_line.as_str());
             } else {
@@ -326,7 +369,7 @@ mod tests {
 
     #[test]
     fn test_python_parser_default() {
-        let parser = PythonParser::default();
+        let parser = PythonParser;
         assert_eq!(parser.name(), "PythonParser");
     }
 
@@ -334,7 +377,7 @@ mod tests {
     fn test_supported_extensions() {
         let parser = PythonParser::new();
         let extensions = parser.supported_extensions();
-        
+
         assert!(extensions.contains(&".py"));
         assert!(extensions.contains(&".pyi"));
         assert!(extensions.contains(&".pyw"));
@@ -343,19 +386,19 @@ mod tests {
     #[test]
     fn test_python_parser_can_parse() {
         let parser = PythonParser::new();
-        
+
         assert!(parser.can_parse("test.py", None));
         assert!(parser.can_parse("test.pyi", None));
         assert!(parser.can_parse("test.pyw", None));
         assert!(!parser.can_parse("test.txt", None));
         assert!(!parser.can_parse("test.js", None));
-        
+
         let python_content = "def foo():\n    pass";
         assert!(parser.can_parse("unknown", Some(python_content)));
-        
+
         let python_with_class = "class MyClass:\n    pass";
         assert!(parser.can_parse("unknown", Some(python_with_class)));
-        
+
         let python_with_import = "import os\nimport sys";
         assert!(parser.can_parse("unknown", Some(python_with_import)));
     }
@@ -364,7 +407,7 @@ mod tests {
     fn test_can_parse_non_python_content() {
         let parser = PythonParser::new();
         let non_python = "This is just plain text without Python syntax";
-        
+
         assert!(!parser.can_parse("unknown.txt", Some(non_python)));
     }
 
@@ -376,7 +419,7 @@ mod tests {
 def foo():
     pass
 "#;
-        
+
         let result = parser.extract_units(content, "test.py").unwrap();
         assert!(!result.units.is_empty());
         assert!(result.units[0].content.contains("This is a comment"));
@@ -394,7 +437,7 @@ def foo():
     pass
 # Comment 3
 "#;
-        
+
         let result = parser.extract_units(content, "test.py").unwrap();
         assert_eq!(result.units.len(), 3);
     }
@@ -407,7 +450,7 @@ def foo():
     """This is a docstring"""
     pass
 "#;
-        
+
         let result = parser.extract_units(content, "test.py").unwrap();
         assert!(!result.units.is_empty());
         assert_eq!(result.units[0].unit_type, UnitType::Docstring);
@@ -422,7 +465,7 @@ def foo():
     '''This is a docstring with single quotes'''
     pass
 "#;
-        
+
         let result = parser.extract_units(content, "test.py").unwrap();
         assert!(!result.units.is_empty());
     }
@@ -431,7 +474,7 @@ def foo():
     fn test_extract_empty_file() {
         let parser = PythonParser::new();
         let content = "";
-        
+
         let result = parser.extract_units(content, "test.py").unwrap();
         assert!(result.units.is_empty());
     }
@@ -445,7 +488,7 @@ def foo():
 def foo():
     pass
 "#;
-        
+
         let result = parser.extract_units(content, "test.py").unwrap();
         // TODO and FIXME should be filtered out
         assert!(result.units.is_empty());
@@ -454,23 +497,23 @@ def foo():
     #[test]
     fn test_is_translatable() {
         let parser = PythonParser::new();
-        
+
         // Should be translatable
         assert!(parser.is_translatable("This is a normal comment"));
         assert!(parser.is_translatable("Calculate the sum of numbers"));
         assert!(parser.is_translatable("   Text with spaces   "));
-        
+
         // Should not be translatable
         assert!(!parser.is_translatable("TODO"));
         assert!(!parser.is_translatable("FIXME"));
         assert!(!parser.is_translatable("NOTE"));
         assert!(!parser.is_translatable("http://example.com"));
         assert!(!parser.is_translatable("user@example.com"));
-        assert!(!parser.is_translatable("a"));  // Too short
+        assert!(!parser.is_translatable("a")); // Too short
         assert!(!parser.is_translatable("ab")); // Too short
-        assert!(!parser.is_translatable(""));   // Empty
+        assert!(!parser.is_translatable("")); // Empty
         assert!(!parser.is_translatable("   ")); // Whitespace only
-        assert!(!parser.is_translatable("!!!"));  // Mostly symbols
+        assert!(!parser.is_translatable("!!!")); // Mostly symbols
         assert!(!parser.is_translatable("self"));
         assert!(!parser.is_translatable("cls"));
         assert!(!parser.is_translatable("args"));
@@ -480,7 +523,7 @@ def foo():
     #[test]
     fn test_is_translatable_with_url() {
         let parser = PythonParser::new();
-        
+
         assert!(!parser.is_translatable("See https://example.com for details"));
         assert!(!parser.is_translatable("Contact us at support@example.com"));
     }
@@ -488,7 +531,7 @@ def foo():
     #[test]
     fn test_is_translatable_mostly_symbols() {
         let parser = PythonParser::new();
-        
+
         // Text with too many symbols should not be translatable
         assert!(!parser.is_translatable("========"));
         assert!(!parser.is_translatable("--------"));
@@ -499,15 +542,13 @@ def foo():
     fn test_reconstruct_comment() {
         let parser = PythonParser::new();
         let original = "# Original comment\ndef foo():\n    pass";
-        
-        let translated_unit = TranslatableUnit::new(
-            "Translated comment".to_string(),
-            UnitType::Comment,
-            1,
-            1,
-        );
-        
-        let result = parser.reconstruct(original, &[translated_unit], "test.py").unwrap();
+
+        let translated_unit =
+            TranslatableUnit::new("Translated comment".to_string(), UnitType::Comment, 1, 1);
+
+        let result = parser
+            .reconstruct(original, &[translated_unit], "test.py")
+            .unwrap();
         assert!(result.contains("Translated comment"));
         assert!(result.contains("def foo()"));
     }
@@ -518,15 +559,17 @@ def foo():
         let original = r#"def foo():
     """Original docstring"""
     pass"#;
-        
+
         let translated_unit = TranslatableUnit::new(
             "Translated docstring".to_string(),
             UnitType::Docstring,
             2,
             1,
         );
-        
-        let result = parser.reconstruct(original, &[translated_unit], "test.py").unwrap();
+
+        let result = parser
+            .reconstruct(original, &[translated_unit], "test.py")
+            .unwrap();
         assert!(result.contains("Translated docstring"));
     }
 
@@ -534,7 +577,7 @@ def foo():
     fn test_reconstruct_empty_units() {
         let parser = PythonParser::new();
         let original = "def foo():\n    pass";
-        
+
         let result = parser.reconstruct(original, &[], "test.py").unwrap();
         assert_eq!(result, original);
     }
@@ -543,9 +586,9 @@ def foo():
     fn test_extract_with_metadata() {
         let parser = PythonParser::new();
         let content = "# Test comment\ndef foo():\n    pass";
-        
+
         let result = parser.extract_units(content, "test.py").unwrap();
-        
+
         assert_eq!(result.file_type, "python");
         assert_eq!(result.encoding, "utf-8");
         assert!(result.line_count > 0);
@@ -560,7 +603,7 @@ def foo():
     # Indented comment
     pass
 "#;
-        
+
         let result = parser.extract_units(content, "test.py").unwrap();
         assert!(!result.units.is_empty());
         assert!(result.units[0].content.contains("Indented comment"));
@@ -576,7 +619,7 @@ def foo():
     fn test_extract_units_context() {
         let parser = PythonParser::new();
         let content = "# Test comment\nprint('hello')";
-        
+
         let result = parser.extract_units(content, "test.py").unwrap();
         assert!(!result.units.is_empty());
         assert!(result.units[0].context.is_some());
@@ -591,20 +634,25 @@ def foo():
     """Docstring with high priority"""
     pass
 "#;
-        
+
         let result = parser.extract_units(content, "test.py").unwrap();
-        
+
         // Find comment and docstring
-        let comment = result.units.iter().find(|u| u.unit_type == UnitType::Comment);
-        let docstring = result.units.iter().find(|u| u.unit_type == UnitType::Docstring);
-        
+        let comment = result
+            .units
+            .iter()
+            .find(|u| u.unit_type == UnitType::Comment);
+        let docstring = result
+            .units
+            .iter()
+            .find(|u| u.unit_type == UnitType::Docstring);
+
         if let Some(c) = comment {
             assert_eq!(c.priority, Priority::Medium);
         }
-        
+
         if let Some(d) = docstring {
             assert_eq!(d.priority, Priority::High);
         }
     }
 }
-
