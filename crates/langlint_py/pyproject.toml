@@ -34,10 +34,10 @@ Issues = "https://github.com/HzaCode/Langlint/issues"
 
 [tool.maturin]
 python-source = "../.."
-module-name = "langlint.langlint_py"
+module-name = "langlint_py"
 include = [
-    { path = "../../langlint/__init__.py", format = "sdist" },
-    { path = "../../langlint/cli.py", format = "sdist" },
-    { path = "../../langlint/py.typed", format = "sdist" }
+    { path = "../../langlint/__init__.py", format = ["sdist", "wheel"] },
+    { path = "../../langlint/cli.py", format = ["sdist", "wheel"] },
+    { path = "../../langlint/py.typed", format = ["sdist", "wheel"] }
 ]
 
