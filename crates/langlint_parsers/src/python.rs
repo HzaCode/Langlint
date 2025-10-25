@@ -425,14 +425,14 @@ mod tests {
     fn test_extract_comment() {
         let parser = PythonParser::new();
         let content = r#"
-# This is a comment
+# 这是一个注释
 def foo():
     pass
 "#;
 
         let result = parser.extract_units(content, "test.py").unwrap();
         assert!(!result.units.is_empty());
-        assert!(result.units[0].content.contains("This is a comment"));
+        assert!(result.units[0].content.contains("这是一个注释"));
         assert_eq!(result.units[0].unit_type, UnitType::Comment);
         assert_eq!(result.units[0].line_number, 2);
     }
@@ -441,11 +441,11 @@ def foo():
     fn test_extract_multiple_comments() {
         let parser = PythonParser::new();
         let content = r#"
-# Comment 1
+# 注释一
 def foo():
-    # Comment 2
+    # 注释二
     pass
-# Comment 3
+# 注释三
 "#;
 
         let result = parser.extract_units(content, "test.py").unwrap();
@@ -457,7 +457,7 @@ def foo():
         let parser = PythonParser::new();
         let content = r#"
 def foo():
-    """This is a docstring"""
+    """这是一个文档字符串"""
     pass
 "#;
 
@@ -472,7 +472,7 @@ def foo():
         let parser = PythonParser::new();
         let content = r#"
 def foo():
-    '''This is a docstring with single quotes'''
+    '''这是单引号文档字符串'''
     pass
 "#;
 
@@ -508,12 +508,17 @@ def foo():
     fn test_is_translatable() {
         let parser = PythonParser::new();
 
-        // Should be translatable
-        assert!(parser.is_translatable("This is a normal comment"));
-        assert!(parser.is_translatable("Calculate the sum of numbers"));
-        assert!(parser.is_translatable("   Text with spaces   "));
+        // Should be translatable (contains non-ASCII)
+        assert!(parser.is_translatable("这是一个普通注释"));
+        assert!(parser.is_translatable("計算数値の合計"));
+        assert!(parser.is_translatable("   带空格的文本   "));
 
-        // Should not be translatable
+        // Should not be translatable (English only - filtered by language filter)
+        assert!(!parser.is_translatable("This is a normal comment"));
+        assert!(!parser.is_translatable("Calculate the sum of numbers"));
+        assert!(!parser.is_translatable("   Text with spaces   "));
+        
+        // Should not be translatable (technical terms)
         assert!(!parser.is_translatable("TODO"));
         assert!(!parser.is_translatable("FIXME"));
         assert!(!parser.is_translatable("NOTE"));
@@ -610,13 +615,13 @@ def foo():
         let parser = PythonParser::new();
         let content = r#"
 def foo():
-    # Indented comment
+    # 缩进的注释
     pass
 "#;
 
         let result = parser.extract_units(content, "test.py").unwrap();
         assert!(!result.units.is_empty());
-        assert!(result.units[0].content.contains("Indented comment"));
+        assert!(result.units[0].content.contains("缩进的注释"));
     }
 
     #[test]
@@ -628,7 +633,7 @@ def foo():
     #[test]
     fn test_extract_units_context() {
         let parser = PythonParser::new();
-        let content = "# Test comment\nprint('hello')";
+        let content = "# 测试注释\nprint('hello')";
 
         let result = parser.extract_units(content, "test.py").unwrap();
         assert!(!result.units.is_empty());
