@@ -329,7 +329,7 @@ backup = true
         assert_eq!(default_source_lang(), vec!["auto".to_string()]);
         assert_eq!(default_target_lang(), "en");
         assert_eq!(default_translator(), "google");
-        assert_eq!(default_backup(), true);
+        assert!(default_backup());
     }
 
     #[test]
