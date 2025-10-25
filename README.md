@@ -19,8 +19,6 @@
 
  **LangLint** is a high-performance, extensible, **Rust-powered, code-aware translation and linting toolkit** for code comments and documentation. It keeps multilingual scientific software docs consistent and reproducible, supporting **FAIR** and open-science practices.
 
-🎉 **v1.0.0 Stable Release:** Production-ready with **10–50× faster** Rust core, comprehensive tests, and **97% coverage**.
-
 
 
 ## 🚀 Quick Start
