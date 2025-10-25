@@ -12,19 +12,14 @@ pub enum UnitType {
 }
 
 /// Translation priority levels
-#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, PartialEq, Eq, PartialOrd, Ord, Default)]
 #[serde(rename_all = "lowercase")]
 pub enum Priority {
     High,
+    #[default]
     Medium,
     Low,
     Ignore,
-}
-
-impl Default for Priority {
-    fn default() -> Self {
-        Priority::Medium
-    }
 }
 
 /// Position in source code
