@@ -1,0 +1,895 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Translators &mdash; LangLint 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Contributing" href="../contributing.html" />
+    <link rel="prev" title="Parsers Module" href="parsers.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            LangLint
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">Command-Line Interface</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parsers.html">Parsers Module</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Translators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-langlint.translators.base">Base Translator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#langlint.translators.base.TranslationError"><code class="docutils literal notranslate"><span class="pre">TranslationError</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.TranslationError.__str__"><code class="docutils literal notranslate"><span class="pre">TranslationError.__str__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#langlint.translators.base.TranslationResult"><code class="docutils literal notranslate"><span class="pre">TranslationResult</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.TranslationResult.original_text"><code class="docutils literal notranslate"><span class="pre">TranslationResult.original_text</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.TranslationResult.translated_text"><code class="docutils literal notranslate"><span class="pre">TranslationResult.translated_text</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.TranslationResult.source_language"><code class="docutils literal notranslate"><span class="pre">TranslationResult.source_language</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.TranslationResult.target_language"><code class="docutils literal notranslate"><span class="pre">TranslationResult.target_language</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.TranslationResult.status"><code class="docutils literal notranslate"><span class="pre">TranslationResult.status</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.TranslationResult.confidence"><code class="docutils literal notranslate"><span class="pre">TranslationResult.confidence</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.TranslationResult.metadata"><code class="docutils literal notranslate"><span class="pre">TranslationResult.metadata</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.TranslationResult.__post_init__"><code class="docutils literal notranslate"><span class="pre">TranslationResult.__post_init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">TranslationResult.confidence</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">TranslationResult.metadata</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2"><code class="docutils literal notranslate"><span class="pre">TranslationResult.original_text</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3"><code class="docutils literal notranslate"><span class="pre">TranslationResult.source_language</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id4"><code class="docutils literal notranslate"><span class="pre">TranslationResult.status</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id5"><code class="docutils literal notranslate"><span class="pre">TranslationResult.target_language</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id6"><code class="docutils literal notranslate"><span class="pre">TranslationResult.translated_text</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#langlint.translators.base.TranslationStatus"><code class="docutils literal notranslate"><span class="pre">TranslationStatus</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.TranslationStatus.FAILED"><code class="docutils literal notranslate"><span class="pre">TranslationStatus.FAILED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.TranslationStatus.PARTIAL"><code class="docutils literal notranslate"><span class="pre">TranslationStatus.PARTIAL</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.TranslationStatus.SKIPPED"><code class="docutils literal notranslate"><span class="pre">TranslationStatus.SKIPPED</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.TranslationStatus.SUCCESS"><code class="docutils literal notranslate"><span class="pre">TranslationStatus.SUCCESS</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#langlint.translators.base.Translator"><code class="docutils literal notranslate"><span class="pre">Translator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.Translator.estimate_cost"><code class="docutils literal notranslate"><span class="pre">Translator.estimate_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.Translator.get_supported_language_pairs"><code class="docutils literal notranslate"><span class="pre">Translator.get_supported_language_pairs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.Translator.get_usage_info"><code class="docutils literal notranslate"><span class="pre">Translator.get_usage_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.Translator.is_language_supported"><code class="docutils literal notranslate"><span class="pre">Translator.is_language_supported()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.Translator.name"><code class="docutils literal notranslate"><span class="pre">Translator.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.Translator.normalize_language_code"><code class="docutils literal notranslate"><span class="pre">Translator.normalize_language_code()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.Translator.supported_languages"><code class="docutils literal notranslate"><span class="pre">Translator.supported_languages</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.Translator.translate"><code class="docutils literal notranslate"><span class="pre">Translator.translate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.Translator.translate_batch"><code class="docutils literal notranslate"><span class="pre">Translator.translate_batch()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.base.Translator.validate_languages"><code class="docutils literal notranslate"><span class="pre">Translator.validate_languages()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-langlint.translators.google_translator">Google Translator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#langlint.translators.google_translator.GoogleConfig"><code class="docutils literal notranslate"><span class="pre">GoogleConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.google_translator.GoogleConfig.delay_range"><code class="docutils literal notranslate"><span class="pre">GoogleConfig.delay_range</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.google_translator.GoogleConfig.retry_count"><code class="docutils literal notranslate"><span class="pre">GoogleConfig.retry_count</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.google_translator.GoogleConfig.service_urls"><code class="docutils literal notranslate"><span class="pre">GoogleConfig.service_urls</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.google_translator.GoogleConfig.timeout"><code class="docutils literal notranslate"><span class="pre">GoogleConfig.timeout</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#langlint.translators.google_translator.GoogleTranslator"><code class="docutils literal notranslate"><span class="pre">GoogleTranslator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.google_translator.GoogleTranslator.estimate_cost"><code class="docutils literal notranslate"><span class="pre">GoogleTranslator.estimate_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.google_translator.GoogleTranslator.get_language_name"><code class="docutils literal notranslate"><span class="pre">GoogleTranslator.get_language_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.google_translator.GoogleTranslator.get_supported_language_pairs"><code class="docutils literal notranslate"><span class="pre">GoogleTranslator.get_supported_language_pairs()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.google_translator.GoogleTranslator.get_usage_info"><code class="docutils literal notranslate"><span class="pre">GoogleTranslator.get_usage_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.google_translator.GoogleTranslator.is_language_supported"><code class="docutils literal notranslate"><span class="pre">GoogleTranslator.is_language_supported()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.google_translator.GoogleTranslator.name"><code class="docutils literal notranslate"><span class="pre">GoogleTranslator.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.google_translator.GoogleTranslator.normalize_language_code"><code class="docutils literal notranslate"><span class="pre">GoogleTranslator.normalize_language_code()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.google_translator.GoogleTranslator.supported_languages"><code class="docutils literal notranslate"><span class="pre">GoogleTranslator.supported_languages</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.google_translator.GoogleTranslator.translate"><code class="docutils literal notranslate"><span class="pre">GoogleTranslator.translate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.google_translator.GoogleTranslator.translate_batch"><code class="docutils literal notranslate"><span class="pre">GoogleTranslator.translate_batch()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-langlint.translators.mock_translator">Mock Translator</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#langlint.translators.mock_translator.MockConfig"><code class="docutils literal notranslate"><span class="pre">MockConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.mock_translator.MockConfig.confidence_range"><code class="docutils literal notranslate"><span class="pre">MockConfig.confidence_range</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.mock_translator.MockConfig.delay_range"><code class="docutils literal notranslate"><span class="pre">MockConfig.delay_range</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.mock_translator.MockConfig.error_rate"><code class="docutils literal notranslate"><span class="pre">MockConfig.error_rate</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#langlint.translators.mock_translator.MockTranslator"><code class="docutils literal notranslate"><span class="pre">MockTranslator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.mock_translator.MockTranslator.LANGUAGE_MAPPING"><code class="docutils literal notranslate"><span class="pre">MockTranslator.LANGUAGE_MAPPING</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.mock_translator.MockTranslator.estimate_cost"><code class="docutils literal notranslate"><span class="pre">MockTranslator.estimate_cost()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.mock_translator.MockTranslator.get_usage_info"><code class="docutils literal notranslate"><span class="pre">MockTranslator.get_usage_info()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.mock_translator.MockTranslator.is_language_supported"><code class="docutils literal notranslate"><span class="pre">MockTranslator.is_language_supported()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.mock_translator.MockTranslator.name"><code class="docutils literal notranslate"><span class="pre">MockTranslator.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.mock_translator.MockTranslator.normalize_language_code"><code class="docutils literal notranslate"><span class="pre">MockTranslator.normalize_language_code()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.mock_translator.MockTranslator.supported_languages"><code class="docutils literal notranslate"><span class="pre">MockTranslator.supported_languages</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.mock_translator.MockTranslator.translate"><code class="docutils literal notranslate"><span class="pre">MockTranslator.translate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#langlint.translators.mock_translator.MockTranslator.translate_batch"><code class="docutils literal notranslate"><span class="pre">MockTranslator.translate_batch()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#future-translators">Future Translators</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">LangLint</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Translators</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/api/translators.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="translators">
+<h1>Translators<a class="headerlink" href="#translators" title="Link to this heading"></a></h1>
+<p>This module contains translator implementations for different translation services.</p>
+<section id="module-langlint.translators.base">
+<span id="base-translator"></span><h2>Base Translator<a class="headerlink" href="#module-langlint.translators.base" title="Link to this heading"></a></h2>
+<p>Base translator classes and interfaces.</p>
+<p>This module defines the abstract base classes that all translators must implement
+to ensure a consistent interface across different translation services.</p>
+<dl class="py exception">
+<dt class="sig sig-object py" id="langlint.translators.base.TranslationError">
+<em class="property"><span class="k"><span class="pre">exception</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">langlint.translators.base.</span></span><span class="sig-name descname"><span class="pre">TranslationError</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">message</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">translator_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/langlint/translators/base.html#TranslationError"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.base.TranslationError" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/exceptions.html#Exception" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></a></p>
+<p>Exception raised for translation-related errors.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.base.TranslationError.__str__">
+<span class="sig-name descname"><span class="pre">__str__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/langlint/translators/base.html#TranslationError.__str__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.base.TranslationError.__str__" title="Link to this definition"></a></dt>
+<dd><p>Return a formatted error message.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="langlint.translators.base.TranslationResult">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">langlint.translators.base.</span></span><span class="sig-name descname"><span class="pre">TranslationResult</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">original_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">translated_text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">status</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#langlint.translators.base.TranslationStatus" title="langlint.translators.base.TranslationStatus"><span class="pre">TranslationStatus</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/langlint/translators/base.html#TranslationResult"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.base.TranslationResult" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Result of a translation operation.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.base.TranslationResult.original_text">
+<span class="sig-name descname"><span class="pre">original_text</span></span><a class="headerlink" href="#langlint.translators.base.TranslationResult.original_text" title="Link to this definition"></a></dt>
+<dd><p>The original text that was translated</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.base.TranslationResult.translated_text">
+<span class="sig-name descname"><span class="pre">translated_text</span></span><a class="headerlink" href="#langlint.translators.base.TranslationResult.translated_text" title="Link to this definition"></a></dt>
+<dd><p>The translated text</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.base.TranslationResult.source_language">
+<span class="sig-name descname"><span class="pre">source_language</span></span><a class="headerlink" href="#langlint.translators.base.TranslationResult.source_language" title="Link to this definition"></a></dt>
+<dd><p>Source language code</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.base.TranslationResult.target_language">
+<span class="sig-name descname"><span class="pre">target_language</span></span><a class="headerlink" href="#langlint.translators.base.TranslationResult.target_language" title="Link to this definition"></a></dt>
+<dd><p>Target language code</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.base.TranslationResult.status">
+<span class="sig-name descname"><span class="pre">status</span></span><a class="headerlink" href="#langlint.translators.base.TranslationResult.status" title="Link to this definition"></a></dt>
+<dd><p>Status of the translation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#langlint.translators.base.TranslationStatus" title="langlint.translators.base.TranslationStatus">langlint.translators.base.TranslationStatus</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.base.TranslationResult.confidence">
+<span class="sig-name descname"><span class="pre">confidence</span></span><a class="headerlink" href="#langlint.translators.base.TranslationResult.confidence" title="Link to this definition"></a></dt>
+<dd><p>Confidence score (0.0 to 1.0)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.base.TranslationResult.metadata">
+<span class="sig-name descname"><span class="pre">metadata</span></span><a class="headerlink" href="#langlint.translators.base.TranslationResult.metadata" title="Link to this definition"></a></dt>
+<dd><p>Additional metadata about the translation</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dict[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)">str</a>, Any] | None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.base.TranslationResult.__post_init__">
+<span class="sig-name descname"><span class="pre">__post_init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/langlint/translators/base.html#TranslationResult.__post_init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.base.TranslationResult.__post_init__" title="Link to this definition"></a></dt>
+<dd><p>Validate the translation result after initialization.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id0">
+<span class="sig-name descname"><span class="pre">confidence</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1.0</span></em><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id1">
+<span class="sig-name descname"><span class="pre">metadata</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id2">
+<span class="sig-name descname"><span class="pre">original_text</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#id2" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id3">
+<span class="sig-name descname"><span class="pre">source_language</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#id3" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id4">
+<span class="sig-name descname"><span class="pre">status</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#langlint.translators.base.TranslationStatus" title="langlint.translators.base.TranslationStatus"><span class="pre">TranslationStatus</span></a></em><a class="headerlink" href="#id4" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id5">
+<span class="sig-name descname"><span class="pre">target_language</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#id5" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="id6">
+<span class="sig-name descname"><span class="pre">translated_text</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#id6" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="langlint.translators.base.TranslationStatus">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">langlint.translators.base.</span></span><span class="sig-name descname"><span class="pre">TranslationStatus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/langlint/translators/base.html#TranslationStatus"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.base.TranslationStatus" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/enum.html#enum.Enum" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></a></p>
+<p>Status of a translation operation.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.base.TranslationStatus.FAILED">
+<span class="sig-name descname"><span class="pre">FAILED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'failed'</span></em><a class="headerlink" href="#langlint.translators.base.TranslationStatus.FAILED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.base.TranslationStatus.PARTIAL">
+<span class="sig-name descname"><span class="pre">PARTIAL</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'partial'</span></em><a class="headerlink" href="#langlint.translators.base.TranslationStatus.PARTIAL" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.base.TranslationStatus.SKIPPED">
+<span class="sig-name descname"><span class="pre">SKIPPED</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'skipped'</span></em><a class="headerlink" href="#langlint.translators.base.TranslationStatus.SKIPPED" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.base.TranslationStatus.SUCCESS">
+<span class="sig-name descname"><span class="pre">SUCCESS</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'success'</span></em><a class="headerlink" href="#langlint.translators.base.TranslationStatus.SUCCESS" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="langlint.translators.base.Translator">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">langlint.translators.base.</span></span><span class="sig-name descname"><span class="pre">Translator</span></span><a class="reference internal" href="../_modules/langlint/translators/base.html#Translator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.base.Translator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/abc.html#abc.ABC" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></a></p>
+<p>Abstract base class for all translation services.</p>
+<p>All translators must implement the methods defined in this class to ensure
+a consistent interface across different translation services.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.base.Translator.estimate_cost">
+<span class="sig-name descname"><span class="pre">estimate_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/langlint/translators/base.html#Translator.estimate_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.base.Translator.estimate_cost" title="Link to this definition"></a></dt>
+<dd><p>Estimate the cost of translating the given text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> – Text to translate</p></li>
+<li><p><strong>source_language</strong> – Source language code</p></li>
+<li><p><strong>target_language</strong> – Target language code</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Estimated cost in the translator’s currency</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.base.Translator.get_supported_language_pairs">
+<span class="sig-name descname"><span class="pre">get_supported_language_pairs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/langlint/translators/base.html#Translator.get_supported_language_pairs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.base.Translator.get_supported_language_pairs" title="Link to this definition"></a></dt>
+<dd><p>Get all supported language pairs for this translator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of (source, target) language code tuples</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.base.Translator.get_usage_info">
+<span class="sig-name descname"><span class="pre">get_usage_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/langlint/translators/base.html#Translator.get_usage_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.base.Translator.get_usage_info" title="Link to this definition"></a></dt>
+<dd><p>Get usage information for this translator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary containing usage information</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.base.Translator.is_language_supported">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_language_supported</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">language_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/langlint/translators/base.html#Translator.is_language_supported"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.base.Translator.is_language_supported" title="Link to this definition"></a></dt>
+<dd><p>Check if a language code is supported by this translator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>language_code</strong> – Language code to check</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the language is supported, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="langlint.translators.base.Translator.name">
+<em class="property"><span class="k"><span class="pre">abstract</span></span><span class="w"> </span><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#langlint.translators.base.Translator.name" title="Link to this definition"></a></dt>
+<dd><p>Return the name of this translator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Translator name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.base.Translator.normalize_language_code">
+<span class="sig-name descname"><span class="pre">normalize_language_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">language_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/langlint/translators/base.html#Translator.normalize_language_code"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.base.Translator.normalize_language_code" title="Link to this definition"></a></dt>
+<dd><p>Normalize a language code to the format expected by this translator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>language_code</strong> – Language code to normalize</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Normalized language code</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="langlint.translators.base.Translator.supported_languages">
+<em class="property"><span class="k"><span class="pre">abstract</span></span><span class="w"> </span><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">supported_languages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#langlint.translators.base.Translator.supported_languages" title="Link to this definition"></a></dt>
+<dd><p>Return a list of supported language codes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of supported language codes (e.g., [‘en’, ‘zh’, ‘ja’, ‘ko’])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.base.Translator.translate">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#langlint.translators.base.TranslationResult" title="langlint.translators.base.TranslationResult"><span class="pre">TranslationResult</span></a></span></span><a class="reference internal" href="../_modules/langlint/translators/base.html#Translator.translate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.base.Translator.translate" title="Link to this definition"></a></dt>
+<dd><p>Translate text from source language to target language.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> – Text to translate</p></li>
+<li><p><strong>source_language</strong> – Source language code</p></li>
+<li><p><strong>target_language</strong> – Target language code</p></li>
+<li><p><strong>**kwargs</strong> – Additional translator-specific parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TranslationResult containing the translated text and metadata</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#langlint.translators.base.TranslationError" title="langlint.translators.base.TranslationError"><strong>TranslationError</strong></a> – If translation fails</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If parameters are invalid</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.base.Translator.translate_batch">
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">translate_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">texts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#langlint.translators.base.TranslationResult" title="langlint.translators.base.TranslationResult"><span class="pre">TranslationResult</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/langlint/translators/base.html#Translator.translate_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.base.Translator.translate_batch" title="Link to this definition"></a></dt>
+<dd><p>Translate multiple texts in a single batch operation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>texts</strong> – List of texts to translate</p></li>
+<li><p><strong>source_language</strong> – Source language code</p></li>
+<li><p><strong>target_language</strong> – Target language code</p></li>
+<li><p><strong>**kwargs</strong> – Additional translator-specific parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of TranslationResult objects</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#langlint.translators.base.TranslationError" title="langlint.translators.base.TranslationError"><strong>TranslationError</strong></a> – If batch translation fails</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If parameters are invalid</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.base.Translator.validate_languages">
+<span class="sig-name descname"><span class="pre">validate_languages</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="reference internal" href="../_modules/langlint/translators/base.html#Translator.validate_languages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.base.Translator.validate_languages" title="Link to this definition"></a></dt>
+<dd><p>Validate that both source and target languages are supported.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>source_language</strong> – Source language code</p></li>
+<li><p><strong>target_language</strong> – Target language code</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If either language is not supported</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-langlint.translators.google_translator">
+<span id="google-translator"></span><h2>Google Translator<a class="headerlink" href="#module-langlint.translators.google_translator" title="Link to this heading"></a></h2>
+<p>Google Translate translator for using Google’s translation service.</p>
+<p>This translator uses Google’s free translation API to provide translations
+with support for over 100 languages.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="langlint.translators.google_translator.GoogleConfig">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">langlint.translators.google_translator.</span></span><span class="sig-name descname"><span class="pre">GoogleConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">service_urls</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retry_count</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0.3,</span> <span class="pre">0.6)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/langlint/translators/google_translator.html#GoogleConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.google_translator.GoogleConfig" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Configuration for Google translator.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.google_translator.GoogleConfig.delay_range">
+<span class="sig-name descname"><span class="pre">delay_range</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0.3,</span> <span class="pre">0.6)</span></em><a class="headerlink" href="#langlint.translators.google_translator.GoogleConfig.delay_range" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.google_translator.GoogleConfig.retry_count">
+<span class="sig-name descname"><span class="pre">retry_count</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3</span></em><a class="headerlink" href="#langlint.translators.google_translator.GoogleConfig.retry_count" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.google_translator.GoogleConfig.service_urls">
+<span class="sig-name descname"><span class="pre">service_urls</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#langlint.translators.google_translator.GoogleConfig.service_urls" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.google_translator.GoogleConfig.timeout">
+<span class="sig-name descname"><span class="pre">timeout</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">30</span></em><a class="headerlink" href="#langlint.translators.google_translator.GoogleConfig.timeout" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="langlint.translators.google_translator.GoogleTranslator">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">langlint.translators.google_translator.</span></span><span class="sig-name descname"><span class="pre">GoogleTranslator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#langlint.translators.google_translator.GoogleConfig" title="langlint.translators.google_translator.GoogleConfig"><span class="pre">GoogleConfig</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/langlint/translators/google_translator.html#GoogleTranslator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.google_translator.GoogleTranslator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#langlint.translators.base.Translator" title="langlint.translators.base.Translator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Translator</span></code></a></p>
+<p>Translator using Google’s free translation service.</p>
+<p>This translator provides translations using Google’s free translation API
+with support for over 100 languages.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.google_translator.GoogleTranslator.estimate_cost">
+<span class="sig-name descname"><span class="pre">estimate_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/langlint/translators/google_translator.html#GoogleTranslator.estimate_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.google_translator.GoogleTranslator.estimate_cost" title="Link to this definition"></a></dt>
+<dd><p>Estimate the cost of translating the given text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> – Text to translate</p></li>
+<li><p><strong>source_language</strong> – Source language code</p></li>
+<li><p><strong>target_language</strong> – Target language code</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Estimated cost (always 0 for Google Translate free tier)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.google_translator.GoogleTranslator.get_language_name">
+<span class="sig-name descname"><span class="pre">get_language_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">language_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/langlint/translators/google_translator.html#GoogleTranslator.get_language_name"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.google_translator.GoogleTranslator.get_language_name" title="Link to this definition"></a></dt>
+<dd><p>Get the full language name for a language code.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>language_code</strong> – Language code</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Full language name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.google_translator.GoogleTranslator.get_supported_language_pairs">
+<span class="sig-name descname"><span class="pre">get_supported_language_pairs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/langlint/translators/google_translator.html#GoogleTranslator.get_supported_language_pairs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.google_translator.GoogleTranslator.get_supported_language_pairs" title="Link to this definition"></a></dt>
+<dd><p>Get all supported language pairs for this translator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List of (source, target) language code tuples</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.google_translator.GoogleTranslator.get_usage_info">
+<span class="sig-name descname"><span class="pre">get_usage_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/langlint/translators/google_translator.html#GoogleTranslator.get_usage_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.google_translator.GoogleTranslator.get_usage_info" title="Link to this definition"></a></dt>
+<dd><p>Get usage information for this translator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary containing usage information</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.google_translator.GoogleTranslator.is_language_supported">
+<span class="sig-name descname"><span class="pre">is_language_supported</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">language_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/langlint/translators/google_translator.html#GoogleTranslator.is_language_supported"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.google_translator.GoogleTranslator.is_language_supported" title="Link to this definition"></a></dt>
+<dd><p>Check if a language code is supported by this translator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>language_code</strong> – Language code to check</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the language is supported, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="langlint.translators.google_translator.GoogleTranslator.name">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#langlint.translators.google_translator.GoogleTranslator.name" title="Link to this definition"></a></dt>
+<dd><p>Return the name of this translator.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.google_translator.GoogleTranslator.normalize_language_code">
+<span class="sig-name descname"><span class="pre">normalize_language_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">language_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/langlint/translators/google_translator.html#GoogleTranslator.normalize_language_code"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.google_translator.GoogleTranslator.normalize_language_code" title="Link to this definition"></a></dt>
+<dd><p>Normalize a language code to the format expected by this translator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>language_code</strong> – Language code to normalize</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Normalized language code</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="langlint.translators.google_translator.GoogleTranslator.supported_languages">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">supported_languages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#langlint.translators.google_translator.GoogleTranslator.supported_languages" title="Link to this definition"></a></dt>
+<dd><p>Return a list of supported language codes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.google_translator.GoogleTranslator.translate">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#langlint.translators.base.TranslationResult" title="langlint.translators.base.TranslationResult"><span class="pre">TranslationResult</span></a></span></span><a class="reference internal" href="../_modules/langlint/translators/google_translator.html#GoogleTranslator.translate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.google_translator.GoogleTranslator.translate" title="Link to this definition"></a></dt>
+<dd><p>Translate text from source language to target language.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> – Text to translate</p></li>
+<li><p><strong>source_language</strong> – Source language code</p></li>
+<li><p><strong>target_language</strong> – Target language code</p></li>
+<li><p><strong>**kwargs</strong> – Additional parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TranslationResult containing the translated text and metadata</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#langlint.translators.base.TranslationError" title="langlint.translators.base.TranslationError"><strong>TranslationError</strong></a> – If translation fails</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.google_translator.GoogleTranslator.translate_batch">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">translate_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">texts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#langlint.translators.base.TranslationResult" title="langlint.translators.base.TranslationResult"><span class="pre">TranslationResult</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/langlint/translators/google_translator.html#GoogleTranslator.translate_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.google_translator.GoogleTranslator.translate_batch" title="Link to this definition"></a></dt>
+<dd><p>Translate multiple texts in a single batch operation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>texts</strong> – List of texts to translate</p></li>
+<li><p><strong>source_language</strong> – Source language code</p></li>
+<li><p><strong>target_language</strong> – Target language code</p></li>
+<li><p><strong>**kwargs</strong> – Additional parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of TranslationResult objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-langlint.translators.mock_translator">
+<span id="mock-translator"></span><h2>Mock Translator<a class="headerlink" href="#module-langlint.translators.mock_translator" title="Link to this heading"></a></h2>
+<p>Mock translator for testing and development.</p>
+<p>This translator provides a simple mock implementation that can be used
+for testing without making actual API calls to translation services.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="langlint.translators.mock_translator.MockConfig">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">langlint.translators.mock_translator.</span></span><span class="sig-name descname"><span class="pre">MockConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">delay_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0.1,</span> <span class="pre">0.5)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">error_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">(0.8,</span> <span class="pre">1.0)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/langlint/translators/mock_translator.html#MockConfig"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.mock_translator.MockConfig" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Configuration for Mock translator.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.mock_translator.MockConfig.confidence_range">
+<span class="sig-name descname"><span class="pre">confidence_range</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0.8,</span> <span class="pre">1.0)</span></em><a class="headerlink" href="#langlint.translators.mock_translator.MockConfig.confidence_range" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.mock_translator.MockConfig.delay_range">
+<span class="sig-name descname"><span class="pre">delay_range</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">(0.1,</span> <span class="pre">0.5)</span></em><a class="headerlink" href="#langlint.translators.mock_translator.MockConfig.delay_range" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.mock_translator.MockConfig.error_rate">
+<span class="sig-name descname"><span class="pre">error_rate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#langlint.translators.mock_translator.MockConfig.error_rate" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="langlint.translators.mock_translator.MockTranslator">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">langlint.translators.mock_translator.</span></span><span class="sig-name descname"><span class="pre">MockTranslator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#langlint.translators.mock_translator.MockConfig" title="langlint.translators.mock_translator.MockConfig"><span class="pre">MockConfig</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/langlint/translators/mock_translator.html#MockTranslator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.mock_translator.MockTranslator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#langlint.translators.base.Translator" title="langlint.translators.base.Translator"><code class="xref py py-class docutils literal notranslate"><span class="pre">Translator</span></code></a></p>
+<p>Mock translator for testing and development.</p>
+<p>This translator provides a simple mock implementation that can be used
+for testing without making actual API calls to translation services.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="langlint.translators.mock_translator.MockTranslator.LANGUAGE_MAPPING">
+<span class="sig-name descname"><span class="pre">LANGUAGE_MAPPING</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'af':</span> <span class="pre">'Afrikaans',</span> <span class="pre">'am':</span> <span class="pre">'Amharic',</span> <span class="pre">'ar':</span> <span class="pre">'Arabic',</span> <span class="pre">'az':</span> <span class="pre">'Azerbaijani',</span> <span class="pre">'be':</span> <span class="pre">'Belarusian',</span> <span class="pre">'bg':</span> <span class="pre">'Bulgarian',</span> <span class="pre">'bn':</span> <span class="pre">'Bengali',</span> <span class="pre">'bs':</span> <span class="pre">'Bosnian',</span> <span class="pre">'ca':</span> <span class="pre">'Catalan',</span> <span class="pre">'cs':</span> <span class="pre">'Czech',</span> <span class="pre">'cy':</span> <span class="pre">'Welsh',</span> <span class="pre">'da':</span> <span class="pre">'Danish',</span> <span class="pre">'de':</span> <span class="pre">'German',</span> <span class="pre">'en':</span> <span class="pre">'English',</span> <span class="pre">'es':</span> <span class="pre">'Spanish',</span> <span class="pre">'et':</span> <span class="pre">'Estonian',</span> <span class="pre">'eu':</span> <span class="pre">'Basque',</span> <span class="pre">'fi':</span> <span class="pre">'Finnish',</span> <span class="pre">'fr':</span> <span class="pre">'French',</span> <span class="pre">'ga':</span> <span class="pre">'Irish',</span> <span class="pre">'gl':</span> <span class="pre">'Galician',</span> <span class="pre">'gu':</span> <span class="pre">'Gujarati',</span> <span class="pre">'he':</span> <span class="pre">'Hebrew',</span> <span class="pre">'hi':</span> <span class="pre">'Hindi',</span> <span class="pre">'hr':</span> <span class="pre">'Croatian',</span> <span class="pre">'hu':</span> <span class="pre">'Hungarian',</span> <span class="pre">'id':</span> <span class="pre">'Indonesian',</span> <span class="pre">'is':</span> <span class="pre">'Icelandic',</span> <span class="pre">'it':</span> <span class="pre">'Italian',</span> <span class="pre">'ja':</span> <span class="pre">'Japanese',</span> <span class="pre">'ka':</span> <span class="pre">'Georgian',</span> <span class="pre">'kk':</span> <span class="pre">'Kazakh',</span> <span class="pre">'ko':</span> <span class="pre">'Korean',</span> <span class="pre">'ky':</span> <span class="pre">'Kyrgyz',</span> <span class="pre">'lo':</span> <span class="pre">'Lao',</span> <span class="pre">'lt':</span> <span class="pre">'Lithuanian',</span> <span class="pre">'lv':</span> <span class="pre">'Latvian',</span> <span class="pre">'me':</span> <span class="pre">'Montenegrin',</span> <span class="pre">'mk':</span> <span class="pre">'Macedonian',</span> <span class="pre">'mn':</span> <span class="pre">'Mongolian',</span> <span class="pre">'ms':</span> <span class="pre">'Malay',</span> <span class="pre">'mt':</span> <span class="pre">'Maltese',</span> <span class="pre">'my':</span> <span class="pre">'Burmese',</span> <span class="pre">'ne':</span> <span class="pre">'Nepali',</span> <span class="pre">'nl':</span> <span class="pre">'Dutch',</span> <span class="pre">'no':</span> <span class="pre">'Norwegian',</span> <span class="pre">'pl':</span> <span class="pre">'Polish',</span> <span class="pre">'pt':</span> <span class="pre">'Portuguese',</span> <span class="pre">'ro':</span> <span class="pre">'Romanian',</span> <span class="pre">'ru':</span> <span class="pre">'Russian',</span> <span class="pre">'si':</span> <span class="pre">'Sinhala',</span> <span class="pre">'sk':</span> <span class="pre">'Slovak',</span> <span class="pre">'sl':</span> <span class="pre">'Slovenian',</span> <span class="pre">'sq':</span> <span class="pre">'Albanian',</span> <span class="pre">'sr':</span> <span class="pre">'Serbian',</span> <span class="pre">'sv':</span> <span class="pre">'Swedish',</span> <span class="pre">'sw':</span> <span class="pre">'Swahili',</span> <span class="pre">'ta':</span> <span class="pre">'Tamil',</span> <span class="pre">'te':</span> <span class="pre">'Telugu',</span> <span class="pre">'th':</span> <span class="pre">'Thai',</span> <span class="pre">'tl':</span> <span class="pre">'Filipino',</span> <span class="pre">'tr':</span> <span class="pre">'Turkish',</span> <span class="pre">'uk':</span> <span class="pre">'Ukrainian',</span> <span class="pre">'ur':</span> <span class="pre">'Urdu',</span> <span class="pre">'uz':</span> <span class="pre">'Uzbek',</span> <span class="pre">'vi':</span> <span class="pre">'Vietnamese',</span> <span class="pre">'zh':</span> <span class="pre">'Chinese'}</span></em><a class="headerlink" href="#langlint.translators.mock_translator.MockTranslator.LANGUAGE_MAPPING" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.mock_translator.MockTranslator.estimate_cost">
+<span class="sig-name descname"><span class="pre">estimate_cost</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></span><a class="reference internal" href="../_modules/langlint/translators/mock_translator.html#MockTranslator.estimate_cost"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.mock_translator.MockTranslator.estimate_cost" title="Link to this definition"></a></dt>
+<dd><p>Estimate the cost of translating the given text.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> – Text to translate</p></li>
+<li><p><strong>source_language</strong> – Source language code</p></li>
+<li><p><strong>target_language</strong> – Target language code</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Estimated cost (always 0 for mock)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.mock_translator.MockTranslator.get_usage_info">
+<span class="sig-name descname"><span class="pre">get_usage_info</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Dict" title="(in Python v3.14)"><span class="pre">Dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/langlint/translators/mock_translator.html#MockTranslator.get_usage_info"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.mock_translator.MockTranslator.get_usage_info" title="Link to this definition"></a></dt>
+<dd><p>Get usage information for this translator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Dictionary containing usage information</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.mock_translator.MockTranslator.is_language_supported">
+<span class="sig-name descname"><span class="pre">is_language_supported</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">language_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="reference internal" href="../_modules/langlint/translators/mock_translator.html#MockTranslator.is_language_supported"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.mock_translator.MockTranslator.is_language_supported" title="Link to this definition"></a></dt>
+<dd><p>Check if a language code is supported by this translator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>language_code</strong> – Language code to check</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True if the language is supported, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="langlint.translators.mock_translator.MockTranslator.name">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#langlint.translators.mock_translator.MockTranslator.name" title="Link to this definition"></a></dt>
+<dd><p>Return the name of this translator.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.mock_translator.MockTranslator.normalize_language_code">
+<span class="sig-name descname"><span class="pre">normalize_language_code</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">language_code</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></span><a class="reference internal" href="../_modules/langlint/translators/mock_translator.html#MockTranslator.normalize_language_code"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.mock_translator.MockTranslator.normalize_language_code" title="Link to this definition"></a></dt>
+<dd><p>Normalize a language code to the format expected by this translator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>language_code</strong> – Language code to normalize</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Normalized language code</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="langlint.translators.mock_translator.MockTranslator.supported_languages">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">supported_languages</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#langlint.translators.mock_translator.MockTranslator.supported_languages" title="Link to this definition"></a></dt>
+<dd><p>Return a list of supported language codes.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.mock_translator.MockTranslator.translate">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#langlint.translators.base.TranslationResult" title="langlint.translators.base.TranslationResult"><span class="pre">TranslationResult</span></a></span></span><a class="reference internal" href="../_modules/langlint/translators/mock_translator.html#MockTranslator.translate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.mock_translator.MockTranslator.translate" title="Link to this definition"></a></dt>
+<dd><p>Translate text from source language to target language.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>text</strong> – Text to translate</p></li>
+<li><p><strong>source_language</strong> – Source language code</p></li>
+<li><p><strong>target_language</strong> – Target language code</p></li>
+<li><p><strong>**kwargs</strong> – Additional parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>TranslationResult containing the translated text and metadata</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#langlint.translators.base.TranslationError" title="langlint.translators.base.TranslationError"><strong>TranslationError</strong></a> – If translation fails</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="langlint.translators.mock_translator.MockTranslator.translate_batch">
+<em class="property"><span class="k"><span class="pre">async</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">translate_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">texts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_language</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.14)"><span class="pre">Any</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.14)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#langlint.translators.base.TranslationResult" title="langlint.translators.base.TranslationResult"><span class="pre">TranslationResult</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/langlint/translators/mock_translator.html#MockTranslator.translate_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#langlint.translators.mock_translator.MockTranslator.translate_batch" title="Link to this definition"></a></dt>
+<dd><p>Translate multiple texts in a single batch operation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>texts</strong> – List of texts to translate</p></li>
+<li><p><strong>source_language</strong> – Source language code</p></li>
+<li><p><strong>target_language</strong> – Target language code</p></li>
+<li><p><strong>**kwargs</strong> – Additional parameters</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of TranslationResult objects</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="future-translators">
+<h2>Future Translators<a class="headerlink" href="#future-translators" title="Link to this heading"></a></h2>
+<p>The following translators are planned for future releases:</p>
+<ul class="simple">
+<li><p>OpenAI GPT (requires Rust implementation)</p></li>
+<li><p>DeepL API (requires Rust implementation)</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="parsers.html" class="btn btn-neutral float-left" title="Parsers Module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../contributing.html" class="btn btn-neutral float-right" title="Contributing" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Zhiang He.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

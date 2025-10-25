@@ -1,0 +1,283 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quick Start &mdash; LangLint 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Usage Guide" href="usage.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            LangLint
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#basic-commands">Basic Commands</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scan">scan</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translate">translate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fix">fix</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#simple-example">Simple Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#common-use-cases">Common Use Cases</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#internationalize-a-project">Internationalize a Project</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multi-language-support">Multi-language Support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#jupyter-notebooks">Jupyter Notebooks</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-file">Configuration File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command-Line Interface</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/parsers.html">Parsers Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/translators.html">Translators</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LangLint</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Quick Start</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/quickstart.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="quick-start">
+<h1>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h1>
+<p>This guide will help you get started with LangLint in just a few minutes.</p>
+<section id="basic-commands">
+<h2>Basic Commands<a class="headerlink" href="#basic-commands" title="Link to this heading"></a></h2>
+<p>LangLint provides three main commands:</p>
+<section id="scan">
+<h3>scan<a class="headerlink" href="#scan" title="Link to this heading"></a></h3>
+<p>Scan files for translatable content without making changes:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>langlint<span class="w"> </span>scan<span class="w"> </span>path/to/files
+</pre></div>
+</div>
+<p>Example output:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>Scanning 10 files...
+Found 25 translatable units in 5 files
+</pre></div>
+</div>
+</section>
+<section id="translate">
+<h3>translate<a class="headerlink" href="#translate" title="Link to this heading"></a></h3>
+<p>Translate files to a new directory (preserves originals):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>langlint<span class="w"> </span>translate<span class="w"> </span>path/to/files<span class="w"> </span>-s<span class="w"> </span>auto<span class="w"> </span>-t<span class="w"> </span>en<span class="w"> </span>-o<span class="w"> </span>output/
+</pre></div>
+</div>
+<p>This will:</p>
+<ol class="arabic simple">
+<li><p>Auto-detect the source language</p></li>
+<li><p>Translate to English</p></li>
+<li><p>Save results to the <code class="docutils literal notranslate"><span class="pre">output/</span></code> directory</p></li>
+</ol>
+</section>
+<section id="fix">
+<h3>fix<a class="headerlink" href="#fix" title="Link to this heading"></a></h3>
+<p>Translate files in-place (creates automatic backups):</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>langlint<span class="w"> </span>fix<span class="w"> </span>path/to/files<span class="w"> </span>-s<span class="w"> </span>auto<span class="w"> </span>-t<span class="w"> </span>en
+</pre></div>
+</div>
+<p>This will:</p>
+<ol class="arabic simple">
+<li><p>Auto-detect the source language</p></li>
+<li><p>Translate to English</p></li>
+<li><p>Update files in-place</p></li>
+<li><p>Create <code class="docutils literal notranslate"><span class="pre">.backup</span></code> backup files</p></li>
+</ol>
+</section>
+</section>
+<section id="simple-example">
+<h2>Simple Example<a class="headerlink" href="#simple-example" title="Link to this heading"></a></h2>
+<p>Let’s translate a Python file with Chinese comments:</p>
+<p><strong>Before</strong> (<code class="docutils literal notranslate"><span class="pre">example.py</span></code>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">calculate_total</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;计算总价&quot;&quot;&quot;</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+        <span class="c1"># 累加价格</span>
+        <span class="n">total</span> <span class="o">+=</span> <span class="n">item</span><span class="o">.</span><span class="n">price</span>
+    <span class="k">return</span> <span class="n">total</span>
+</pre></div>
+</div>
+<p><strong>Translate</strong>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>langlint<span class="w"> </span>fix<span class="w"> </span>example.py<span class="w"> </span>-s<span class="w"> </span>zh<span class="w"> </span>-t<span class="w"> </span>en
+</pre></div>
+</div>
+<p><strong>After</strong>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">calculate_total</span><span class="p">(</span><span class="n">items</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate total price&quot;&quot;&quot;</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">items</span><span class="p">:</span>
+        <span class="c1"># Accumulate prices</span>
+        <span class="n">total</span> <span class="o">+=</span> <span class="n">item</span><span class="o">.</span><span class="n">price</span>
+    <span class="k">return</span> <span class="n">total</span>
+</pre></div>
+</div>
+</section>
+<section id="common-use-cases">
+<h2>Common Use Cases<a class="headerlink" href="#common-use-cases" title="Link to this heading"></a></h2>
+<section id="internationalize-a-project">
+<h3>Internationalize a Project<a class="headerlink" href="#internationalize-a-project" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Scan first to see what will be translated</span>
+langlint<span class="w"> </span>scan<span class="w"> </span>src/
+
+<span class="c1"># Translate all Python files</span>
+langlint<span class="w"> </span>fix<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>zh<span class="w"> </span>-t<span class="w"> </span>en
+</pre></div>
+</div>
+</section>
+<section id="multi-language-support">
+<h3>Multi-language Support<a class="headerlink" href="#multi-language-support" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># French to English</span>
+langlint<span class="w"> </span>fix<span class="w"> </span>french_code.py<span class="w"> </span>-s<span class="w"> </span>fr<span class="w"> </span>-t<span class="w"> </span>en
+
+<span class="c1"># German to Chinese</span>
+langlint<span class="w"> </span>fix<span class="w"> </span>german_code.py<span class="w"> </span>-s<span class="w"> </span>de<span class="w"> </span>-t<span class="w"> </span>zh-CN
+
+<span class="c1"># Japanese to English</span>
+langlint<span class="w"> </span>fix<span class="w"> </span>japanese_code.py<span class="w"> </span>-s<span class="w"> </span>ja<span class="w"> </span>-t<span class="w"> </span>en
+</pre></div>
+</div>
+</section>
+<section id="jupyter-notebooks">
+<h3>Jupyter Notebooks<a class="headerlink" href="#jupyter-notebooks" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Translate Jupyter notebooks</span>
+langlint<span class="w"> </span>fix<span class="w"> </span>notebooks/<span class="w"> </span>-s<span class="w"> </span>zh-CN<span class="w"> </span>-t<span class="w"> </span>en
+</pre></div>
+</div>
+</section>
+</section>
+<section id="configuration-file">
+<h2>Configuration File<a class="headerlink" href="#configuration-file" title="Link to this heading"></a></h2>
+<p>Create a <code class="docutils literal notranslate"><span class="pre">.langlint.yml</span></code> file in your project root:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Global settings</span>
+<span class="nt">translator</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;google&quot;</span>
+<span class="nt">target_lang</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;en&quot;</span>
+<span class="nt">source_lang</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;zh-CN&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;ja&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;ko&quot;</span><span class="p p-Indicator">]</span>
+<span class="nt">backup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="c1"># File processing</span>
+<span class="nt">include</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.py&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.js&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.md&quot;</span>
+
+<span class="nt">exclude</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/node_modules/**&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/test_*&quot;</span>
+</pre></div>
+</div>
+<p>Then simply run:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>langlint<span class="w"> </span>fix<span class="w"> </span>src/
+</pre></div>
+</div>
+</section>
+<section id="next-steps">
+<h2>Next Steps<a class="headerlink" href="#next-steps" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Read the <a class="reference internal" href="usage.html"><span class="doc">Usage Guide</span></a> guide for detailed documentation</p></li>
+<li><p>Check the <a class="reference internal" href="configuration.html"><span class="doc">Configuration</span></a> for advanced options</p></li>
+<li><p>See the <a class="reference internal" href="cli.html"><span class="doc">Command-Line Interface</span></a> reference for all available commands</p></li>
+</ul>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="usage.html" class="btn btn-neutral float-right" title="Usage Guide" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Zhiang He.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

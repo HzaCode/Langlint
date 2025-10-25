@@ -1,0 +1,459 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>langlint.core.config &mdash; LangLint 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            LangLint
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command-Line Interface</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/parsers.html">Parsers Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/translators.html">Translators</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">LangLint</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">langlint.core.config</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for langlint.core.config</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Configuration management for LangLint.</span>
+
+<span class="sd">This module provides configuration loading, validation, and management</span>
+<span class="sd">for the LangLint platform.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">toml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span><span class="p">,</span> <span class="n">field</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">Enum</span>
+
+
+<div class="viewcode-block" id="TranslatorType">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.config.TranslatorType">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TranslatorType</span><span class="p">(</span><span class="n">Enum</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Supported translator types.&quot;&quot;&quot;</span>
+    <span class="n">OPENAI</span> <span class="o">=</span> <span class="s2">&quot;openai&quot;</span>
+    <span class="n">DEEPL</span> <span class="o">=</span> <span class="s2">&quot;deepl&quot;</span>
+    <span class="n">GOOGLE</span> <span class="o">=</span> <span class="s2">&quot;google&quot;</span>
+    <span class="n">AZURE</span> <span class="o">=</span> <span class="s2">&quot;azure&quot;</span>
+    <span class="n">MOCK</span> <span class="o">=</span> <span class="s2">&quot;mock&quot;</span>  <span class="c1"># For testing</span></div>
+
+
+
+<div class="viewcode-block" id="TranslatorConfig">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.config.TranslatorConfig">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">TranslatorConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Configuration for a specific translator.&quot;&quot;&quot;</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="n">TranslatorType</span>
+    <span class="n">api_key</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">api_url</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">model</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">max_tokens</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># For OpenAI translator</span>
+    <span class="n">max_retries</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span>
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span>
+    <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span>
+    <span class="n">additional_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="PathConfig">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.config.PathConfig">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PathConfig</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Path-specific configuration overrides.&quot;&quot;&quot;</span>
+    <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">translator</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">TranslatorType</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">target_lang</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">source_lang</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">additional_params</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="Config">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.config.Config">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Main configuration class for LangLint.</span>
+
+<span class="sd">    This class handles loading, validation, and access to configuration</span>
+<span class="sd">    from various sources including pyproject.toml, environment variables,</span>
+<span class="sd">    and command-line arguments.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Global settings</span>
+    <span class="n">translator</span><span class="p">:</span> <span class="n">TranslatorType</span> <span class="o">=</span> <span class="n">TranslatorType</span><span class="o">.</span><span class="n">GOOGLE</span>
+    <span class="n">target_lang</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;EN-US&quot;</span>
+    <span class="n">source_lang</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;zh&quot;</span><span class="p">,</span> <span class="s2">&quot;ja&quot;</span><span class="p">,</span> <span class="s2">&quot;ko&quot;</span><span class="p">])</span>
+
+    <span class="c1"># File processing</span>
+    <span class="n">exclude</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="k">lambda</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s2">&quot;**/data/&quot;</span><span class="p">,</span> <span class="s2">&quot;**/secrets.yml&quot;</span><span class="p">,</span> <span class="s2">&quot;**/node_modules/&quot;</span><span class="p">,</span> <span class="s2">&quot;**/__pycache__/&quot;</span>
+    <span class="p">])</span>
+    <span class="n">include</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="c1"># Translator configurations</span>
+    <span class="n">translators</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="n">TranslatorType</span><span class="p">,</span> <span class="n">TranslatorConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>
+
+    <span class="c1"># Path-specific overrides</span>
+    <span class="n">path_configs</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">PathConfig</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>
+
+    <span class="c1"># Performance settings</span>
+    <span class="n">max_workers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
+    <span class="n">cache_enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">cache_ttl</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3600</span>  <span class="c1"># 1 hour</span>
+
+    <span class="c1"># Output settings</span>
+    <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">dry_run</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">backup</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="Config.__post_init__">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.config.Config.__post_init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize default translator configurations.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">translators</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">translators</span> <span class="o">=</span> <span class="p">{</span>
+                <span class="n">TranslatorType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">:</span> <span class="n">TranslatorConfig</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="o">=</span><span class="n">TranslatorType</span><span class="o">.</span><span class="n">OPENAI</span><span class="p">,</span>
+                    <span class="n">model</span><span class="o">=</span><span class="s2">&quot;gpt-3.5-turbo&quot;</span><span class="p">,</span>
+                    <span class="n">api_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;OPENAI_API_KEY&quot;</span><span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">TranslatorType</span><span class="o">.</span><span class="n">DEEPL</span><span class="p">:</span> <span class="n">TranslatorConfig</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="o">=</span><span class="n">TranslatorType</span><span class="o">.</span><span class="n">DEEPL</span><span class="p">,</span>
+                    <span class="n">api_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;DEEPL_API_KEY&quot;</span><span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">TranslatorType</span><span class="o">.</span><span class="n">GOOGLE</span><span class="p">:</span> <span class="n">TranslatorConfig</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="o">=</span><span class="n">TranslatorType</span><span class="o">.</span><span class="n">GOOGLE</span><span class="p">,</span>
+                    <span class="n">api_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;GOOGLE_API_KEY&quot;</span><span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">TranslatorType</span><span class="o">.</span><span class="n">AZURE</span><span class="p">:</span> <span class="n">TranslatorConfig</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="o">=</span><span class="n">TranslatorType</span><span class="o">.</span><span class="n">AZURE</span><span class="p">,</span>
+                    <span class="n">api_key</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;AZURE_API_KEY&quot;</span><span class="p">),</span>
+                    <span class="n">api_url</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;AZURE_ENDPOINT&quot;</span><span class="p">),</span>
+                <span class="p">),</span>
+                <span class="n">TranslatorType</span><span class="o">.</span><span class="n">MOCK</span><span class="p">:</span> <span class="n">TranslatorConfig</span><span class="p">(</span>
+                    <span class="nb">type</span><span class="o">=</span><span class="n">TranslatorType</span><span class="o">.</span><span class="n">MOCK</span><span class="p">,</span>
+                <span class="p">),</span>
+            <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="Config.load">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.config.Config.load">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">load</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">config_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;Config&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Load configuration from file and environment.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            config_path: Path to configuration file (defaults to pyproject.toml)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Loaded configuration instance</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ConfigError: If configuration cannot be loaded or is invalid</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">config_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Look for pyproject.toml in current directory and parent directories</span>
+            <span class="n">current_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span>
+            <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="p">[</span><span class="n">current_dir</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">current_dir</span><span class="o">.</span><span class="n">parents</span><span class="p">):</span>
+                <span class="n">config_file</span> <span class="o">=</span> <span class="n">path</span> <span class="o">/</span> <span class="s2">&quot;pyproject.toml&quot;</span>
+                <span class="k">if</span> <span class="n">config_file</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                    <span class="n">config_path</span> <span class="o">=</span> <span class="n">config_file</span>
+                    <span class="k">break</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># No config file found, return default config</span>
+                <span class="k">return</span> <span class="bp">cls</span><span class="p">()</span>
+
+        <span class="n">config_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config_path</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">config_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Configuration file not found: </span><span class="si">{</span><span class="n">config_path</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="n">toml</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to load configuration file: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+        <span class="c1"># Extract langlint configuration</span>
+        <span class="n">langlint_config</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;tool&#39;</span><span class="p">,</span> <span class="p">{})</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;langlint&#39;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">langlint_config</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">cls</span><span class="p">()</span>
+
+        <span class="c1"># Parse configuration</span>
+        <span class="n">config</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">()</span>
+
+        <span class="c1"># Global settings</span>
+        <span class="k">if</span> <span class="s1">&#39;translator&#39;</span> <span class="ow">in</span> <span class="n">langlint_config</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">config</span><span class="o">.</span><span class="n">translator</span> <span class="o">=</span> <span class="n">TranslatorType</span><span class="p">(</span><span class="n">langlint_config</span><span class="p">[</span><span class="s1">&#39;translator&#39;</span><span class="p">])</span>
+            <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid translator type: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+        <span class="k">if</span> <span class="s1">&#39;target_lang&#39;</span> <span class="ow">in</span> <span class="n">langlint_config</span><span class="p">:</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">target_lang</span> <span class="o">=</span> <span class="n">langlint_config</span><span class="p">[</span><span class="s1">&#39;target_lang&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s1">&#39;source_lang&#39;</span> <span class="ow">in</span> <span class="n">langlint_config</span><span class="p">:</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">source_lang</span> <span class="o">=</span> <span class="n">langlint_config</span><span class="p">[</span><span class="s1">&#39;source_lang&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s1">&#39;exclude&#39;</span> <span class="ow">in</span> <span class="n">langlint_config</span><span class="p">:</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">exclude</span> <span class="o">=</span> <span class="n">langlint_config</span><span class="p">[</span><span class="s1">&#39;exclude&#39;</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="s1">&#39;include&#39;</span> <span class="ow">in</span> <span class="n">langlint_config</span><span class="p">:</span>
+            <span class="n">config</span><span class="o">.</span><span class="n">include</span> <span class="o">=</span> <span class="n">langlint_config</span><span class="p">[</span><span class="s1">&#39;include&#39;</span><span class="p">]</span>
+
+        <span class="c1"># 路径特定配置</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">langlint_config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="nb">dict</span><span class="p">)</span> <span class="ow">and</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;**&quot;</span><span class="p">):</span>
+                <span class="n">pattern</span> <span class="o">=</span> <span class="n">key</span>
+                <span class="n">path_config</span> <span class="o">=</span> <span class="n">PathConfig</span><span class="p">(</span><span class="n">pattern</span><span class="o">=</span><span class="n">pattern</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="s1">&#39;translator&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">path_config</span><span class="o">.</span><span class="n">translator</span> <span class="o">=</span> <span class="n">TranslatorType</span><span class="p">(</span><span class="n">value</span><span class="p">[</span><span class="s1">&#39;translator&#39;</span><span class="p">])</span>
+                    <span class="k">except</span> <span class="ne">ValueError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+                        <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid translator type for </span><span class="si">{</span><span class="n">pattern</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+                <span class="k">if</span> <span class="s1">&#39;target_lang&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="n">path_config</span><span class="o">.</span><span class="n">target_lang</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;target_lang&#39;</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="s1">&#39;source_lang&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="n">path_config</span><span class="o">.</span><span class="n">source_lang</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;source_lang&#39;</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="s1">&#39;enabled&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="n">path_config</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;enabled&#39;</span><span class="p">]</span>
+
+                <span class="k">if</span> <span class="s1">&#39;additional_params&#39;</span> <span class="ow">in</span> <span class="n">value</span><span class="p">:</span>
+                    <span class="n">path_config</span><span class="o">.</span><span class="n">additional_params</span> <span class="o">=</span> <span class="n">value</span><span class="p">[</span><span class="s1">&#39;additional_params&#39;</span><span class="p">]</span>
+
+                <span class="n">config</span><span class="o">.</span><span class="n">path_configs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">path_config</span><span class="p">)</span>
+
+        <span class="c1"># Load from environment variables</span>
+        <span class="n">config</span><span class="o">.</span><span class="n">_load_from_env</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">config</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_load_from_env</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Load configuration from environment variables.&quot;&quot;&quot;</span>
+        <span class="c1"># Override with environment variables</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LANGINT_TRANSLATOR&quot;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">translator</span> <span class="o">=</span> <span class="n">TranslatorType</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LANGINT_TRANSLATOR&quot;</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">pass</span>  <span class="c1"># Keep default if invalid</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LANGINT_TARGET_LANG&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">target_lang</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LANGINT_TARGET_LANG&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LANGINT_SOURCE_LANG&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">source_lang</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LANGINT_SOURCE_LANG&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LANGINT_EXCLUDE&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">exclude</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LANGINT_EXCLUDE&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LANGINT_MAX_WORKERS&quot;</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">max_workers</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LANGINT_MAX_WORKERS&quot;</span><span class="p">))</span>
+            <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                <span class="k">pass</span>  <span class="c1"># Keep default if invalid</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LANGINT_VERBOSE&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LANGINT_VERBOSE&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LANGINT_DRY_RUN&quot;</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dry_run</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">&quot;LANGINT_DRY_RUN&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;1&quot;</span><span class="p">,</span> <span class="s2">&quot;yes&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Config.get_path_config">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.config.Config.get_path_config">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_path_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">PathConfig</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get path-specific configuration for a file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            file_path: Path to the file</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            PathConfig if found, None otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">path_config</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_configs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">path_config</span><span class="o">.</span><span class="n">enabled</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_match_pattern</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">path_config</span><span class="o">.</span><span class="n">pattern</span><span class="p">):</span>
+                <span class="k">return</span> <span class="n">path_config</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_match_pattern</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if a file path matches a pattern.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            file_path: Path to check</span>
+<span class="sd">            pattern: Pattern to match against</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the path matches the pattern</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">fnmatch</span><span class="w"> </span><span class="kn">import</span> <span class="n">fnmatch</span>
+        <span class="k">return</span> <span class="n">fnmatch</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">pattern</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Config.get_translator_config">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.config.Config.get_translator_config">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_translator_config</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">translator_type</span><span class="p">:</span> <span class="n">TranslatorType</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">TranslatorConfig</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get configuration for a specific translator.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            translator_type: Type of translator</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            TranslatorConfig for the translator</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">translators</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">translator_type</span><span class="p">,</span> <span class="n">TranslatorConfig</span><span class="p">(</span><span class="nb">type</span><span class="o">=</span><span class="n">translator_type</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Config.validate">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.config.Config.validate">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validate the configuration.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ConfigError: If configuration is invalid</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Validate translator configuration</span>
+        <span class="n">translator_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_translator_config</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">translator</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">translator_config</span><span class="o">.</span><span class="n">api_key</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">translator</span> <span class="o">!=</span> <span class="n">TranslatorType</span><span class="o">.</span><span class="n">MOCK</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;API key not configured for translator: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">translator</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Validate language codes</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_lang</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s2">&quot;target_lang cannot be empty&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">source_lang</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s2">&quot;source_lang cannot be empty&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Validate path configurations</span>
+        <span class="k">for</span> <span class="n">path_config</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">path_configs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">path_config</span><span class="o">.</span><span class="n">pattern</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="s2">&quot;Path pattern cannot be empty&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">path_config</span><span class="o">.</span><span class="n">translator</span> <span class="ow">and</span> <span class="n">path_config</span><span class="o">.</span><span class="n">translator</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">translators</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ConfigError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Translator not configured: </span><span class="si">{</span><span class="n">path_config</span><span class="o">.</span><span class="n">translator</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ConfigError">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.config.ConfigError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConfigError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception raised for configuration errors.&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Zhiang He.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

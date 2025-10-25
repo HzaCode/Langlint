@@ -1,0 +1,644 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>langlint.parsers.markdown_parser &mdash; LangLint 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            LangLint
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command-Line Interface</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/parsers.html">Parsers Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/translators.html">Translators</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">LangLint</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">langlint.parsers.markdown_parser</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for langlint.parsers.markdown_parser</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Markdown parser for extracting translatable text from Markdown files.</span>
+
+<span class="sd">This parser uses mistune to parse Markdown AST and extract only text nodes</span>
+<span class="sd">while preserving the exact structure of code blocks, links, HTML tags,</span>
+<span class="sd">and Front Matter metadata.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">mistune</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mistune</span><span class="w"> </span><span class="kn">import</span> <span class="n">Markdown</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">mistune</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">Markdown</span> <span class="o">=</span> <span class="kc">None</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parser</span><span class="p">,</span> <span class="n">TranslatableUnit</span><span class="p">,</span> <span class="n">ParseResult</span><span class="p">,</span> <span class="n">UnitType</span><span class="p">,</span> <span class="n">ParseError</span>
+
+
+<div class="viewcode-block" id="MarkdownNode">
+<a class="viewcode-back" href="../../../api/parsers.html#langlint.parsers.markdown_parser.MarkdownNode">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">MarkdownNode</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a Markdown AST node.&quot;&quot;&quot;</span>
+    <span class="nb">type</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">text</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">children</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="s1">&#39;MarkdownNode&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">attrs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">line_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">column_number</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span></div>
+
+
+
+<div class="viewcode-block" id="MarkdownParser">
+<a class="viewcode-back" href="../../../api/parsers.html#langlint.parsers.markdown_parser.MarkdownParser">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MarkdownParser</span><span class="p">(</span><span class="n">Parser</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parser for Markdown files that extracts text nodes while preserving structure.</span>
+
+<span class="sd">    This parser uses mistune to parse Markdown into an AST and extracts only</span>
+<span class="sd">    text content from appropriate nodes while maintaining the exact structure</span>
+<span class="sd">    of code blocks, links, HTML tags, and Front Matter.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Markdown parser.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">mistune</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;mistune is required for Markdown parsing. Install with: pip install mistune&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">markdown</span> <span class="o">=</span> <span class="n">Markdown</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_front_matter_pattern</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^---\s*\n(.*?)\n---\s*\n&#39;</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">supported_extensions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return supported file extensions.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;.md&#39;</span><span class="p">,</span> <span class="s1">&#39;.markdown&#39;</span><span class="p">,</span> <span class="s1">&#39;.mdown&#39;</span><span class="p">,</span> <span class="s1">&#39;.mkd&#39;</span><span class="p">,</span> <span class="s1">&#39;.mkdn&#39;</span><span class="p">]</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">supported_mime_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return supported MIME types.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="s1">&#39;text/markdown&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-markdown&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;application/markdown&#39;</span>
+        <span class="p">]</span>
+
+<div class="viewcode-block" id="MarkdownParser.can_parse">
+<a class="viewcode-back" href="../../../api/parsers.html#langlint.parsers.markdown_parser.MarkdownParser.can_parse">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if this parser can handle the given file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            file_path: Path to the file</span>
+<span class="sd">            content: Optional file content</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if this parser can handle the file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">content</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">file_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">supported_extensions</span><span class="p">))</span>
+
+        <span class="c1"># Check if content looks like Markdown</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">content</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Check for common Markdown patterns</span>
+        <span class="n">markdown_patterns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">r</span><span class="s1">&#39;^#{1,6}\s+&#39;</span><span class="p">,</span>  <span class="c1"># Headers</span>
+            <span class="sa">r</span><span class="s1">&#39;^\*\s+&#39;</span><span class="p">,</span>      <span class="c1"># Unordered lists</span>
+            <span class="sa">r</span><span class="s1">&#39;^\d+\.\s+&#39;</span><span class="p">,</span>   <span class="c1"># Ordered lists</span>
+            <span class="sa">r</span><span class="s1">&#39;^\&gt;\s+&#39;</span><span class="p">,</span>      <span class="c1"># Blockquotes</span>
+            <span class="sa">r</span><span class="s1">&#39;```&#39;</span><span class="p">,</span>         <span class="c1"># Code blocks</span>
+            <span class="sa">r</span><span class="s1">&#39;\[.*?\]\(.*?\)&#39;</span><span class="p">,</span>  <span class="c1"># Links</span>
+            <span class="sa">r</span><span class="s1">&#39;\*\*.*?\*\*&#39;</span><span class="p">,</span>     <span class="c1"># Bold</span>
+            <span class="sa">r</span><span class="s1">&#39;\*.*?\*&#39;</span><span class="p">,</span>         <span class="c1"># Italic</span>
+        <span class="p">]</span>
+
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span> <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">markdown_patterns</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="MarkdownParser.extract_translatable_units">
+<a class="viewcode-back" href="../../../api/parsers.html#langlint.parsers.markdown_parser.MarkdownParser.extract_translatable_units">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">extract_translatable_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParseResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract translatable units from Markdown file content.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            content: The file content to parse</span>
+<span class="sd">            file_path: Path to the file</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ParseResult containing all translatable units found</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ParseError: If the file cannot be parsed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Extract Front Matter first</span>
+            <span class="n">front_matter_units</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_front_matter</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+
+            <span class="c1"># Parse the main content (excluding Front Matter)</span>
+            <span class="n">main_content</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_remove_front_matter</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+
+            <span class="c1"># Parse Markdown AST</span>
+            <span class="n">ast</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_parse_markdown_ast</span><span class="p">(</span><span class="n">main_content</span><span class="p">)</span>
+
+            <span class="c1"># Extract translatable units from AST</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="n">front_matter_units</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_units_from_ast</span><span class="p">(</span><span class="n">ast</span><span class="p">,</span> <span class="n">main_content</span><span class="p">)</span>
+
+            <span class="c1"># Filter out non-translatable units</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="p">[</span><span class="n">unit</span> <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span> <span class="n">units</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_translatable_text</span><span class="p">(</span><span class="n">unit</span><span class="o">.</span><span class="n">content</span><span class="p">)]</span>
+
+            <span class="k">return</span> <span class="n">ParseResult</span><span class="p">(</span>
+                <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span>
+                <span class="n">file_type</span><span class="o">=</span><span class="s2">&quot;markdown&quot;</span><span class="p">,</span>
+                <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+                <span class="n">line_count</span><span class="o">=</span><span class="n">content</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;parser&quot;</span><span class="p">:</span> <span class="s2">&quot;MarkdownParser&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;has_front_matter&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">(</span><span class="n">front_matter_units</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ParseError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse Markdown file </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
+
+
+<div class="viewcode-block" id="MarkdownParser.reconstruct_file">
+<a class="viewcode-back" href="../../../api/parsers.html#langlint.parsers.markdown_parser.MarkdownParser.reconstruct_file">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reconstruct_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">original_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">translated_units</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TranslatableUnit</span><span class="p">],</span>
+        <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reconstruct the file content with translated units.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            original_content: The original file content</span>
+<span class="sd">            translated_units: List of translated units</span>
+<span class="sd">            file_path: Path to the file</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The reconstructed file content with translations applied</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create a mapping of original content to translated content</span>
+        <span class="n">translation_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span> <span class="n">translated_units</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">unit</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">and</span> <span class="s1">&#39;original_content&#39;</span> <span class="ow">in</span> <span class="n">unit</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
+                <span class="n">original</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;original_content&#39;</span><span class="p">]</span>
+                <span class="n">translation_map</span><span class="p">[</span><span class="n">original</span><span class="p">]</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">content</span>
+
+        <span class="c1"># Process the content line by line</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">original_content</span><span class="o">.</span><span class="n">splitlines</span><span class="p">(</span><span class="n">keepends</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">result_lines</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">lines</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+            <span class="c1"># Check if this line should be translated</span>
+            <span class="n">translated_line</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_translate_line</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">translation_map</span><span class="p">)</span>
+            <span class="n">result_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">translated_line</span><span class="p">)</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="s1">&#39;&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">result_lines</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_front_matter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TranslatableUnit</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract translatable text from Front Matter.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            content: File content</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of translatable units from Front Matter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">match</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_front_matter_pattern</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="n">front_matter</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">lines</span> <span class="o">=</span> <span class="n">front_matter</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">line_num</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="k">if</span> <span class="s1">&#39;:&#39;</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                    <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;:&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+                    <span class="c1"># Extract translatable values (like title, description, etc.)</span>
+                    <span class="k">if</span> <span class="n">value</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_front_matter_value_translatable</span><span class="p">(</span><span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">value</span><span class="p">):</span>
+                        <span class="n">units</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TranslatableUnit</span><span class="p">(</span>
+                            <span class="n">content</span><span class="o">=</span><span class="n">value</span><span class="p">,</span>
+                            <span class="n">unit_type</span><span class="o">=</span><span class="n">UnitType</span><span class="o">.</span><span class="n">METADATA</span><span class="p">,</span>
+                            <span class="n">line_number</span><span class="o">=</span><span class="n">line_num</span><span class="p">,</span>
+                            <span class="n">column_number</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                            <span class="n">context</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Front Matter: </span><span class="si">{</span><span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                            <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+                                <span class="s1">&#39;original_content&#39;</span><span class="p">:</span> <span class="n">line</span><span class="p">,</span>
+                                <span class="s1">&#39;front_matter_key&#39;</span><span class="p">:</span> <span class="n">key</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span>
+                                <span class="s1">&#39;is_front_matter&#39;</span><span class="p">:</span> <span class="kc">True</span>
+                            <span class="p">}</span>
+                        <span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">units</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_remove_front_matter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove Front Matter from content.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            content: File content</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Content without Front Matter</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_front_matter_pattern</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">content</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_parse_markdown_ast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">MarkdownNode</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Parse Markdown content into AST nodes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            content: Markdown content</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of AST nodes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Use mistune to parse the content</span>
+        <span class="c1"># Note: This is a simplified implementation</span>
+        <span class="c1"># A full implementation would need to handle the mistune AST properly</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_simple_ast</span><span class="p">(</span><span class="n">content</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_create_simple_ast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">MarkdownNode</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a simple AST from Markdown content.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            content: Markdown content</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of AST nodes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">line_num</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                <span class="k">continue</span>
+
+            <span class="c1"># Detect different Markdown elements</span>
+            <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">):</span>
+                <span class="c1"># Header</span>
+                <span class="n">level</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">-</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">))</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+                    <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MarkdownNode</span><span class="p">(</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;heading&#39;</span><span class="p">,</span>
+                        <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
+                        <span class="n">line_number</span><span class="o">=</span><span class="n">line_num</span><span class="p">,</span>
+                        <span class="n">column_number</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="n">attrs</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;level&#39;</span><span class="p">:</span> <span class="n">level</span><span class="p">}</span>
+                    <span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;- &#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;* &#39;</span><span class="p">):</span>
+                <span class="c1"># Unordered list item</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+                    <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MarkdownNode</span><span class="p">(</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;list_item&#39;</span><span class="p">,</span>
+                        <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
+                        <span class="n">line_number</span><span class="o">=</span><span class="n">line_num</span><span class="p">,</span>
+                        <span class="n">column_number</span><span class="o">=</span><span class="mi">3</span>
+                    <span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\d+\.\s+&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">):</span>
+                <span class="c1"># Ordered list item</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\d+\.\s+&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+                    <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MarkdownNode</span><span class="p">(</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;list_item&#39;</span><span class="p">,</span>
+                        <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
+                        <span class="n">line_number</span><span class="o">=</span><span class="n">line_num</span><span class="p">,</span>
+                        <span class="n">column_number</span><span class="o">=</span><span class="mi">1</span>
+                    <span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;&gt; &#39;</span><span class="p">):</span>
+                <span class="c1"># Blockquote</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">2</span><span class="p">:]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+                    <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MarkdownNode</span><span class="p">(</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;blockquote&#39;</span><span class="p">,</span>
+                        <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
+                        <span class="n">line_number</span><span class="o">=</span><span class="n">line_num</span><span class="p">,</span>
+                        <span class="n">column_number</span><span class="o">=</span><span class="mi">3</span>
+                    <span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;```&#39;</span><span class="p">):</span>
+                <span class="c1"># Code block - skip</span>
+                <span class="k">continue</span>
+
+            <span class="k">elif</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+                <span class="c1"># Regular paragraph</span>
+                <span class="c1"># Extract text from inline elements</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_text_from_inline_elements</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">text</span><span class="p">:</span>
+                    <span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">MarkdownNode</span><span class="p">(</span>
+                        <span class="nb">type</span><span class="o">=</span><span class="s1">&#39;paragraph&#39;</span><span class="p">,</span>
+                        <span class="n">text</span><span class="o">=</span><span class="n">text</span><span class="p">,</span>
+                        <span class="n">line_number</span><span class="o">=</span><span class="n">line_num</span><span class="p">,</span>
+                        <span class="n">column_number</span><span class="o">=</span><span class="mi">1</span>
+                    <span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">nodes</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_text_from_inline_elements</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract plain text from inline Markdown elements.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            line: Line with inline elements</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Plain text content</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Remove inline formatting</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\*\*(.*?)\*\*&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\1&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>  <span class="c1"># Bold</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\*(.*?)\*&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\1&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>      <span class="c1"># Italic</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;`(.*?)`&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\1&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>        <span class="c1"># Inline code</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\[([^\]]+)\]\([^)]+\)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\1&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>  <span class="c1"># Links</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;!\[([^\]]*)\]\([^)]+\)&#39;</span><span class="p">,</span> <span class="sa">r</span><span class="s1">&#39;\1&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>  <span class="c1"># Images</span>
+
+        <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_units_from_ast</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ast</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">MarkdownNode</span><span class="p">],</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">TranslatableUnit</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract translatable units from AST nodes.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ast: List of AST nodes</span>
+<span class="sd">            content: Original content</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List of translatable units</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">units</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">ast</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">text</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_translatable_text</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">text</span><span class="p">):</span>
+                <span class="n">unit_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_unit_type_from_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+
+                <span class="n">units</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TranslatableUnit</span><span class="p">(</span>
+                    <span class="n">content</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+                    <span class="n">unit_type</span><span class="o">=</span><span class="n">unit_type</span><span class="p">,</span>
+                    <span class="n">line_number</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">line_number</span><span class="p">,</span>
+                    <span class="n">column_number</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">column_number</span><span class="p">,</span>
+                    <span class="n">context</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Markdown </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+                        <span class="s1">&#39;original_content&#39;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">text</span><span class="p">,</span>
+                        <span class="s1">&#39;node_type&#39;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span><span class="p">,</span>
+                        <span class="s1">&#39;attrs&#39;</span><span class="p">:</span> <span class="n">node</span><span class="o">.</span><span class="n">attrs</span> <span class="ow">or</span> <span class="p">{}</span>
+                    <span class="p">}</span>
+                <span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">units</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_unit_type_from_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">MarkdownNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">UnitType</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the unit type from an AST node.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            node: AST node</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Unit type</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="s1">&#39;heading&#39;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">UnitType</span><span class="o">.</span><span class="n">TEXT_NODE</span>
+        <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;paragraph&#39;</span><span class="p">,</span> <span class="s1">&#39;list_item&#39;</span><span class="p">,</span> <span class="s1">&#39;blockquote&#39;</span><span class="p">]:</span>
+            <span class="k">return</span> <span class="n">UnitType</span><span class="o">.</span><span class="n">TEXT_NODE</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">UnitType</span><span class="o">.</span><span class="n">OTHER</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_front_matter_value_translatable</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if a Front Matter value should be translated.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key: Front Matter key</span>
+<span class="sd">            value: Front Matter value</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the value should be translated</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Keys that typically contain translatable content</span>
+        <span class="n">translatable_keys</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="s1">&#39;summary&#39;</span><span class="p">,</span> <span class="s1">&#39;excerpt&#39;</span><span class="p">,</span> <span class="s1">&#39;subtitle&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;author&#39;</span><span class="p">,</span> <span class="s1">&#39;authors&#39;</span><span class="p">,</span> <span class="s1">&#39;tags&#39;</span><span class="p">,</span> <span class="s1">&#39;categories&#39;</span><span class="p">,</span> <span class="s1">&#39;keywords&#39;</span>
+        <span class="p">}</span>
+
+        <span class="k">if</span> <span class="n">key</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">translatable_keys</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Check if the value looks like translatable text</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_translatable_text</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_translatable_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if text should be translated.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text: Text to check</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the text should be translated</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Skip empty or whitespace-only text</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Skip very short text</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Skip text that&#39;s mostly code or technical terms</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_mostly_code</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Skip text that&#39;s mostly punctuation or symbols</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">text</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">isalnum</span><span class="p">()])</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Skip URLs and email addresses</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^https?://|^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Only translate text containing non-English (non-ASCII) characters</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contains_non_english</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_mostly_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if text is mostly code rather than natural language.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text: Text to check</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the text appears to be mostly code</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check for common code patterns</span>
+        <span class="n">code_patterns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">r</span><span class="s1">&#39;```&#39;</span><span class="p">,</span>  <span class="c1"># Code blocks</span>
+            <span class="sa">r</span><span class="s1">&#39;`[^`]+`&#39;</span><span class="p">,</span>  <span class="c1"># Inline code</span>
+            <span class="sa">r</span><span class="s1">&#39;import\s+&#39;</span><span class="p">,</span>  <span class="c1"># Import statements</span>
+            <span class="sa">r</span><span class="s1">&#39;from\s+&#39;</span><span class="p">,</span>  <span class="c1"># From statements</span>
+            <span class="sa">r</span><span class="s1">&#39;def\s+&#39;</span><span class="p">,</span>  <span class="c1"># Function definitions</span>
+            <span class="sa">r</span><span class="s1">&#39;class\s+&#39;</span><span class="p">,</span>  <span class="c1"># Class definitions</span>
+            <span class="sa">r</span><span class="s1">&#39;#\s*&#39;</span><span class="p">,</span>  <span class="c1"># Comments</span>
+        <span class="p">]</span>
+
+        <span class="n">code_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">code_patterns</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">text</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">code_count</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">*</span> <span class="mf">0.3</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_translate_line</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">translation_map</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Translate a single line using the translation map.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            line: Line to translate</span>
+<span class="sd">            translation_map: Mapping of original to translated content</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Translated line</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Simple implementation - replace exact matches</span>
+        <span class="k">for</span> <span class="n">original</span><span class="p">,</span> <span class="n">translated</span> <span class="ow">in</span> <span class="n">translation_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">original</span> <span class="ow">in</span> <span class="n">line</span><span class="p">:</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">original</span><span class="p">,</span> <span class="n">translated</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">line</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_contains_non_english</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if text contains non-English (non-ASCII) characters.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text: Text to check</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the text contains non-ASCII characters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check if any character is outside the ASCII range (0-127)</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">char</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">127</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">text</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Zhiang He.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

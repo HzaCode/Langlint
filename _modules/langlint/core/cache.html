@@ -1,0 +1,451 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>langlint.core.cache &mdash; LangLint 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            LangLint
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command-Line Interface</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/parsers.html">Parsers Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/translators.html">Translators</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">LangLint</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">langlint.core.cache</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for langlint.core.cache</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Caching system for LangLint.</span>
+
+<span class="sd">This module provides caching functionality for parse results and translations</span>
+<span class="sd">to improve performance and reduce API calls.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sqlite3</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">hashlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+
+
+<div class="viewcode-block" id="CacheEntry">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.cache.CacheEntry">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CacheEntry</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;A cache entry with metadata.&quot;&quot;&quot;</span>
+    <span class="n">key</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">value</span><span class="p">:</span> <span class="n">Any</span>
+    <span class="n">created_at</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">ttl</span><span class="p">:</span> <span class="nb">int</span>
+    <span class="n">access_count</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">last_accessed</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>
+
+<div class="viewcode-block" id="CacheEntry.is_expired">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.cache.CacheEntry.is_expired">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_expired</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the cache entry has expired.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ttl</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>  <span class="c1"># No expiration</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">created_at</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">ttl</span></div>
+
+
+<div class="viewcode-block" id="CacheEntry.touch">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.cache.CacheEntry.touch">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">touch</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Update access information.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">access_count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_accessed</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="Cache">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.cache.Cache">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Cache</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    SQLite-based cache for LangLint.</span>
+
+<span class="sd">    This cache stores parse results and translations to improve performance</span>
+<span class="sd">    and reduce external API calls.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">cache_dir</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">max_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span>
+        <span class="n">default_ttl</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3600</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize the cache.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            cache_dir: Directory to store cache database</span>
+<span class="sd">            max_size: Maximum number of entries to store</span>
+<span class="sd">            default_ttl: Default time-to-live in seconds</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">cache_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;.langlint&quot;</span> <span class="o">/</span> <span class="s2">&quot;cache&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cache_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">cache_dir</span><span class="p">)</span>
+
+        <span class="n">cache_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db_path</span> <span class="o">=</span> <span class="n">cache_dir</span> <span class="o">/</span> <span class="s2">&quot;langlint_cache.db&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_size</span> <span class="o">=</span> <span class="n">max_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">default_ttl</span> <span class="o">=</span> <span class="n">default_ttl</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_database</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_database</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the SQLite database.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                CREATE TABLE IF NOT EXISTS cache_entries (</span>
+<span class="s2">                    key TEXT PRIMARY KEY,</span>
+<span class="s2">                    value TEXT NOT NULL,</span>
+<span class="s2">                    created_at REAL NOT NULL,</span>
+<span class="s2">                    ttl INTEGER NOT NULL,</span>
+<span class="s2">                    access_count INTEGER DEFAULT 0,</span>
+<span class="s2">                    last_accessed REAL DEFAULT 0</span>
+<span class="s2">                )</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">)</span>
+
+            <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                CREATE INDEX IF NOT EXISTS idx_created_at ON cache_entries(created_at)</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">)</span>
+
+            <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                CREATE INDEX IF NOT EXISTS idx_last_accessed ON cache_entries(last_accessed)</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">)</span>
+
+    <span class="nd">@contextmanager</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Get a database connection with proper error handling.&quot;&quot;&quot;</span>
+        <span class="n">conn</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">db_path</span><span class="p">))</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">row_factory</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Row</span>
+            <span class="k">yield</span> <span class="n">conn</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">conn</span><span class="p">:</span>
+                <span class="n">conn</span><span class="o">.</span><span class="n">rollback</span><span class="p">()</span>
+            <span class="k">raise</span> <span class="n">CacheError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Database error: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">conn</span><span class="p">:</span>
+                <span class="n">conn</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_serialize_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Serialize a value for storage.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">value</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CacheError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot serialize value: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_deserialize_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value_str</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Any</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Deserialize a value from storage.&quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">value_str</span><span class="p">)</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">TypeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">CacheError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cannot deserialize value: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_key</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate a cache key from arguments.&quot;&quot;&quot;</span>
+        <span class="n">key_data</span> <span class="o">=</span> <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="n">args</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">hashlib</span><span class="o">.</span><span class="n">sha256</span><span class="p">(</span><span class="n">key_data</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span><span class="o">.</span><span class="n">hexdigest</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Cache.get">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.cache.Cache.get">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get a value from the cache.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key: Cache key</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Cached value if found and not expired, None otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                <span class="s2">&quot;SELECT * FROM cache_entries WHERE key = ?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">key</span><span class="p">,)</span>
+            <span class="p">)</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">row</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="n">entry</span> <span class="o">=</span> <span class="n">CacheEntry</span><span class="p">(</span>
+                <span class="n">key</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;key&#39;</span><span class="p">],</span>
+                <span class="n">value</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_deserialize_value</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]),</span>
+                <span class="n">created_at</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;created_at&#39;</span><span class="p">],</span>
+                <span class="n">ttl</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;ttl&#39;</span><span class="p">],</span>
+                <span class="n">access_count</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;access_count&#39;</span><span class="p">],</span>
+                <span class="n">last_accessed</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;last_accessed&#39;</span><span class="p">]</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">is_expired</span><span class="p">():</span>
+                <span class="c1"># Remove expired entry</span>
+                <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;DELETE FROM cache_entries WHERE key = ?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">key</span><span class="p">,))</span>
+                <span class="k">return</span> <span class="kc">None</span>
+
+            <span class="c1"># Update access information</span>
+            <span class="n">entry</span><span class="o">.</span><span class="n">touch</span><span class="p">()</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span>
+                <span class="s2">&quot;UPDATE cache_entries SET access_count = ?, last_accessed = ? WHERE key = ?&quot;</span><span class="p">,</span>
+                <span class="p">(</span><span class="n">entry</span><span class="o">.</span><span class="n">access_count</span><span class="p">,</span> <span class="n">entry</span><span class="o">.</span><span class="n">last_accessed</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">entry</span><span class="o">.</span><span class="n">value</span></div>
+
+
+<div class="viewcode-block" id="Cache.set">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.cache.Cache.set">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">value</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">ttl</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set a value in the cache.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key: Cache key</span>
+<span class="sd">            value: Value to cache</span>
+<span class="sd">            ttl: Time-to-live in seconds (uses default if None)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">ttl</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">ttl</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">default_ttl</span>
+
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+            <span class="c1"># Check if we need to evict entries</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_evict_if_needed</span><span class="p">(</span><span class="n">conn</span><span class="p">)</span>
+
+            <span class="c1"># Insert or update the entry</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                INSERT OR REPLACE INTO cache_entries</span>
+<span class="s2">                (key, value, created_at, ttl, access_count, last_accessed)</span>
+<span class="s2">                VALUES (?, ?, ?, ?, 0, ?)</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">,</span> <span class="p">(</span>
+                <span class="n">key</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_serialize_value</span><span class="p">(</span><span class="n">value</span><span class="p">),</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),</span>
+                <span class="n">ttl</span><span class="p">,</span>
+                <span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span>
+            <span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="Cache.delete">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.cache.Cache.delete">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Delete a value from the cache.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key: Cache key to delete</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the key was found and deleted, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;DELETE FROM cache_entries WHERE key = ?&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">key</span><span class="p">,))</span>
+            <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">rowcount</span> <span class="o">&gt;</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="Cache.clear">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.cache.Cache.clear">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">clear</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Clear all entries from the cache.&quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;DELETE FROM cache_entries&quot;</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_evict_if_needed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">conn</span><span class="p">:</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">Connection</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Evict entries if the cache is full.&quot;&quot;&quot;</span>
+        <span class="c1"># Count current entries</span>
+        <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT COUNT(*) FROM cache_entries&quot;</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">count</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_size</span><span class="p">:</span>
+            <span class="c1"># Remove oldest entries (least recently accessed)</span>
+            <span class="n">to_remove</span> <span class="o">=</span> <span class="n">count</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_size</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                DELETE FROM cache_entries</span>
+<span class="s2">                WHERE key IN (</span>
+<span class="s2">                    SELECT key FROM cache_entries</span>
+<span class="s2">                    ORDER BY last_accessed ASC</span>
+<span class="s2">                    LIMIT ?</span>
+<span class="s2">                )</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">to_remove</span><span class="p">,))</span>
+
+<div class="viewcode-block" id="Cache.cleanup_expired">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.cache.Cache.cleanup_expired">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cleanup_expired</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove expired entries from the cache.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Number of entries removed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                DELETE FROM cache_entries</span>
+<span class="s2">                WHERE created_at + ttl &lt; ?</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),))</span>
+            <span class="k">return</span> <span class="n">cursor</span><span class="o">.</span><span class="n">rowcount</span></div>
+
+
+<div class="viewcode-block" id="Cache.get_stats">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.cache.Cache.get_stats">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_stats</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get cache statistics.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dictionary with cache statistics</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_connection</span><span class="p">()</span> <span class="k">as</span> <span class="n">conn</span><span class="p">:</span>
+            <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT COUNT(*) FROM cache_entries&quot;</span><span class="p">)</span>
+            <span class="n">total_entries</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                SELECT COUNT(*) FROM cache_entries</span>
+<span class="s2">                WHERE created_at + ttl &lt; ?</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">(),))</span>
+            <span class="n">expired_entries</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">cursor</span> <span class="o">=</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;</span>
+<span class="s2">                SELECT AVG(access_count), MAX(access_count), MIN(access_count)</span>
+<span class="s2">                FROM cache_entries</span>
+<span class="s2">            &quot;&quot;&quot;</span><span class="p">)</span>
+            <span class="n">stats</span> <span class="o">=</span> <span class="n">cursor</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+            <span class="n">avg_access</span><span class="p">,</span> <span class="n">max_access</span><span class="p">,</span> <span class="n">min_access</span> <span class="o">=</span> <span class="n">stats</span>
+
+            <span class="k">return</span> <span class="p">{</span>
+                <span class="s1">&#39;total_entries&#39;</span><span class="p">:</span> <span class="n">total_entries</span><span class="p">,</span>
+                <span class="s1">&#39;expired_entries&#39;</span><span class="p">:</span> <span class="n">expired_entries</span><span class="p">,</span>
+                <span class="s1">&#39;active_entries&#39;</span><span class="p">:</span> <span class="n">total_entries</span> <span class="o">-</span> <span class="n">expired_entries</span><span class="p">,</span>
+                <span class="s1">&#39;max_size&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_size</span><span class="p">,</span>
+                <span class="s1">&#39;utilization&#39;</span><span class="p">:</span> <span class="n">total_entries</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_size</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s1">&#39;avg_access_count&#39;</span><span class="p">:</span> <span class="n">avg_access</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s1">&#39;max_access_count&#39;</span><span class="p">:</span> <span class="n">max_access</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">,</span>
+                <span class="s1">&#39;min_access_count&#39;</span><span class="p">:</span> <span class="n">min_access</span> <span class="ow">or</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="p">}</span></div>
+
+
+<div class="viewcode-block" id="Cache.close">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.cache.Cache.close">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Close the cache and clean up resources.&quot;&quot;&quot;</span>
+        <span class="c1"># SQLite connections are closed automatically in the context manager</span>
+        <span class="k">pass</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CacheError">
+<a class="viewcode-back" href="../../../api/core.html#langlint.core.cache.CacheError">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CacheError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception raised for cache-related errors.&quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Zhiang He.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

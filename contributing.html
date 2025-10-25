@@ -1,0 +1,367 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contributing &mdash; LangLint 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Changelog" href="changelog.html" />
+    <link rel="prev" title="Translators" href="api/translators.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            LangLint
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command-Line Interface</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/parsers.html">Parsers Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/translators.html">Translators</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Contributing</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#ways-to-contribute">Ways to Contribute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#fork-the-repository">1. Fork the Repository</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#set-up-development-environment">2. Set Up Development Environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#make-your-changes">3. Make Your Changes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run-tests">4. Run Tests</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#code-quality-checks">5. Code Quality Checks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#submit-pull-request">6. Submit Pull Request</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#development-guidelines">Development Guidelines</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#code-style">Code Style</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#testing">Testing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation">Documentation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#commit-messages">Commit Messages</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#project-structure">Project Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-a-new-parser">Adding a New Parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#adding-a-translator">Adding a Translator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code-of-conduct">Code of Conduct</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#getting-help">Getting Help</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LangLint</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Contributing</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/contributing.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="contributing">
+<h1>Contributing<a class="headerlink" href="#contributing" title="Link to this heading"></a></h1>
+<p>Thank you for your interest in contributing to LangLint! We welcome contributions of all kinds.</p>
+<section id="ways-to-contribute">
+<h2>Ways to Contribute<a class="headerlink" href="#ways-to-contribute" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>Report bugs and request features via GitHub Issues</p></li>
+<li><p>Submit pull requests to fix bugs or add features</p></li>
+<li><p>Improve documentation</p></li>
+<li><p>Write tutorials and examples</p></li>
+<li><p>Help answer questions in Discussions</p></li>
+</ul>
+</section>
+<section id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Link to this heading"></a></h2>
+<section id="fork-the-repository">
+<h3>1. Fork the Repository<a class="headerlink" href="#fork-the-repository" title="Link to this heading"></a></h3>
+<p>Fork the repository on GitHub and clone your fork:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/YOUR_USERNAME/langlint.git
+<span class="nb">cd</span><span class="w"> </span>langlint
+</pre></div>
+</div>
+</section>
+<section id="set-up-development-environment">
+<h3>2. Set Up Development Environment<a class="headerlink" href="#set-up-development-environment" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Create virtual environment</span>
+python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>venv
+<span class="nb">source</span><span class="w"> </span>venv/bin/activate<span class="w">  </span><span class="c1"># On Windows: venv\Scripts\activate</span>
+
+<span class="c1"># Install development dependencies</span>
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;.[dev]&quot;</span>
+
+<span class="c1"># Install pre-commit hooks</span>
+pre-commit<span class="w"> </span>install
+</pre></div>
+</div>
+</section>
+<section id="make-your-changes">
+<h3>3. Make Your Changes<a class="headerlink" href="#make-your-changes" title="Link to this heading"></a></h3>
+<p>Create a new branch for your changes:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>checkout<span class="w"> </span>-b<span class="w"> </span>feature/your-feature-name
+</pre></div>
+</div>
+<p>Make your changes and ensure:</p>
+<ul class="simple">
+<li><p>Code follows the project style (Black, Ruff)</p></li>
+<li><p>All tests pass</p></li>
+<li><p>New features include tests</p></li>
+<li><p>Documentation is updated</p></li>
+</ul>
+</section>
+<section id="run-tests">
+<h3>4. Run Tests<a class="headerlink" href="#run-tests" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Run all tests</span>
+pytest
+
+<span class="c1"># Run with coverage</span>
+pytest<span class="w"> </span>--cov<span class="o">=</span>langlint<span class="w"> </span>--cov-report<span class="o">=</span>term-missing
+
+<span class="c1"># Run specific test</span>
+pytest<span class="w"> </span>tests/test_cli.py
+</pre></div>
+</div>
+</section>
+<section id="code-quality-checks">
+<h3>5. Code Quality Checks<a class="headerlink" href="#code-quality-checks" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Format code</span>
+black<span class="w"> </span>langlint/<span class="w"> </span>tests/
+
+<span class="c1"># Lint code</span>
+ruff<span class="w"> </span>check<span class="w"> </span>langlint/<span class="w"> </span>tests/
+
+<span class="c1"># Type check</span>
+mypy<span class="w"> </span>langlint/
+
+<span class="c1"># Security check</span>
+bandit<span class="w"> </span>-r<span class="w"> </span>langlint/
+</pre></div>
+</div>
+</section>
+<section id="submit-pull-request">
+<h3>6. Submit Pull Request<a class="headerlink" href="#submit-pull-request" title="Link to this heading"></a></h3>
+<p>Push your changes and create a pull request:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>push<span class="w"> </span>origin<span class="w"> </span>feature/your-feature-name
+</pre></div>
+</div>
+<p>Then open a pull request on GitHub with:</p>
+<ul class="simple">
+<li><p>Clear description of changes</p></li>
+<li><p>Reference to related issues</p></li>
+<li><p>Test results</p></li>
+</ul>
+</section>
+</section>
+<section id="development-guidelines">
+<h2>Development Guidelines<a class="headerlink" href="#development-guidelines" title="Link to this heading"></a></h2>
+<section id="code-style">
+<h3>Code Style<a class="headerlink" href="#code-style" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Follow PEP 8</p></li>
+<li><p>Use Black for formatting (line length: 100)</p></li>
+<li><p>Use type hints</p></li>
+<li><p>Write docstrings for all public APIs</p></li>
+</ul>
+</section>
+<section id="testing">
+<h3>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Write tests for all new features</p></li>
+<li><p>Maintain test coverage ≥ 85%</p></li>
+<li><p>Use pytest fixtures for common setup</p></li>
+<li><p>Test edge cases and error handling</p></li>
+</ul>
+</section>
+<section id="documentation">
+<h3>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Update docstrings for code changes</p></li>
+<li><p>Update RST files for user-facing changes</p></li>
+<li><p>Add examples for new features</p></li>
+<li><p>Keep documentation in sync with code</p></li>
+</ul>
+</section>
+<section id="commit-messages">
+<h3>Commit Messages<a class="headerlink" href="#commit-messages" title="Link to this heading"></a></h3>
+<p>Follow Conventional Commits:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>feat: add support for new file type
+fix: correct translation of multiline strings
+docs: update installation guide
+test: add tests for edge cases
+chore: update dependencies
+</pre></div>
+</div>
+</section>
+</section>
+<section id="project-structure">
+<h2>Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading"></a></h2>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>langlint/
+├── langlint/           # Python package
+│   ├── core/          # Core functionality
+│   ├── parsers/       # File parsers
+│   ├── translators/   # Translation services
+│   └── cli.py         # CLI interface
+├── crates/            # Rust implementation
+├── tests/             # Test suite
+├── docs/              # Documentation
+└── examples/          # Usage examples
+</pre></div>
+</div>
+</section>
+<section id="adding-a-new-parser">
+<h2>Adding a New Parser<a class="headerlink" href="#adding-a-new-parser" title="Link to this heading"></a></h2>
+<p>To add support for a new file type:</p>
+<ol class="arabic simple">
+<li><p>Create <code class="docutils literal notranslate"><span class="pre">langlint/parsers/your_parser.py</span></code></p></li>
+<li><p>Inherit from <code class="docutils literal notranslate"><span class="pre">Parser</span></code> abstract class</p></li>
+<li><p>Implement required methods:
+* <code class="docutils literal notranslate"><span class="pre">supported_extensions</span></code>
+* <code class="docutils literal notranslate"><span class="pre">supported_mime_types</span></code>
+* <code class="docutils literal notranslate"><span class="pre">can_parse()</span></code>
+* <code class="docutils literal notranslate"><span class="pre">extract_translatable_units()</span></code>
+* <code class="docutils literal notranslate"><span class="pre">reconstruct_file()</span></code></p></li>
+<li><p>Add tests in <code class="docutils literal notranslate"><span class="pre">tests/test_your_parser.py</span></code></p></li>
+<li><p>Update documentation</p></li>
+</ol>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">langlint.parsers.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parser</span><span class="p">,</span> <span class="n">ParseResult</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">YourParser</span><span class="p">(</span><span class="n">Parser</span><span class="p">):</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">supported_extensions</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">[</span><span class="s1">&#39;.ext&#39;</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">,</span> <span class="n">content</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">file_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.ext&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">extract_translatable_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+        <span class="c1"># Parse and extract units</span>
+        <span class="k">pass</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">reconstruct_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">original</span><span class="p">,</span> <span class="n">translated</span><span class="p">,</span> <span class="n">file_path</span><span class="p">):</span>
+        <span class="c1"># Reconstruct file with translations</span>
+        <span class="k">pass</span>
+</pre></div>
+</div>
+</section>
+<section id="adding-a-translator">
+<h2>Adding a Translator<a class="headerlink" href="#adding-a-translator" title="Link to this heading"></a></h2>
+<p>To add a new translation service:</p>
+<ol class="arabic simple">
+<li><p>Create <code class="docutils literal notranslate"><span class="pre">langlint/translators/your_translator.py</span></code></p></li>
+<li><p>Inherit from <code class="docutils literal notranslate"><span class="pre">Translator</span></code> abstract class</p></li>
+<li><p>Implement required methods</p></li>
+<li><p>Add configuration handling</p></li>
+<li><p>Add tests</p></li>
+<li><p>Update documentation</p></li>
+</ol>
+</section>
+<section id="code-of-conduct">
+<h2>Code of Conduct<a class="headerlink" href="#code-of-conduct" title="Link to this heading"></a></h2>
+<p>Please read and follow our <span class="xref std std-doc">Code of Conduct</span>.</p>
+</section>
+<section id="getting-help">
+<h2>Getting Help<a class="headerlink" href="#getting-help" title="Link to this heading"></a></h2>
+<p>If you need help:</p>
+<ul class="simple">
+<li><p>Check the documentation</p></li>
+<li><p>Search existing issues</p></li>
+<li><p>Ask in GitHub Discussions</p></li>
+<li><p>Email: <a class="reference external" href="mailto:ang&#37;&#52;&#48;hezhiang&#46;com">ang<span>&#64;</span>hezhiang<span>&#46;</span>com</a></p></li>
+</ul>
+</section>
+<section id="license">
+<h2>License<a class="headerlink" href="#license" title="Link to this heading"></a></h2>
+<p>By contributing, you agree that your contributions will be licensed under the MIT License.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="api/translators.html" class="btn btn-neutral float-left" title="Translators" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="changelog.html" class="btn btn-neutral float-right" title="Changelog" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Zhiang He.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

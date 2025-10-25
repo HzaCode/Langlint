@@ -1,0 +1,431 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Configuration &mdash; LangLint 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Command-Line Interface" href="cli.html" />
+    <link rel="prev" title="Usage Guide" href="usage.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            LangLint
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-file">Configuration File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-options">Configuration Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#global-settings">Global Settings</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#translator">translator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#target-lang">target_lang</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#source-lang">source_lang</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#backup">backup</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#file-processing">File Processing</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#include">include</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#exclude">exclude</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#path-specific-overrides">Path-Specific Overrides</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-overrides">Command-Line Overrides</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#backup-control">Backup Control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#environment-variables">Environment Variables</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#google-translate">Google Translate</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#mock-translator">Mock Translator</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#configuration-examples">Configuration Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#minimal-configuration">Minimal Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#full-configuration">Full Configuration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multi-project-setup">Multi-Project Setup</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command-Line Interface</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/parsers.html">Parsers Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/translators.html">Translators</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LangLint</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Configuration</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/configuration.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="configuration">
+<h1>Configuration<a class="headerlink" href="#configuration" title="Link to this heading"></a></h1>
+<p>LangLint can be configured using a <code class="docutils literal notranslate"><span class="pre">.langlint.yml</span></code> file in your project root.</p>
+<section id="configuration-file">
+<h2>Configuration File<a class="headerlink" href="#configuration-file" title="Link to this heading"></a></h2>
+<p>Create <code class="docutils literal notranslate"><span class="pre">.langlint.yml</span></code> in your project root:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Global settings</span>
+<span class="nt">translator</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;google&quot;</span><span class="w">  </span><span class="c1"># google (default, free) or mock (testing)</span>
+<span class="nt">target_lang</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;en&quot;</span>
+<span class="nt">source_lang</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;zh-CN&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;ja&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;ko&quot;</span><span class="p p-Indicator">]</span>
+<span class="nt">backup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">  </span><span class="c1"># Create backup files before in-place translation</span>
+
+<span class="c1"># File processing</span>
+<span class="nt">include</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.py&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.js&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.ts&quot;</span>
+
+<span class="nt">exclude</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/node_modules/**&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/test_*&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/data/**&quot;</span>
+
+<span class="c1"># Path-specific overrides</span>
+<span class="nt">path_configs</span><span class="p">:</span>
+<span class="w">  </span><span class="s">&quot;**/tests/**&quot;</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="nt">translator</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;mock&quot;</span>
+<span class="w">    </span><span class="nt">backup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w">  </span><span class="c1"># Don&#39;t backup test files</span>
+
+<span class="w">  </span><span class="s">&quot;**/docs/**&quot;</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="nt">translator</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;google&quot;</span>
+<span class="w">    </span><span class="nt">target_lang</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;en&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="configuration-options">
+<h2>Configuration Options<a class="headerlink" href="#configuration-options" title="Link to this heading"></a></h2>
+<section id="global-settings">
+<h3>Global Settings<a class="headerlink" href="#global-settings" title="Link to this heading"></a></h3>
+<section id="translator">
+<h4>translator<a class="headerlink" href="#translator" title="Link to this heading"></a></h4>
+<p>Translation service to use.</p>
+<ul class="simple">
+<li><p>Type: string</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;google&quot;</span></code></p></li>
+<li><p>Options: <code class="docutils literal notranslate"><span class="pre">&quot;google&quot;</span></code> (free), <code class="docutils literal notranslate"><span class="pre">&quot;mock&quot;</span></code> (testing only)</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">translator</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;google&quot;</span><span class="w">  </span><span class="c1"># or &quot;mock&quot; for testing</span>
+</pre></div>
+</div>
+</section>
+<section id="target-lang">
+<h4>target_lang<a class="headerlink" href="#target-lang" title="Link to this heading"></a></h4>
+<p>Target language for translation.</p>
+<ul class="simple">
+<li><p>Type: string</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">&quot;en&quot;</span></code></p></li>
+<li><p>Format: ISO 639-1 language code</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">target_lang</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;en&quot;</span><span class="w">  </span><span class="c1"># English</span>
+<span class="c1"># or</span>
+<span class="nt">target_lang</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;zh-CN&quot;</span><span class="w">  </span><span class="c1"># Simplified Chinese</span>
+</pre></div>
+</div>
+</section>
+<section id="source-lang">
+<h4>source_lang<a class="headerlink" href="#source-lang" title="Link to this heading"></a></h4>
+<p>Source languages to detect and translate.</p>
+<ul class="simple">
+<li><p>Type: list of strings</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">[&quot;zh-CN&quot;,</span> <span class="pre">&quot;ja&quot;,</span> <span class="pre">&quot;ko&quot;]</span></code></p></li>
+<li><p>Format: List of ISO 639-1 language codes</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">source_lang</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;zh-CN&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;ja&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;ko&quot;</span><span class="p p-Indicator">]</span>
+<span class="c1"># or</span>
+<span class="nt">source_lang</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;fr&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;de&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;es&quot;</span><span class="p p-Indicator">]</span><span class="w">  </span><span class="c1"># European languages</span>
+</pre></div>
+</div>
+</section>
+<section id="backup">
+<h4>backup<a class="headerlink" href="#backup" title="Link to this heading"></a></h4>
+<p>Create backup files before in-place translation.</p>
+<ul class="simple">
+<li><p>Type: boolean</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">true</span></code></p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">backup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span><span class="w">  </span><span class="c1"># Creates .backup files</span>
+<span class="c1"># or</span>
+<span class="nt">backup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span><span class="w">  </span><span class="c1"># No backups</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="file-processing">
+<h3>File Processing<a class="headerlink" href="#file-processing" title="Link to this heading"></a></h3>
+<section id="include">
+<h4>include<a class="headerlink" href="#include" title="Link to this heading"></a></h4>
+<p>File patterns to include.</p>
+<ul class="simple">
+<li><p>Type: list of strings</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">[&quot;**/*.py&quot;,</span> <span class="pre">&quot;**/*.md&quot;,</span> <span class="pre">&quot;**/*.ipynb&quot;]</span></code></p></li>
+<li><p>Format: Glob patterns</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">include</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.py&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.js&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.ts&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.md&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="exclude">
+<h4>exclude<a class="headerlink" href="#exclude" title="Link to this heading"></a></h4>
+<p>File patterns to exclude.</p>
+<ul class="simple">
+<li><p>Type: list of strings</p></li>
+<li><p>Default: <code class="docutils literal notranslate"><span class="pre">[&quot;**/node_modules/**&quot;,</span> <span class="pre">&quot;**/__pycache__/**&quot;,</span> <span class="pre">&quot;**/.git/**&quot;]</span></code></p></li>
+<li><p>Format: Glob patterns</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">exclude</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/node_modules/**&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/test_*&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/.venv/**&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/build/**&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="path-specific-overrides">
+<h3>Path-Specific Overrides<a class="headerlink" href="#path-specific-overrides" title="Link to this heading"></a></h3>
+<p>Override settings for specific paths:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">path_configs</span><span class="p">:</span>
+<span class="w">  </span><span class="c1"># Use mock translator for tests</span>
+<span class="w">  </span><span class="s">&quot;**/tests/**&quot;</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="nt">translator</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;mock&quot;</span>
+<span class="w">    </span><span class="nt">backup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+
+<span class="w">  </span><span class="c1"># Different target for docs</span>
+<span class="w">  </span><span class="s">&quot;**/docs/**&quot;</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="nt">target_lang</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;zh-CN&quot;</span>
+
+<span class="w">  </span><span class="c1"># Skip data directories</span>
+<span class="w">  </span><span class="s">&quot;**/data/**&quot;</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="nt">exclude</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="command-line-overrides">
+<h2>Command-Line Overrides<a class="headerlink" href="#command-line-overrides" title="Link to this heading"></a></h2>
+<p>Command-line options override configuration file settings:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Config says target_lang: &quot;en&quot;, but CLI overrides to &quot;zh&quot;</span>
+langlint<span class="w"> </span>fix<span class="w"> </span>src/<span class="w"> </span>--target-lang<span class="w"> </span>zh
+</pre></div>
+</div>
+<p>Priority order (highest to lowest):</p>
+<ol class="arabic simple">
+<li><p>Command-line options</p></li>
+<li><p>Configuration file</p></li>
+<li><p>Default values</p></li>
+</ol>
+</section>
+<section id="backup-control">
+<h2>Backup Control<a class="headerlink" href="#backup-control" title="Link to this heading"></a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">backup</span></code> option controls automatic backup creation:</p>
+<p>Configuration file:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">backup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>Command-line override:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Disable backup (overrides config)</span>
+langlint<span class="w"> </span>fix<span class="w"> </span>src/<span class="w"> </span>--no-backup
+</pre></div>
+</div>
+<p>Backup files are created with <code class="docutils literal notranslate"><span class="pre">.backup</span></code> extension:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>example.py         # Translated file
+example.py.backup  # Original backup
+</pre></div>
+</div>
+</section>
+<section id="environment-variables">
+<h2>Environment Variables<a class="headerlink" href="#environment-variables" title="Link to this heading"></a></h2>
+<p>Currently supported translators do not require environment variables:</p>
+<section id="google-translate">
+<h3>Google Translate<a class="headerlink" href="#google-translate" title="Link to this heading"></a></h3>
+<p>No API key or environment variables needed (free service).</p>
+</section>
+<section id="mock-translator">
+<h3>Mock Translator<a class="headerlink" href="#mock-translator" title="Link to this heading"></a></h3>
+<p>No configuration needed (for testing only).</p>
+</section>
+</section>
+<section id="configuration-examples">
+<h2>Configuration Examples<a class="headerlink" href="#configuration-examples" title="Link to this heading"></a></h2>
+<section id="minimal-configuration">
+<h3>Minimal Configuration<a class="headerlink" href="#minimal-configuration" title="Link to this heading"></a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">translator</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;google&quot;</span>
+<span class="nt">target_lang</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;en&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="full-configuration">
+<h3>Full Configuration<a class="headerlink" href="#full-configuration" title="Link to this heading"></a></h3>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Global settings</span>
+<span class="nt">translator</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;google&quot;</span>
+<span class="nt">target_lang</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;en&quot;</span>
+<span class="nt">source_lang</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;zh-CN&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;ja&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;ko&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;fr&quot;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&quot;de&quot;</span><span class="p p-Indicator">]</span>
+<span class="nt">backup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="c1"># File processing</span>
+<span class="nt">include</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.py&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.js&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.ts&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.md&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.ipynb&quot;</span>
+
+<span class="nt">exclude</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/node_modules/**&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/test_*&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/__pycache__/**&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/.git/**&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/build/**&quot;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/dist/**&quot;</span>
+
+<span class="c1"># Path-specific overrides</span>
+<span class="nt">path_configs</span><span class="p">:</span>
+<span class="w">  </span><span class="s">&quot;**/tests/**&quot;</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="nt">translator</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;mock&quot;</span>
+<span class="w">    </span><span class="nt">backup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+
+<span class="w">  </span><span class="s">&quot;**/docs/**&quot;</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="nt">translator</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;google&quot;</span>
+<span class="w">    </span><span class="nt">target_lang</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;en&quot;</span>
+
+<span class="w">  </span><span class="s">&quot;**/examples/**&quot;</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="nt">backup</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+</section>
+<section id="multi-project-setup">
+<h3>Multi-Project Setup<a class="headerlink" href="#multi-project-setup" title="Link to this heading"></a></h3>
+<p>For monorepos with multiple projects:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="c1"># Root .langlint.yml</span>
+<span class="nt">translator</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;google&quot;</span>
+<span class="nt">target_lang</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;en&quot;</span>
+
+<span class="nt">path_configs</span><span class="p">:</span>
+<span class="w">  </span><span class="s">&quot;frontend/**&quot;</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="nt">source_lang</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;fr&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">include</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.js&quot;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.jsx&quot;</span>
+
+<span class="w">  </span><span class="s">&quot;backend/**&quot;</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="nt">source_lang</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;zh-CN&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">include</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.py&quot;</span>
+
+<span class="w">  </span><span class="s">&quot;docs/**&quot;</span><span class="p p-Indicator">:</span>
+<span class="w">    </span><span class="nt">source_lang</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&quot;ja&quot;</span><span class="p p-Indicator">]</span>
+<span class="w">    </span><span class="nt">include</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;**/*.md&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="usage.html" class="btn btn-neutral float-left" title="Usage Guide" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cli.html" class="btn btn-neutral float-right" title="Command-Line Interface" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Zhiang He.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

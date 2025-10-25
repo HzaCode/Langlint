@@ -1,0 +1,441 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Usage Guide &mdash; LangLint 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Configuration" href="configuration.html" />
+    <link rel="prev" title="Quick Start" href="quickstart.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            LangLint
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Usage Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#supported-languages">Supported Languages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#european-languages">European Languages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#asian-languages">Asian Languages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#other-languages">Other Languages</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#supported-file-types">Supported File Types</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#programming-languages">Programming Languages</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation-data">Documentation &amp; Data</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#what-gets-translated">What Gets Translated</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#command-options">Command Options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scan-command">scan Command</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translate-command">translate Command</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#fix-command">fix Command</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#advanced-usage">Advanced Usage</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#batch-processing">Batch Processing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#language-detection">Language Detection</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#custom-exclusions">Custom Exclusions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#python-api">Python API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#best-practices">Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#troubleshooting">Troubleshooting</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#file-not-translated">File Not Translated</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#translation-quality">Translation Quality</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#performance-tips">Performance Tips</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command-Line Interface</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/parsers.html">Parsers Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/translators.html">Translators</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">LangLint</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Usage Guide</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/usage.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="usage-guide">
+<h1>Usage Guide<a class="headerlink" href="#usage-guide" title="Link to this heading"></a></h1>
+<p>This guide covers the main features and usage patterns of LangLint.</p>
+<section id="supported-languages">
+<h2>Supported Languages<a class="headerlink" href="#supported-languages" title="Link to this heading"></a></h2>
+<p>LangLint supports 100+ language pairs, including:</p>
+<section id="european-languages">
+<h3>European Languages<a class="headerlink" href="#european-languages" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>English (en)</p></li>
+<li><p>French (fr)</p></li>
+<li><p>German (de)</p></li>
+<li><p>Spanish (es)</p></li>
+<li><p>Italian (it)</p></li>
+<li><p>Portuguese (pt)</p></li>
+<li><p>Russian (ru)</p></li>
+<li><p>Dutch (nl)</p></li>
+<li><p>Polish (pl)</p></li>
+<li><p>Swedish (sv)</p></li>
+</ul>
+</section>
+<section id="asian-languages">
+<h3>Asian Languages<a class="headerlink" href="#asian-languages" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Simplified Chinese (zh-CN)</p></li>
+<li><p>Traditional Chinese (zh-TW)</p></li>
+<li><p>Japanese (ja)</p></li>
+<li><p>Korean (ko)</p></li>
+<li><p>Thai (th)</p></li>
+<li><p>Vietnamese (vi)</p></li>
+<li><p>Hindi (hi)</p></li>
+<li><p>Indonesian (id)</p></li>
+</ul>
+</section>
+<section id="other-languages">
+<h3>Other Languages<a class="headerlink" href="#other-languages" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Arabic (ar)</p></li>
+<li><p>Hebrew (he)</p></li>
+<li><p>Turkish (tr)</p></li>
+<li><p>Greek (el)</p></li>
+<li><p>Persian (fa)</p></li>
+</ul>
+</section>
+</section>
+<section id="supported-file-types">
+<h2>Supported File Types<a class="headerlink" href="#supported-file-types" title="Link to this heading"></a></h2>
+<p>LangLint supports 28+ file types:</p>
+<section id="programming-languages">
+<h3>Programming Languages<a class="headerlink" href="#programming-languages" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Python</strong>: <code class="docutils literal notranslate"><span class="pre">.py</span></code></p></li>
+<li><p><strong>JavaScript/TypeScript</strong>: <code class="docutils literal notranslate"><span class="pre">.js</span></code>, <code class="docutils literal notranslate"><span class="pre">.ts</span></code>, <code class="docutils literal notranslate"><span class="pre">.jsx</span></code>, <code class="docutils literal notranslate"><span class="pre">.tsx</span></code></p></li>
+<li><p><strong>Rust</strong>: <code class="docutils literal notranslate"><span class="pre">.rs</span></code></p></li>
+<li><p><strong>Go</strong>: <code class="docutils literal notranslate"><span class="pre">.go</span></code></p></li>
+<li><p><strong>C/C++</strong>: <code class="docutils literal notranslate"><span class="pre">.c</span></code>, <code class="docutils literal notranslate"><span class="pre">.cpp</span></code>, <code class="docutils literal notranslate"><span class="pre">.h</span></code>, <code class="docutils literal notranslate"><span class="pre">.hpp</span></code></p></li>
+<li><p><strong>Java</strong>: <code class="docutils literal notranslate"><span class="pre">.java</span></code></p></li>
+<li><p><strong>Kotlin</strong>: <code class="docutils literal notranslate"><span class="pre">.kt</span></code></p></li>
+<li><p><strong>Scala</strong>: <code class="docutils literal notranslate"><span class="pre">.scala</span></code></p></li>
+<li><p><strong>C#</strong>: <code class="docutils literal notranslate"><span class="pre">.cs</span></code></p></li>
+<li><p><strong>PHP</strong>: <code class="docutils literal notranslate"><span class="pre">.php</span></code></p></li>
+<li><p><strong>Ruby</strong>: <code class="docutils literal notranslate"><span class="pre">.rb</span></code></p></li>
+<li><p><strong>Swift</strong>: <code class="docutils literal notranslate"><span class="pre">.swift</span></code></p></li>
+<li><p><strong>Dart</strong>: <code class="docutils literal notranslate"><span class="pre">.dart</span></code></p></li>
+<li><p><strong>Lua</strong>: <code class="docutils literal notranslate"><span class="pre">.lua</span></code></p></li>
+</ul>
+</section>
+<section id="documentation-data">
+<h3>Documentation &amp; Data<a class="headerlink" href="#documentation-data" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><strong>Markdown</strong>: <code class="docutils literal notranslate"><span class="pre">.md</span></code></p></li>
+<li><p><strong>Jupyter Notebooks</strong>: <code class="docutils literal notranslate"><span class="pre">.ipynb</span></code></p></li>
+<li><p><strong>Shell Scripts</strong>: <code class="docutils literal notranslate"><span class="pre">.sh</span></code>, <code class="docutils literal notranslate"><span class="pre">.bash</span></code></p></li>
+<li><p><strong>SQL</strong>: <code class="docutils literal notranslate"><span class="pre">.sql</span></code></p></li>
+<li><p><strong>R</strong>: <code class="docutils literal notranslate"><span class="pre">.r</span></code>, <code class="docutils literal notranslate"><span class="pre">.R</span></code></p></li>
+<li><p><strong>MATLAB</strong>: <code class="docutils literal notranslate"><span class="pre">.m</span></code></p></li>
+<li><p><strong>Vim Script</strong>: <code class="docutils literal notranslate"><span class="pre">.vim</span></code></p></li>
+</ul>
+</section>
+</section>
+<section id="what-gets-translated">
+<h2>What Gets Translated<a class="headerlink" href="#what-gets-translated" title="Link to this heading"></a></h2>
+<p>LangLint intelligently translates:</p>
+<dl class="simple">
+<dt>✅ <strong>Translated</strong>:</dt><dd><ul class="simple">
+<li><p>Comments (<code class="docutils literal notranslate"><span class="pre">#</span> <span class="pre">inline</span> <span class="pre">comments</span></code>)</p></li>
+<li><p>Docstrings (<code class="docutils literal notranslate"><span class="pre">&quot;&quot;&quot;docstring&quot;&quot;&quot;</span></code>)</p></li>
+<li><p>Documentation strings</p></li>
+<li><p>Markdown text content</p></li>
+</ul>
+</dd>
+<dt>❌ <strong>Not Translated</strong> (Preserved):</dt><dd><ul class="simple">
+<li><p>Variable names</p></li>
+<li><p>Function names</p></li>
+<li><p>String literals</p></li>
+<li><p>Code syntax</p></li>
+<li><p>Import statements</p></li>
+<li><p>Configuration values</p></li>
+</ul>
+</dd>
+</dl>
+</section>
+<section id="command-options">
+<h2>Command Options<a class="headerlink" href="#command-options" title="Link to this heading"></a></h2>
+<section id="scan-command">
+<h3>scan Command<a class="headerlink" href="#scan-command" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>langlint<span class="w"> </span>scan<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>PATH
+</pre></div>
+</div>
+<p>Options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-o,</span> <span class="pre">--output</span> <span class="pre">FILE</span></code> - Save results to file</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--format</span> <span class="pre">FORMAT</span></code> - Output format (json/yaml/csv)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-i,</span> <span class="pre">--include</span> <span class="pre">PATTERN</span></code> - Include file patterns</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-e,</span> <span class="pre">--exclude</span> <span class="pre">PATTERN</span></code> - Exclude file patterns</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-v,</span> <span class="pre">--verbose</span></code> - Enable verbose output</p></li>
+</ul>
+<p>Examples:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Scan with JSON output</span>
+langlint<span class="w"> </span>scan<span class="w"> </span>src/<span class="w"> </span>-o<span class="w"> </span>report.json<span class="w"> </span>--format<span class="w"> </span>json
+
+<span class="c1"># Scan with exclusions</span>
+langlint<span class="w"> </span>scan<span class="w"> </span>.<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;**/test_*&quot;</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;**/__pycache__/&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="translate-command">
+<h3>translate Command<a class="headerlink" href="#translate-command" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>langlint<span class="w"> </span>translate<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>PATH
+</pre></div>
+</div>
+<p>Options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-s,</span> <span class="pre">--source-lang</span> <span class="pre">LANG</span></code> - Source language code (default: auto)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-t,</span> <span class="pre">--target-lang</span> <span class="pre">LANG</span></code> - Target language code (default: en)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--translator</span> <span class="pre">SERVICE</span></code> - Translation service (google/mock, default: google)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-o,</span> <span class="pre">--output</span> <span class="pre">DIR</span></code> - Output directory</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--dry-run</span></code> - Preview without making changes</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-i,</span> <span class="pre">--include</span> <span class="pre">PATTERN</span></code> - Include patterns</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-e,</span> <span class="pre">--exclude</span> <span class="pre">PATTERN</span></code> - Exclude patterns</p></li>
+</ul>
+<p>Examples:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Basic translation</span>
+langlint<span class="w"> </span>translate<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>zh<span class="w"> </span>-t<span class="w"> </span>en<span class="w"> </span>-o<span class="w"> </span>output/
+
+<span class="c1"># Dry run</span>
+langlint<span class="w"> </span>translate<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>zh<span class="w"> </span>-t<span class="w"> </span>en<span class="w"> </span>--dry-run
+
+<span class="c1"># With specific translator (google or mock only)</span>
+langlint<span class="w"> </span>translate<span class="w"> </span>src/<span class="w"> </span>--translator<span class="w"> </span>google
+</pre></div>
+</div>
+</section>
+<section id="fix-command">
+<h3>fix Command<a class="headerlink" href="#fix-command" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>langlint<span class="w"> </span>fix<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>PATH
+</pre></div>
+</div>
+<p>Options:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">-s,</span> <span class="pre">--source-lang</span> <span class="pre">LANG</span></code> - Source language code (default: auto)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-t,</span> <span class="pre">--target-lang</span> <span class="pre">LANG</span></code> - Target language code (default: en)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">--translator</span> <span class="pre">SERVICE</span></code> - Translation service (default: google)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-i,</span> <span class="pre">--include</span> <span class="pre">PATTERN</span></code> - Include patterns</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">-e,</span> <span class="pre">--exclude</span> <span class="pre">PATTERN</span></code> - Exclude patterns</p></li>
+</ul>
+<p>Examples:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Basic fix</span>
+langlint<span class="w"> </span>fix<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>zh<span class="w"> </span>-t<span class="w"> </span>en
+
+<span class="c1"># With specific translator (google or mock only)</span>
+langlint<span class="w"> </span>fix<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>zh<span class="w"> </span>-t<span class="w"> </span>en<span class="w"> </span>--translator<span class="w"> </span>google
+</pre></div>
+</div>
+</section>
+</section>
+<section id="advanced-usage">
+<h2>Advanced Usage<a class="headerlink" href="#advanced-usage" title="Link to this heading"></a></h2>
+<section id="batch-processing">
+<h3>Batch Processing<a class="headerlink" href="#batch-processing" title="Link to this heading"></a></h3>
+<p>Process multiple files efficiently:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Translate all Python files</span>
+langlint<span class="w"> </span>fix<span class="w"> </span>**/*.py<span class="w"> </span>-s<span class="w"> </span>zh<span class="w"> </span>-t<span class="w"> </span>en
+
+<span class="c1"># Translate specific directories</span>
+langlint<span class="w"> </span>fix<span class="w"> </span>src/<span class="w"> </span>tests/<span class="w"> </span>docs/<span class="w"> </span>-s<span class="w"> </span>zh<span class="w"> </span>-t<span class="w"> </span>en
+</pre></div>
+</div>
+</section>
+<section id="language-detection">
+<h3>Language Detection<a class="headerlink" href="#language-detection" title="Link to this heading"></a></h3>
+<p>LangLint can auto-detect languages, but explicit specification is more accurate:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Auto-detect (may misidentify European languages)</span>
+langlint<span class="w"> </span>fix<span class="w"> </span>file.py<span class="w"> </span>-s<span class="w"> </span>auto<span class="w"> </span>-t<span class="w"> </span>en
+
+<span class="c1"># Explicit source (recommended for European languages)</span>
+langlint<span class="w"> </span>fix<span class="w"> </span>french_file.py<span class="w"> </span>-s<span class="w"> </span>fr<span class="w"> </span>-t<span class="w"> </span>en
+</pre></div>
+</div>
+</section>
+<section id="custom-exclusions">
+<h3>Custom Exclusions<a class="headerlink" href="#custom-exclusions" title="Link to this heading"></a></h3>
+<p>Exclude specific files or directories:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Exclude test files</span>
+langlint<span class="w"> </span>scan<span class="w"> </span>src/<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;**/test_*&quot;</span>
+
+<span class="c1"># Multiple exclusions</span>
+langlint<span class="w"> </span>scan<span class="w"> </span>.<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;**/node_modules/**&quot;</span><span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;**/__pycache__/**&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="python-api">
+<h2>Python API<a class="headerlink" href="#python-api" title="Link to this heading"></a></h2>
+<p>LangLint can be used as a Python library:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">langlint_py</span>
+
+<span class="c1"># Scan files</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">langlint_py</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
+    <span class="s2">&quot;src/&quot;</span><span class="p">,</span>
+    <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;json&quot;</span><span class="p">,</span>
+    <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+
+<span class="c1"># Translate files</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">langlint_py</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span>
+    <span class="s2">&quot;example.py&quot;</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;zh&quot;</span><span class="p">,</span>
+    <span class="n">target</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span>
+    <span class="n">translator</span><span class="o">=</span><span class="s2">&quot;google&quot;</span><span class="p">,</span>
+    <span class="n">output</span><span class="o">=</span><span class="s2">&quot;example_en.py&quot;</span><span class="p">,</span>
+    <span class="n">dry_run</span><span class="o">=</span><span class="kc">False</span>
+<span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="best-practices">
+<h2>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><p><strong>Always specify source language</strong> for European languages (French, German, Spanish, etc.)</p></li>
+<li><p><strong>Use dry-run first</strong> to preview changes</p></li>
+<li><p><strong>Backup important files</strong> before in-place translation</p></li>
+<li><p><strong>Test translated code</strong> to ensure it still works</p></li>
+<li><p><strong>Use configuration files</strong> for consistent settings across teams</p></li>
+</ol>
+</section>
+<section id="troubleshooting">
+<h2>Troubleshooting<a class="headerlink" href="#troubleshooting" title="Link to this heading"></a></h2>
+<section id="file-not-translated">
+<h3>File Not Translated<a class="headerlink" href="#file-not-translated" title="Link to this heading"></a></h3>
+<p>If a file is not being translated:</p>
+<ol class="arabic simple">
+<li><p>Check if the file type is supported</p></li>
+<li><p>Verify the file contains translatable content</p></li>
+<li><p>Check exclusion patterns in your config</p></li>
+<li><p>Run with <code class="docutils literal notranslate"><span class="pre">--verbose</span></code> to see detailed output</p></li>
+</ol>
+</section>
+<section id="translation-quality">
+<h3>Translation Quality<a class="headerlink" href="#translation-quality" title="Link to this heading"></a></h3>
+<p>To improve translation quality:</p>
+<ol class="arabic simple">
+<li><p>Use explicit source language (<code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">fr</span></code> instead of <code class="docutils literal notranslate"><span class="pre">-s</span> <span class="pre">auto</span></code>)</p></li>
+<li><p>Consider using different translators</p></li>
+<li><p>Review and manually adjust complex technical terms</p></li>
+<li><p>Maintain a glossary for domain-specific terms</p></li>
+</ol>
+</section>
+<section id="performance-tips">
+<h3>Performance Tips<a class="headerlink" href="#performance-tips" title="Link to this heading"></a></h3>
+<p>For large projects:</p>
+<ol class="arabic simple">
+<li><p>Use configuration file to set default options</p></li>
+<li><p>Enable caching (enabled by default)</p></li>
+<li><p>Process files in batches</p></li>
+<li><p>Use exclusion patterns to skip unnecessary files</p></li>
+</ol>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="quickstart.html" class="btn btn-neutral float-left" title="Quick Start" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="configuration.html" class="btn btn-neutral float-right" title="Configuration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Zhiang He.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

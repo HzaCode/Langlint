@@ -1,44 +1,274 @@
+
+
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html class="writer-html5" lang="en" data-content_root="./">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LangLint 文档</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            max-width: 800px;
-            margin: 100px auto;
-            padding: 20px;
-            text-align: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-        h1 {
-            font-size: 3em;
-            margin-bottom: 20px;
-        }
-        p {
-            font-size: 1.2em;
-            margin-bottom: 30px;
-        }
-        .status {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 20px;
-            border-radius: 10px;
-            backdrop-filter: blur(10px);
-        }
-    </style>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LangLint Documentation &mdash; LangLint 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=8d563738"></script>
+      <script src="_static/doctools.js?v=9bcbadda"></script>
+      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Installation" href="installation.html" /> 
 </head>
-<body>
-    <h1>🚀 LangLint 文档</h1>
-    <div class="status">
-        <p>文档正在自动构建中...</p>
-        <p>请稍后刷新页面查看完整文档。</p>
-        <p style="font-size: 0.9em; opacity: 0.8;">
-            文档将在每次推送到 main 分支后自动更新
-        </p>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            LangLint
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command-Line Interface</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/parsers.html">Parsers Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/translators.html">Translators</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">LangLint</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">LangLint Documentation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="langlint-documentation">
+<h1>LangLint Documentation<a class="headerlink" href="#langlint-documentation" title="Link to this heading"></a></h1>
+<p><strong>LangLint</strong> is a high-performance, extensible, <strong>Rust-powered, code-aware translation and linting toolkit</strong> for code comments and documentation. It keeps multilingual scientific software docs consistent and reproducible, supporting <strong>FAIR</strong> and open-science practices.</p>
+<a class="reference external image-reference" href="https://pypi.org/project/langlint/"><img alt="PyPI" src="https://img.shields.io/pypi/v/langlint.svg" />
+</a>
+<a class="reference external image-reference" href="https://www.python.org/"><img alt="Python" src="https://img.shields.io/badge/python-3.8%2B-blue.svg" />
+</a>
+<a class="reference external image-reference" href="https://opensource.org/licenses/MIT"><img alt="License" src="https://img.shields.io/badge/License-MIT-yellow.svg" />
+</a>
+<section id="quick-start">
+<h2>Quick Start<a class="headerlink" href="#quick-start" title="Link to this heading"></a></h2>
+<section id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install via pip</span>
+pip<span class="w"> </span>install<span class="w"> </span>langlint
+
+<span class="c1"># Or use pipx for isolated environment</span>
+pipx<span class="w"> </span>install<span class="w"> </span>langlint
+
+<span class="c1"># Or use uv for fastest installation</span>
+uv<span class="w"> </span>tool<span class="w"> </span>install<span class="w"> </span>langlint
+</pre></div>
+</div>
+</section>
+<section id="basic-usage">
+<h3>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading"></a></h3>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Scan translatable content</span>
+langlint<span class="w"> </span>scan<span class="w"> </span>src/
+
+<span class="c1"># Translate (preserve original files)</span>
+langlint<span class="w"> </span>translate<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>auto<span class="w"> </span>-t<span class="w"> </span>en<span class="w"> </span>-o<span class="w"> </span>output/
+
+<span class="c1"># In-place translation (auto backup)</span>
+langlint<span class="w"> </span>fix<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>auto<span class="w"> </span>-t<span class="w"> </span>en
+</pre></div>
+</div>
+</section>
+</section>
+<section id="features">
+<h2>Features<a class="headerlink" href="#features" title="Link to this heading"></a></h2>
+<ul class="simple">
+<li><p>🌍 <strong>100+ Language Pairs</strong>: Support for major world languages</p></li>
+<li><p>⚡ <strong>High Performance</strong>: 10-50× faster with Rust implementation</p></li>
+<li><p>🔌 <strong>28+ File Types</strong>: Python, JavaScript, Rust, Markdown, Jupyter, and more</p></li>
+<li><p>🔒 <strong>Syntax Protection</strong>: Automatically excludes string literals</p></li>
+<li><p>🚀 <strong>Batch Processing</strong>: True parallelism with Rust</p></li>
+<li><p>🆓 <strong>Free Translation</strong>: Google Translate, no API key required</p></li>
+</ul>
+</section>
+<section id="table-of-contents">
+<h2>Table of Contents<a class="headerlink" href="#table-of-contents" title="Link to this heading"></a></h2>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#requirements">Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-methods">Installation Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#verifying-installation">Verifying Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#development-installation">Development Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#upgrading">Upgrading</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#uninstallation">Uninstallation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Quick Start</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#basic-commands">Basic Commands</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#simple-example">Simple Example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#common-use-cases">Common Use Cases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#configuration-file">Configuration File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="quickstart.html#next-steps">Next Steps</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage Guide</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#supported-languages">Supported Languages</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#supported-file-types">Supported File Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#what-gets-translated">What Gets Translated</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#command-options">Command Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#advanced-usage">Advanced Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#python-api">Python API</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#best-practices">Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#troubleshooting">Troubleshooting</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#configuration-file">Configuration File</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#configuration-options">Configuration Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#command-line-overrides">Command-Line Overrides</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#backup-control">Backup Control</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#environment-variables">Environment Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration.html#configuration-examples">Configuration Examples</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cli.html">Command-Line Interface</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#global-options">Global Options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#commands-overview">Commands Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#language-codes">Language Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#exit-codes">Exit Codes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cli.html#shell-integration">Shell Integration</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="api/core.html">Core Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/core.html#module-langlint.core.dispatcher">Dispatcher</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/core.html#module-langlint.core.config">Configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/core.html#module-langlint.core.cache">Cache</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/parsers.html">Parsers Module</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/parsers.html#module-langlint.parsers.base">Base Parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/parsers.html#module-langlint.parsers.python_parser">Python Parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/parsers.html#module-langlint.parsers.markdown_parser">Markdown Parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/parsers.html#module-langlint.parsers.notebook_parser">Notebook Parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/parsers.html#module-langlint.parsers.generic_code_parser">Generic Code Parser</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/parsers.html#module-langlint.parsers.config_parser">Config Parser</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="api/translators.html">Translators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="api/translators.html#module-langlint.translators.base">Base Translator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/translators.html#module-langlint.translators.google_translator">Google Translator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/translators.html#module-langlint.translators.mock_translator">Mock Translator</a></li>
+<li class="toctree-l2"><a class="reference internal" href="api/translators.html#future-translators">Future Translators</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Changelog</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+</ul>
+</div>
+</section>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Link to this heading"></a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="installation.html" class="btn btn-neutral float-right" title="Installation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Zhiang He.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
 </body>
 </html>
-

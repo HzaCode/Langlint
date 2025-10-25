@@ -1,0 +1,728 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>langlint.parsers.generic_code_parser &mdash; LangLint 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            LangLint
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">User Guide</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../quickstart.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../usage.html">Usage Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../cli.html">Command-Line Interface</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/core.html">Core Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/parsers.html">Parsers Module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../api/translators.html">Translators</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../changelog.html">Changelog</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">About</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../license.html">License</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">LangLint</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">langlint.parsers.generic_code_parser</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for langlint.parsers.generic_code_parser</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Generic code parser for extracting comments from various programming languages.</span>
+
+<span class="sd">This parser uses pre-compiled, high-performance regular expressions to identify</span>
+<span class="sd">single-line and block comments in various programming languages.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">Parser</span><span class="p">,</span> <span class="n">TranslatableUnit</span><span class="p">,</span> <span class="n">ParseResult</span><span class="p">,</span> <span class="n">UnitType</span><span class="p">,</span> <span class="n">ParseError</span>
+
+
+<div class="viewcode-block" id="CommentPattern">
+<a class="viewcode-back" href="../../../api/parsers.html#langlint.parsers.generic_code_parser.CommentPattern">[docs]</a>
+<span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CommentPattern</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Represents a comment pattern for a programming language.&quot;&quot;&quot;</span>
+    <span class="n">single_line</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span>
+    <span class="n">block_start</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">block_end</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">block_nested</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span></div>
+
+
+
+<div class="viewcode-block" id="GenericCodeParser">
+<a class="viewcode-back" href="../../../api/parsers.html#langlint.parsers.generic_code_parser.GenericCodeParser">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GenericCodeParser</span><span class="p">(</span><span class="n">Parser</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Generic parser for various programming languages that extracts comments.</span>
+
+<span class="sd">    This parser uses pre-compiled regular expressions to identify and extract</span>
+<span class="sd">    single-line and block comments from various programming languages.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Language-specific comment patterns</span>
+    <span class="n">COMMENT_PATTERNS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;.js&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;//&#39;</span><span class="p">],</span>
+            <span class="n">block_start</span><span class="o">=</span><span class="s1">&#39;/*&#39;</span><span class="p">,</span>
+            <span class="n">block_end</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.ts&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;//&#39;</span><span class="p">],</span>
+            <span class="n">block_start</span><span class="o">=</span><span class="s1">&#39;/*&#39;</span><span class="p">,</span>
+            <span class="n">block_end</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.go&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;//&#39;</span><span class="p">],</span>
+            <span class="n">block_start</span><span class="o">=</span><span class="s1">&#39;/*&#39;</span><span class="p">,</span>
+            <span class="n">block_end</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.rs&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;//&#39;</span><span class="p">],</span>
+            <span class="n">block_start</span><span class="o">=</span><span class="s1">&#39;/*&#39;</span><span class="p">,</span>
+            <span class="n">block_end</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.java&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;//&#39;</span><span class="p">],</span>
+            <span class="n">block_start</span><span class="o">=</span><span class="s1">&#39;/*&#39;</span><span class="p">,</span>
+            <span class="n">block_end</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.cpp&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;//&#39;</span><span class="p">],</span>
+            <span class="n">block_start</span><span class="o">=</span><span class="s1">&#39;/*&#39;</span><span class="p">,</span>
+            <span class="n">block_end</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.c&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;//&#39;</span><span class="p">],</span>
+            <span class="n">block_start</span><span class="o">=</span><span class="s1">&#39;/*&#39;</span><span class="p">,</span>
+            <span class="n">block_end</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.h&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;//&#39;</span><span class="p">],</span>
+            <span class="n">block_start</span><span class="o">=</span><span class="s1">&#39;/*&#39;</span><span class="p">,</span>
+            <span class="n">block_end</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.cs&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;//&#39;</span><span class="p">],</span>
+            <span class="n">block_start</span><span class="o">=</span><span class="s1">&#39;/*&#39;</span><span class="p">,</span>
+            <span class="n">block_end</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.php&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;//&#39;</span><span class="p">,</span> <span class="s1">&#39;#&#39;</span><span class="p">],</span>
+            <span class="n">block_start</span><span class="o">=</span><span class="s1">&#39;/*&#39;</span><span class="p">,</span>
+            <span class="n">block_end</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.rb&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;#&#39;</span><span class="p">],</span>
+            <span class="n">block_start</span><span class="o">=</span><span class="s1">&#39;=begin&#39;</span><span class="p">,</span>
+            <span class="n">block_end</span><span class="o">=</span><span class="s1">&#39;=end&#39;</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.sh&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;#&#39;</span><span class="p">]</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.bash&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;#&#39;</span><span class="p">]</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.zsh&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;#&#39;</span><span class="p">]</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.fish&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;#&#39;</span><span class="p">]</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.sql&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;--&#39;</span><span class="p">],</span>
+            <span class="n">block_start</span><span class="o">=</span><span class="s1">&#39;/*&#39;</span><span class="p">,</span>
+            <span class="n">block_end</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.r&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;#&#39;</span><span class="p">]</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.m&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;%&#39;</span><span class="p">],</span>
+            <span class="n">block_start</span><span class="o">=</span><span class="s1">&#39;%{&#39;</span><span class="p">,</span>
+            <span class="n">block_end</span><span class="o">=</span><span class="s1">&#39;%}&#39;</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.scala&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;//&#39;</span><span class="p">],</span>
+            <span class="n">block_start</span><span class="o">=</span><span class="s1">&#39;/*&#39;</span><span class="p">,</span>
+            <span class="n">block_end</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.kt&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;//&#39;</span><span class="p">],</span>
+            <span class="n">block_start</span><span class="o">=</span><span class="s1">&#39;/*&#39;</span><span class="p">,</span>
+            <span class="n">block_end</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.swift&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;//&#39;</span><span class="p">],</span>
+            <span class="n">block_start</span><span class="o">=</span><span class="s1">&#39;/*&#39;</span><span class="p">,</span>
+            <span class="n">block_end</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.dart&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;//&#39;</span><span class="p">],</span>
+            <span class="n">block_start</span><span class="o">=</span><span class="s1">&#39;/*&#39;</span><span class="p">,</span>
+            <span class="n">block_end</span><span class="o">=</span><span class="s1">&#39;*/&#39;</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.lua&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;--&#39;</span><span class="p">],</span>
+            <span class="n">block_start</span><span class="o">=</span><span class="s1">&#39;--[[&#39;</span><span class="p">,</span>
+            <span class="n">block_end</span><span class="o">=</span><span class="s1">&#39;]]&#39;</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.vim&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;&quot;&#39;</span><span class="p">]</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.yaml&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;#&#39;</span><span class="p">]</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.yml&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;#&#39;</span><span class="p">]</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.toml&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;#&#39;</span><span class="p">]</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.ini&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="s1">&#39;#&#39;</span><span class="p">]</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.cfg&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="s1">&#39;#&#39;</span><span class="p">]</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.conf&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;#&#39;</span><span class="p">]</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.dockerfile&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;#&#39;</span><span class="p">]</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.makefile&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;#&#39;</span><span class="p">]</span>
+        <span class="p">),</span>
+        <span class="s1">&#39;.cmake&#39;</span><span class="p">:</span> <span class="n">CommentPattern</span><span class="p">(</span>
+            <span class="n">single_line</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;#&#39;</span><span class="p">]</span>
+        <span class="p">),</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the generic code parser.&quot;&quot;&quot;</span>
+        <span class="c1"># Pre-compile regular expressions for better performance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compiled_patterns</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_compile_patterns</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_compile_patterns</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Pre-compile regular expressions for all supported languages.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">ext</span><span class="p">,</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">COMMENT_PATTERNS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">compiled</span> <span class="o">=</span> <span class="p">{}</span>
+
+            <span class="c1"># Compile single-line comment patterns</span>
+            <span class="n">compiled</span><span class="p">[</span><span class="s1">&#39;single_line&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">sl_pattern</span> <span class="ow">in</span> <span class="n">pattern</span><span class="o">.</span><span class="n">single_line</span><span class="p">:</span>
+                <span class="c1"># Escape special regex characters</span>
+                <span class="n">escaped</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">sl_pattern</span><span class="p">)</span>
+                <span class="c1"># Match the pattern followed by optional whitespace and content</span>
+                <span class="n">regex</span> <span class="o">=</span> <span class="sa">rf</span><span class="s1">&#39;^\s*</span><span class="si">{</span><span class="n">escaped</span><span class="si">}</span><span class="s1">\s*(.*)$&#39;</span>
+                <span class="n">compiled</span><span class="p">[</span><span class="s1">&#39;single_line&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">))</span>
+
+            <span class="c1"># Compile block comment patterns</span>
+            <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">block_start</span> <span class="ow">and</span> <span class="n">pattern</span><span class="o">.</span><span class="n">block_end</span><span class="p">:</span>
+                <span class="n">start_escaped</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">block_start</span><span class="p">)</span>
+                <span class="n">end_escaped</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">pattern</span><span class="o">.</span><span class="n">block_end</span><span class="p">)</span>
+
+                <span class="c1"># Pattern for block comments</span>
+                <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">block_nested</span><span class="p">:</span>
+                    <span class="c1"># Handle nested comments (like C-style)</span>
+                    <span class="n">regex</span> <span class="o">=</span> <span class="sa">rf</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">start_escaped</span><span class="si">}</span><span class="s1">(?:(?!</span><span class="si">{</span><span class="n">end_escaped</span><span class="si">}</span><span class="s1">).)*</span><span class="si">{</span><span class="n">end_escaped</span><span class="si">}</span><span class="s1">&#39;</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># Non-nested comments</span>
+                    <span class="n">regex</span> <span class="o">=</span> <span class="sa">rf</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">start_escaped</span><span class="si">}</span><span class="s1">.*?</span><span class="si">{</span><span class="n">end_escaped</span><span class="si">}</span><span class="s1">&#39;</span>
+
+                <span class="n">compiled</span><span class="p">[</span><span class="s1">&#39;block&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">DOTALL</span> <span class="o">|</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">_compiled_patterns</span><span class="p">[</span><span class="n">ext</span><span class="p">]</span> <span class="o">=</span> <span class="n">compiled</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">supported_extensions</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return supported file extensions.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">COMMENT_PATTERNS</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">supported_mime_types</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Return supported MIME types.&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="s1">&#39;text/x-javascript&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-typescript&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-go&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-rust&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-java&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-c++&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-c&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-csharp&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-php&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-ruby&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-shellscript&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-sql&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-r&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-matlab&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-scala&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-kotlin&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-swift&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-dart&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-lua&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-vim&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-yaml&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-toml&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-ini&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-dockerfile&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-makefile&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;text/x-cmake&#39;</span><span class="p">,</span>
+        <span class="p">]</span>
+
+<div class="viewcode-block" id="GenericCodeParser.can_parse">
+<a class="viewcode-back" href="../../../api/parsers.html#langlint.parsers.generic_code_parser.GenericCodeParser.can_parse">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if this parser can handle the given file.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            file_path: Path to the file</span>
+<span class="sd">            content: Optional file content</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if this parser can handle the file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">content</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">file_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">supported_extensions</span><span class="p">))</span>
+
+        <span class="c1"># Check if content looks like code with comments</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">content</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Look for comment patterns in the content</span>
+        <span class="k">for</span> <span class="n">ext</span><span class="p">,</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">COMMENT_PATTERNS</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">ext</span><span class="p">):</span>
+                <span class="c1"># Check for single-line comments</span>
+                <span class="k">for</span> <span class="n">sl_pattern</span> <span class="ow">in</span> <span class="n">pattern</span><span class="o">.</span><span class="n">single_line</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">sl_pattern</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="kc">True</span>
+
+                <span class="c1"># Check for block comments</span>
+                <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">block_start</span> <span class="ow">and</span> <span class="n">pattern</span><span class="o">.</span><span class="n">block_end</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">pattern</span><span class="o">.</span><span class="n">block_start</span> <span class="ow">in</span> <span class="n">content</span> <span class="ow">and</span> <span class="n">pattern</span><span class="o">.</span><span class="n">block_end</span> <span class="ow">in</span> <span class="n">content</span><span class="p">:</span>
+                        <span class="k">return</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="GenericCodeParser.extract_translatable_units">
+<a class="viewcode-back" href="../../../api/parsers.html#langlint.parsers.generic_code_parser.GenericCodeParser.extract_translatable_units">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">extract_translatable_units</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ParseResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract translatable units from code file content.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            content: The file content to parse</span>
+<span class="sd">            file_path: Path to the file</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ParseResult containing all translatable units found</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            ParseError: If the file cannot be parsed</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Determine file extension</span>
+            <span class="n">ext</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_extension</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">COMMENT_PATTERNS</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">ParseError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Unsupported file extension: </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Get comment pattern for this file type</span>
+            <span class="n">pattern</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">COMMENT_PATTERNS</span><span class="p">[</span><span class="n">ext</span><span class="p">]</span>
+            <span class="n">compiled</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_compiled_patterns</span><span class="p">[</span><span class="n">ext</span><span class="p">]</span>
+
+            <span class="c1"># Extract translatable units</span>
+            <span class="n">units</span> <span class="o">=</span> <span class="p">[]</span>
+
+            <span class="c1"># Extract single-line comments</span>
+            <span class="k">for</span> <span class="n">regex</span> <span class="ow">in</span> <span class="n">compiled</span><span class="p">[</span><span class="s1">&#39;single_line&#39;</span><span class="p">]:</span>
+                <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">regex</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
+                    <span class="n">comment_text</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+                    <span class="k">if</span> <span class="n">comment_text</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_translatable_text</span><span class="p">(</span><span class="n">comment_text</span><span class="p">):</span>
+                        <span class="n">line_num</span> <span class="o">=</span> <span class="n">content</span><span class="p">[:</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">()]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                        <span class="n">col_num</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="o">-</span> <span class="n">content</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">()))</span>
+
+                        <span class="n">units</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TranslatableUnit</span><span class="p">(</span>
+                            <span class="n">content</span><span class="o">=</span><span class="n">comment_text</span><span class="p">,</span>
+                            <span class="n">unit_type</span><span class="o">=</span><span class="n">UnitType</span><span class="o">.</span><span class="n">COMMENT</span><span class="p">,</span>
+                            <span class="n">line_number</span><span class="o">=</span><span class="n">line_num</span><span class="p">,</span>
+                            <span class="n">column_number</span><span class="o">=</span><span class="n">col_num</span><span class="p">,</span>
+                            <span class="n">context</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Comment in </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2"> file&quot;</span><span class="p">,</span>
+                            <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+                                <span class="s1">&#39;original_content&#39;</span><span class="p">:</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+                                <span class="s1">&#39;file_extension&#39;</span><span class="p">:</span> <span class="n">ext</span><span class="p">,</span>
+                                <span class="s1">&#39;comment_type&#39;</span><span class="p">:</span> <span class="s1">&#39;single_line&#39;</span>
+                            <span class="p">}</span>
+                        <span class="p">))</span>
+
+            <span class="c1"># Extract block comments</span>
+            <span class="k">if</span> <span class="s1">&#39;block&#39;</span> <span class="ow">in</span> <span class="n">compiled</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">compiled</span><span class="p">[</span><span class="s1">&#39;block&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
+                    <span class="n">comment_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_extract_block_comment_content</span><span class="p">(</span>
+                        <span class="k">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">pattern</span><span class="o">.</span><span class="n">block_start</span><span class="p">,</span> <span class="n">pattern</span><span class="o">.</span><span class="n">block_end</span>
+                    <span class="p">)</span>
+
+                    <span class="k">if</span> <span class="n">comment_text</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_translatable_text</span><span class="p">(</span><span class="n">comment_text</span><span class="p">):</span>
+                        <span class="n">line_num</span> <span class="o">=</span> <span class="n">content</span><span class="p">[:</span><span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">()]</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+                        <span class="n">col_num</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">()</span> <span class="o">-</span> <span class="n">content</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">match</span><span class="o">.</span><span class="n">start</span><span class="p">()))</span>
+
+                        <span class="n">units</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">TranslatableUnit</span><span class="p">(</span>
+                            <span class="n">content</span><span class="o">=</span><span class="n">comment_text</span><span class="p">,</span>
+                            <span class="n">unit_type</span><span class="o">=</span><span class="n">UnitType</span><span class="o">.</span><span class="n">COMMENT</span><span class="p">,</span>
+                            <span class="n">line_number</span><span class="o">=</span><span class="n">line_num</span><span class="p">,</span>
+                            <span class="n">column_number</span><span class="o">=</span><span class="n">col_num</span><span class="p">,</span>
+                            <span class="n">context</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Block comment in </span><span class="si">{</span><span class="n">ext</span><span class="si">}</span><span class="s2"> file&quot;</span><span class="p">,</span>
+                            <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+                                <span class="s1">&#39;original_content&#39;</span><span class="p">:</span> <span class="n">match</span><span class="o">.</span><span class="n">group</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>
+                                <span class="s1">&#39;file_extension&#39;</span><span class="p">:</span> <span class="n">ext</span><span class="p">,</span>
+                                <span class="s1">&#39;comment_type&#39;</span><span class="p">:</span> <span class="s1">&#39;block&#39;</span>
+                            <span class="p">}</span>
+                        <span class="p">))</span>
+
+            <span class="k">return</span> <span class="n">ParseResult</span><span class="p">(</span>
+                <span class="n">units</span><span class="o">=</span><span class="n">units</span><span class="p">,</span>
+                <span class="n">file_type</span><span class="o">=</span><span class="s2">&quot;generic_code&quot;</span><span class="p">,</span>
+                <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span>
+                <span class="n">line_count</span><span class="o">=</span><span class="n">content</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+                <span class="n">metadata</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">&quot;parser&quot;</span><span class="p">:</span> <span class="s2">&quot;GenericCodeParser&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;file_extension&quot;</span><span class="p">:</span> <span class="n">ext</span><span class="p">,</span>
+                    <span class="s2">&quot;language&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_language_name</span><span class="p">(</span><span class="n">ext</span><span class="p">)</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">ParseError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Failed to parse code file </span><span class="si">{</span><span class="n">file_path</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span></div>
+
+
+<div class="viewcode-block" id="GenericCodeParser.reconstruct_file">
+<a class="viewcode-back" href="../../../api/parsers.html#langlint.parsers.generic_code_parser.GenericCodeParser.reconstruct_file">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reconstruct_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">original_content</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">translated_units</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">TranslatableUnit</span><span class="p">],</span>
+        <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Reconstruct the file content with translated units.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            original_content: The original file content</span>
+<span class="sd">            translated_units: List of translated units</span>
+<span class="sd">            file_path: Path to the file</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The reconstructed file content with translations applied</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Create a mapping of original content to translated content</span>
+        <span class="n">translation_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">unit</span> <span class="ow">in</span> <span class="n">translated_units</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">unit</span><span class="o">.</span><span class="n">metadata</span> <span class="ow">and</span> <span class="s1">&#39;original_content&#39;</span> <span class="ow">in</span> <span class="n">unit</span><span class="o">.</span><span class="n">metadata</span><span class="p">:</span>
+                <span class="n">original</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;original_content&#39;</span><span class="p">]</span>
+                <span class="n">translation_map</span><span class="p">[</span><span class="n">original</span><span class="p">]</span> <span class="o">=</span> <span class="n">unit</span><span class="o">.</span><span class="n">content</span>
+
+        <span class="c1"># Replace comments in the content</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">original_content</span>
+        <span class="k">for</span> <span class="n">original</span><span class="p">,</span> <span class="n">translated</span> <span class="ow">in</span> <span class="n">translation_map</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">original</span><span class="p">,</span> <span class="n">translated</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_file_extension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the file extension from a file path.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            file_path: Path to the file</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            File extension (e.g., &#39;.js&#39;)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="s1">&#39;.&#39;</span> <span class="o">+</span> <span class="n">file_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_extract_block_comment_content</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">comment</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">start_pattern</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">end_pattern</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Extract the actual content from a block comment.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            comment: The full block comment</span>
+<span class="sd">            start_pattern: Start pattern (e.g., &#39;/*&#39;)</span>
+<span class="sd">            end_pattern: End pattern (e.g., &#39;*/&#39;)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            The comment content without start/end patterns</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Remove start and end patterns</span>
+        <span class="n">content</span> <span class="o">=</span> <span class="n">comment</span>
+        <span class="k">if</span> <span class="n">content</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">start_pattern</span><span class="p">):</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">start_pattern</span><span class="p">):]</span>
+        <span class="k">if</span> <span class="n">content</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="n">end_pattern</span><span class="p">):</span>
+            <span class="n">content</span> <span class="o">=</span> <span class="n">content</span><span class="p">[:</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">end_pattern</span><span class="p">)]</span>
+
+        <span class="c1"># Clean up the content</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">content</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">cleaned_lines</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+            <span class="c1"># Remove leading asterisks and whitespace (common in block comments)</span>
+            <span class="n">cleaned_line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^\s*\*+\s*&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+            <span class="n">cleaned_lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cleaned_line</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cleaned_lines</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_translatable_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if text should be translated.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text: Text to check</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the text should be translated</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Skip empty or whitespace-only text</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Skip very short text</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Skip text that&#39;s mostly code</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_is_mostly_code</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Skip text that&#39;s mostly punctuation or symbols</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">([</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">text</span> <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">isalnum</span><span class="p">()])</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.3</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Skip URLs and email addresses</span>
+        <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;^https?://|^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$&#39;</span><span class="p">,</span> <span class="n">text</span><span class="o">.</span><span class="n">strip</span><span class="p">()):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="c1"># Only translate text containing non-English (non-ASCII) characters</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_contains_non_english</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_is_mostly_code</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if text is mostly code rather than natural language.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text: Text to check</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the text appears to be mostly code</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check for common code patterns</span>
+        <span class="n">code_patterns</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="sa">r</span><span class="s1">&#39;import\s+&#39;</span><span class="p">,</span>  <span class="c1"># Import statements</span>
+            <span class="sa">r</span><span class="s1">&#39;from\s+&#39;</span><span class="p">,</span>    <span class="c1"># From statements</span>
+            <span class="sa">r</span><span class="s1">&#39;def\s+&#39;</span><span class="p">,</span>     <span class="c1"># Function definitions</span>
+            <span class="sa">r</span><span class="s1">&#39;class\s+&#39;</span><span class="p">,</span>   <span class="c1"># Class definitions</span>
+            <span class="sa">r</span><span class="s1">&#39;function\s+&#39;</span><span class="p">,</span> <span class="c1"># Function definitions</span>
+            <span class="sa">r</span><span class="s1">&#39;var\s+&#39;</span><span class="p">,</span>     <span class="c1"># Variable declarations</span>
+            <span class="sa">r</span><span class="s1">&#39;let\s+&#39;</span><span class="p">,</span>     <span class="c1"># Variable declarations</span>
+            <span class="sa">r</span><span class="s1">&#39;const\s+&#39;</span><span class="p">,</span>   <span class="c1"># Constant declarations</span>
+            <span class="sa">r</span><span class="s1">&#39;if\s*\(&#39;</span><span class="p">,</span>    <span class="c1"># If statements</span>
+            <span class="sa">r</span><span class="s1">&#39;for\s*\(&#39;</span><span class="p">,</span>   <span class="c1"># For loops</span>
+            <span class="sa">r</span><span class="s1">&#39;while\s*\(&#39;</span><span class="p">,</span> <span class="c1"># While loops</span>
+            <span class="sa">r</span><span class="s1">&#39;return\s+&#39;</span><span class="p">,</span>  <span class="c1"># Return statements</span>
+            <span class="sa">r</span><span class="s1">&#39;console\.&#39;</span><span class="p">,</span>  <span class="c1"># Console statements</span>
+            <span class="sa">r</span><span class="s1">&#39;System\.&#39;</span><span class="p">,</span>   <span class="c1"># System statements</span>
+            <span class="sa">r</span><span class="s1">&#39;printf\s*\(&#39;</span><span class="p">,</span> <span class="c1"># Print statements</span>
+            <span class="sa">r</span><span class="s1">&#39;println\s*\(&#39;</span><span class="p">,</span> <span class="c1"># Print statements</span>
+            <span class="sa">r</span><span class="s1">&#39;#include&#39;</span><span class="p">,</span>   <span class="c1"># Include statements</span>
+            <span class="sa">r</span><span class="s1">&#39;using\s+&#39;</span><span class="p">,</span>   <span class="c1"># Using statements</span>
+            <span class="sa">r</span><span class="s1">&#39;namespace\s+&#39;</span><span class="p">,</span> <span class="c1"># Namespace statements</span>
+            <span class="sa">r</span><span class="s1">&#39;public\s+&#39;</span><span class="p">,</span>  <span class="c1"># Public declarations</span>
+            <span class="sa">r</span><span class="s1">&#39;private\s+&#39;</span><span class="p">,</span> <span class="c1"># Private declarations</span>
+            <span class="sa">r</span><span class="s1">&#39;protected\s+&#39;</span><span class="p">,</span> <span class="c1"># Protected declarations</span>
+            <span class="sa">r</span><span class="s1">&#39;static\s+&#39;</span><span class="p">,</span>  <span class="c1"># Static declarations</span>
+            <span class="sa">r</span><span class="s1">&#39;final\s+&#39;</span><span class="p">,</span>   <span class="c1"># Final declarations</span>
+            <span class="sa">r</span><span class="s1">&#39;abstract\s+&#39;</span><span class="p">,</span> <span class="c1"># Abstract declarations</span>
+            <span class="sa">r</span><span class="s1">&#39;interface\s+&#39;</span><span class="p">,</span> <span class="c1"># Interface declarations</span>
+            <span class="sa">r</span><span class="s1">&#39;enum\s+&#39;</span><span class="p">,</span>    <span class="c1"># Enum declarations</span>
+            <span class="sa">r</span><span class="s1">&#39;struct\s+&#39;</span><span class="p">,</span>  <span class="c1"># Struct declarations</span>
+            <span class="sa">r</span><span class="s1">&#39;union\s+&#39;</span><span class="p">,</span>   <span class="c1"># Union declarations</span>
+            <span class="sa">r</span><span class="s1">&#39;typedef\s+&#39;</span><span class="p">,</span> <span class="c1"># Typedef declarations</span>
+            <span class="sa">r</span><span class="s1">&#39;#define&#39;</span><span class="p">,</span>    <span class="c1"># Define statements</span>
+            <span class="sa">r</span><span class="s1">&#39;#ifdef&#39;</span><span class="p">,</span>     <span class="c1"># Ifdef statements</span>
+            <span class="sa">r</span><span class="s1">&#39;#ifndef&#39;</span><span class="p">,</span>    <span class="c1"># Ifndef statements</span>
+            <span class="sa">r</span><span class="s1">&#39;#endif&#39;</span><span class="p">,</span>     <span class="c1"># Endif statements</span>
+            <span class="sa">r</span><span class="s1">&#39;#pragma&#39;</span><span class="p">,</span>    <span class="c1"># Pragma statements</span>
+            <span class="sa">r</span><span class="s1">&#39;#warning&#39;</span><span class="p">,</span>   <span class="c1"># Warning statements</span>
+            <span class="sa">r</span><span class="s1">&#39;#error&#39;</span><span class="p">,</span>     <span class="c1"># Error statements</span>
+        <span class="p">]</span>
+
+        <span class="n">code_count</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="mi">1</span> <span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">code_patterns</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">text</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">code_count</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="o">*</span> <span class="mf">0.3</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_language_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ext</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the human-readable language name for a file extension.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ext: File extension</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Language name</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">language_names</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;.js&#39;</span><span class="p">:</span> <span class="s1">&#39;JavaScript&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.ts&#39;</span><span class="p">:</span> <span class="s1">&#39;TypeScript&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.go&#39;</span><span class="p">:</span> <span class="s1">&#39;Go&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.rs&#39;</span><span class="p">:</span> <span class="s1">&#39;Rust&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.java&#39;</span><span class="p">:</span> <span class="s1">&#39;Java&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.cpp&#39;</span><span class="p">:</span> <span class="s1">&#39;C++&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.c&#39;</span><span class="p">:</span> <span class="s1">&#39;C&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.h&#39;</span><span class="p">:</span> <span class="s1">&#39;C/C++ Header&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.cs&#39;</span><span class="p">:</span> <span class="s1">&#39;C#&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.php&#39;</span><span class="p">:</span> <span class="s1">&#39;PHP&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.rb&#39;</span><span class="p">:</span> <span class="s1">&#39;Ruby&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.sh&#39;</span><span class="p">:</span> <span class="s1">&#39;Shell Script&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.bash&#39;</span><span class="p">:</span> <span class="s1">&#39;Bash&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.zsh&#39;</span><span class="p">:</span> <span class="s1">&#39;Zsh&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.fish&#39;</span><span class="p">:</span> <span class="s1">&#39;Fish&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.sql&#39;</span><span class="p">:</span> <span class="s1">&#39;SQL&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.r&#39;</span><span class="p">:</span> <span class="s1">&#39;R&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.m&#39;</span><span class="p">:</span> <span class="s1">&#39;MATLAB&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.scala&#39;</span><span class="p">:</span> <span class="s1">&#39;Scala&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.kt&#39;</span><span class="p">:</span> <span class="s1">&#39;Kotlin&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.swift&#39;</span><span class="p">:</span> <span class="s1">&#39;Swift&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.dart&#39;</span><span class="p">:</span> <span class="s1">&#39;Dart&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.lua&#39;</span><span class="p">:</span> <span class="s1">&#39;Lua&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.vim&#39;</span><span class="p">:</span> <span class="s1">&#39;Vim Script&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.yaml&#39;</span><span class="p">:</span> <span class="s1">&#39;YAML&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.yml&#39;</span><span class="p">:</span> <span class="s1">&#39;YAML&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.toml&#39;</span><span class="p">:</span> <span class="s1">&#39;TOML&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.ini&#39;</span><span class="p">:</span> <span class="s1">&#39;INI&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.cfg&#39;</span><span class="p">:</span> <span class="s1">&#39;Configuration&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.conf&#39;</span><span class="p">:</span> <span class="s1">&#39;Configuration&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.dockerfile&#39;</span><span class="p">:</span> <span class="s1">&#39;Dockerfile&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.makefile&#39;</span><span class="p">:</span> <span class="s1">&#39;Makefile&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;.cmake&#39;</span><span class="p">:</span> <span class="s1">&#39;CMake&#39;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">language_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ext</span><span class="p">,</span> <span class="s1">&#39;Unknown&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_contains_non_english</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Check if text contains non-English (non-ASCII) characters.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            text: Text to check</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            True if the text contains non-ASCII characters</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Check if any character is outside the ASCII range (0-127)</span>
+        <span class="k">return</span> <span class="nb">any</span><span class="p">(</span><span class="nb">ord</span><span class="p">(</span><span class="n">char</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">127</span> <span class="k">for</span> <span class="n">char</span> <span class="ow">in</span> <span class="n">text</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Zhiang He.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
