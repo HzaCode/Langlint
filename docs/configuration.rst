@@ -202,7 +202,7 @@ Command-line override:
 .. code-block:: bash
 
    # Disable backup (overrides config)
-   langlint fix src/ --no-backup
+   langlint fix src/ -s zh-CN -t en --no-backup
 
 Backup files are created with ``.backup`` extension:
 

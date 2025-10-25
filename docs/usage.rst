@@ -146,10 +146,10 @@ Examples:
 .. code-block:: bash
 
    # Basic translation
-   langlint translate src/ -s zh -t en -o output/
+   langlint translate src/ -s zh-CN -t en -o output/
 
    # Dry run
-   langlint translate src/ -s zh -t en --dry-run
+   langlint translate src/ -s zh-CN -t en --dry-run
 
    # With specific translator (google or mock only)
    langlint translate src/ --translator google
@@ -174,10 +174,10 @@ Examples:
 .. code-block:: bash
 
    # Basic fix
-   langlint fix src/ -s zh -t en
+   langlint fix src/ -s zh-CN -t en
 
    # With specific translator (google or mock only)
-   langlint fix src/ -s zh -t en --translator google
+   langlint fix src/ -s zh-CN -t en --translator google
 
 Advanced Usage
 --------------
@@ -190,10 +190,10 @@ Process multiple files efficiently:
 .. code-block:: bash
 
    # Translate all Python files
-   langlint fix **/*.py -s zh -t en
+   langlint fix **/*.py -s zh-CN -t en
 
    # Translate specific directories
-   langlint fix src/ tests/ docs/ -s zh -t en
+   langlint fix src/ tests/ docs/ -s zh-CN -t en
 
 Language Detection
 ~~~~~~~~~~~~~~~~~~
@@ -241,7 +241,7 @@ LangLint can be used as a Python library:
    # Translate files
    result = langlint_py.translate(
        "example.py",
-       source="zh",
+       source="zh-CN",
        target="en",
        translator="google",
        output="example_en.py",

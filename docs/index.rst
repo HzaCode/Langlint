@@ -15,6 +15,22 @@ LangLint Documentation
    :target: https://opensource.org/licenses/MIT
    :alt: License
 
+.. image:: https://img.shields.io/badge/rust-1.90%2B-orange.svg
+   :target: https://www.rust-lang.org/
+   :alt: Rust
+
+.. image:: https://github.com/HzaCode/Langlint/workflows/CI/badge.svg
+   :target: https://github.com/HzaCode/Langlint/actions
+   :alt: CI
+
+.. image:: https://codecov.io/gh/HzaCode/Langlint/branch/main/graph/badge.svg
+   :target: https://codecov.io/gh/HzaCode/Langlint
+   :alt: codecov
+
+.. image:: https://static.pepy.tech/badge/langlint?style=flat-square
+   :target: https://pepy.tech/project/langlint
+   :alt: Downloads
+
 Quick Start
 -----------
 
@@ -41,10 +57,10 @@ Basic Usage
    langlint scan src/
 
    # Translate (preserve original files)
-   langlint translate src/ -s auto -t en -o output/
+   langlint translate src/ -s zh-CN -t en -o output/
 
    # In-place translation (auto backup)
-   langlint fix src/ -s auto -t en
+   langlint fix src/ -s zh-CN -t en
 
 Features
 --------
