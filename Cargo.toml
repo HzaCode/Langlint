@@ -47,7 +47,7 @@ toml = "0.8"
 serde_yaml = "0.9"
 
 # Python bindings
-pyo3 = { version = "0.20", features = ["extension-module"] }
+pyo3 = { version = "0.21", features = ["extension-module"] }
 
 # Utilities
 rand = "0.8"
