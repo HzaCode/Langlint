@@ -47,10 +47,10 @@ uv tool install langlint
 langlint scan src/
 
 # Translate (preserve original files)
-langlint translate src/ -s auto -t en -o output/
+langlint translate src/ -s zh-CN -t en -o output/
 
 # In-place translation (auto backup)
-langlint fix src/ -s auto -t en
+langlint fix src/ -s zh-CN -t en
 ```
 
 ## 📸 Translation Demo
@@ -156,7 +156,6 @@ langlint fix german_code.py -s de -t zh-CN
 - **Systems**: `.rs` (Rust), `.go`, `.c`, `.cpp`, `.h`, `.hpp`
 - **JVM**: `.java`, `.scala`, `.kt` (Kotlin)
 - **Others**: `.cs`, `.php`, `.rb`, `.swift`, `.dart`, `.lua`, `.sh`, `.bash`, `.sql`, `.r`, `.R`, `.m`, `.vim`
-- **Notebooks**: `.ipynb` (Jupyter) - ✅ Full support in Rust
 
 **What gets translated**: Comments and docstrings in code files. String literals and configuration values are preserved.
 
@@ -193,8 +192,8 @@ langlint translate french_project/ -s fr -o english_project/
 langlint fix src/
 pytest tests/  # Verify code still works
 
-# Scenario 3: Translate Jupyter Notebook
-langlint fix notebooks/ -s zh-CN -t en
+# Scenario 3: Translate JavaScript project
+langlint fix frontend/ -s zh-CN -t en
 ```
 
 ### Advanced Parameters
@@ -543,9 +542,6 @@ jobs:
 
           # Translate JavaScript files
           langlint fix frontend/ -s zh-CN -t en
-
-          # Translate Jupyter Notebooks
-          langlint fix notebooks/ -s zh-CN -t en
 
       - name: Create Pull Request
         uses: peter-evans/create-pull-request@v5
