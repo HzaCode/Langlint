@@ -260,16 +260,14 @@ fn collect_files(path: &Path) -> Result<Vec<PathBuf>> {
             }
             
             let name = e.file_name().to_string_lossy();
-            let should_include = !name.starts_with('.')
+            !name.starts_with('.')
                 && name != "node_modules"
                 && name != "target"
                 && name != "__pycache__"
                 && name != "venv"
                 && name != ".venv"
                 && name != "build"
-                && name != "dist";
-            
-            should_include
+                && name != "dist"
         })
     {
         let entry = entry?;
