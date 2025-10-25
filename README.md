@@ -111,15 +111,10 @@ def apply_discount(price, rate):
 
 **Default: Google Translate, Auto-detect → English** (Free, no API Key required)
 
-<details>
-<summary>Other Translators (OpenAI, DeepL)</summary>
+**Available Translators:**
 
-- `openai` - OpenAI GPT (requires `OPENAI_API_KEY`) - 🚧 Coming soon in Rust version
-- `deepl` - DeepL (requires `DEEPL_API_KEY`) - 🚧 Coming soon in Rust version
-- `google` - Google Translate (Free, no key needed) - ✅ Available now
-- `mock` - Mock translator for testing - ✅ Available now
-
-</details>
+- `google` - Google Translate (Free, no API key needed) ✅
+- `mock` - Mock translator for testing ✅
 
 ## ✨ Key Features
 
@@ -300,7 +295,7 @@ Just put the **`.langlint.yml`** file in the root directory of your project.
 
 ```yaml
 # Global settings
-translator: "google"  # openai, deepl, google, mock
+translator: "google"  # google or mock
 target_lang: "en"
 source_lang: ["zh-CN", "ja", "ko"]
 backup: true  # Create backup files before in-place translation (default: true)
@@ -840,24 +835,8 @@ jobs:
         run: |
           langlint translate src/ -s zh-CN -t en --translator google -o src_en/
 
-      # Coming soon: OpenAI translator
-      # - name: Translate with OpenAI (🚧 Coming in v0.2.0)
-      #   env:
-      #     OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-      #   run: |
-      #     langlint translate src/ -s zh-CN -t en --translator openai -o src_en/
 ```
 
-#### Secrets Management
-
-```yaml
-# Configure in GitHub Secrets
-# Settings > Secrets and variables > Actions > New repository secret
-
-env:
-  OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
-  DEEPL_API_KEY: ${{ secrets.DEEPL_API_KEY }}
-```
 
 Through CI/CD integration, LangLint can become an indispensable part of your development workflow, just like Ruff, automating multilingual code translation and improving team collaboration efficiency!
 
