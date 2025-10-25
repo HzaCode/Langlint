@@ -20,8 +20,6 @@ from rich import print as rprint
 from .core import Dispatcher, Config, Cache
 from .parsers.base import TranslatableUnit
 from .translators.base import Translator
-from .translators.openai_translator import OpenAITranslator, OpenAIConfig
-from .translators.deepl_translator import DeepLTranslator, DeepLConfig
 from .translators.google_translator import GoogleTranslator, GoogleConfig
 from .translators.mock_translator import MockTranslator, MockConfig
 
