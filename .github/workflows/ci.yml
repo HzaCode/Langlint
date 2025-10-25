@@ -48,11 +48,30 @@ jobs:
         path: target
         key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
 
-    - name: Run tests
+    - name: Run Rust tests
       run: cargo test --workspace --verbose --exclude langlint_py
 
     - name: Run clippy
       run: cargo clippy --all-targets --all-features --workspace --exclude langlint_py -- -D warnings
+    
+    - name: Build Python bindings
+      run: cargo build --release -p langlint_py
+    
+    - name: Install Python dependencies
+      run: pip install pytest pytest-cov click
+    
+    - name: Install package
+      run: pip install -e .
+    
+    - name: Run Python tests with coverage
+      run: pytest tests/ --cov=langlint --cov-report=term --cov-report=xml
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        flags: python
+        name: python-${{ matrix.os }}
 
     # Format check disabled - not critical for CI
     # - name: Check formatting

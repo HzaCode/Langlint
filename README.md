@@ -11,15 +11,15 @@
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Rust](https://img.shields.io/badge/rust-1.90%2B-orange.svg)](https://www.rust-lang.org/)
-[![Tests](https://img.shields.io/badge/tests-143%2B-brightgreen.svg)](https://github.com/HzaCode/LangLint)
-[![Coverage](https://img.shields.io/badge/coverage-100%25-brightgreen.svg)](https://github.com/HzaCode/LangLint)
+[![CI](https://github.com/HzaCode/Langlint/workflows/CI/badge.svg)](https://github.com/HzaCode/Langlint/actions)
+[![codecov](https://codecov.io/gh/HzaCode/Langlint/branch/main/graph/badge.svg)](https://codecov.io/gh/HzaCode/Langlint)
 [![Downloads](https://static.pepy.tech/badge/langlint?style=flat-square)](https://pepy.tech/project/langlint)
 
 </div>
 
  **LangLint** is a high-performance, extensible, **Rust-powered, code-aware translation and linting toolkit** for code comments and documentation. It keeps multilingual scientific software docs consistent and reproducible, supporting **FAIR** and open-science practices.
 
-🎉 **v1.0.0 Stable Release:** Production-ready; **10–50× faster**, 143+ tests, **100% coverage**.
+🎉 **v1.0.0 Stable Release:** Production-ready; **10–50× faster**, 21 Python tests + comprehensive Rust tests, **97% Python coverage**.
 
 
 
