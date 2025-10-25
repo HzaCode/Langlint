@@ -57,13 +57,16 @@ jobs:
     - name: Install maturin
       run: pip install maturin
     
-    - name: Build and install Python bindings with Rust extension
+    - name: Build Python bindings with Rust extension
       run: |
         cd crates/langlint_py
-        maturin develop --release
+        maturin build --release
     
     - name: Install Python dependencies
       run: pip install pytest pytest-cov pytest-timeout click
+    
+    - name: Install built wheel
+      run: pip install target/wheels/langlint-*.whl
     
     - name: Run Python tests with coverage
       run: pytest tests/ --cov=langlint --cov-report=term --cov-report=xml
