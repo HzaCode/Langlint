@@ -73,10 +73,11 @@ jobs:
             target: x86_64-pc-windows-msvc
             artifact_name: langlint.exe
             asset_name: langlint-windows-x86_64.exe
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            artifact_name: langlint
-            asset_name: langlint-macos-x86_64
+          # macOS build disabled due to PyO3 linking issues
+          # - os: macos-latest
+          #   target: x86_64-apple-darwin
+          #   artifact_name: langlint
+          #   asset_name: langlint-macos-x86_64
 
     steps:
     - uses: actions/checkout@v4
