@@ -65,13 +65,15 @@ def test_cli_group_exists():
     assert callable(cli)
 
 
+@pytest.mark.timeout(10)  # 10 seconds timeout
 def test_scan_command_execution():
     """Test scan command executes Rust CLI"""
     from click.testing import CliRunner
     from langlint.cli import cli
     
     runner = CliRunner()
-    result = runner.invoke(cli, ['scan', 'langlint/__init__.py'])
+    # Use existing example file instead of langlint/__init__.py
+    result = runner.invoke(cli, ['scan', 'examples/python_translation/example_chinese.py'])
     # Should run without crashing
     assert result.exit_code in [0, 1]  # 0 or error code
 
@@ -128,6 +130,7 @@ def test_find_rust_cli_in_path():
             assert result == '/usr/local/bin/langlint'
 
 
+@pytest.mark.timeout(10)  # 10 seconds timeout
 def test_scan_with_real_file():
     """Test scan command with real file execution"""
     from click.testing import CliRunner
@@ -139,6 +142,7 @@ def test_scan_with_real_file():
     assert result.exit_code == 0
 
 
+@pytest.mark.timeout(15)  # 15 seconds timeout (translation might take longer)
 def test_translate_with_mock():
     """Test translate command execution"""
     from click.testing import CliRunner
@@ -170,6 +174,7 @@ def test_translate_with_mock():
             pass
 
 
+@pytest.mark.timeout(15)  # 15 seconds timeout (fix might take longer)
 def test_fix_with_mock():
     """Test fix command execution"""
     from click.testing import CliRunner
