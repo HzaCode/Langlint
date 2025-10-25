@@ -128,26 +128,25 @@ Found 25 translatable units in 5 files
 <section id="translate">
 <h3>translate<a class="headerlink" href="#translate" title="Link to this heading"></a></h3>
 <p>Translate files to a new directory (preserves originals):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>langlint<span class="w"> </span>translate<span class="w"> </span>path/to/files<span class="w"> </span>-s<span class="w"> </span>auto<span class="w"> </span>-t<span class="w"> </span>en<span class="w"> </span>-o<span class="w"> </span>output/
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>langlint<span class="w"> </span>translate<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>zh-CN<span class="w"> </span>-t<span class="w"> </span>en<span class="w"> </span>-o<span class="w"> </span>output/
 </pre></div>
 </div>
 <p>This will:</p>
 <ol class="arabic simple">
-<li><p>Auto-detect the source language</p></li>
-<li><p>Translate to English</p></li>
+<li><p>Translate Chinese to English</p></li>
 <li><p>Save results to the <code class="docutils literal notranslate"><span class="pre">output/</span></code> directory</p></li>
+<li><p>Preserve original files</p></li>
 </ol>
 </section>
 <section id="fix">
 <h3>fix<a class="headerlink" href="#fix" title="Link to this heading"></a></h3>
 <p>Translate files in-place (creates automatic backups):</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>langlint<span class="w"> </span>fix<span class="w"> </span>path/to/files<span class="w"> </span>-s<span class="w"> </span>auto<span class="w"> </span>-t<span class="w"> </span>en
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>langlint<span class="w"> </span>fix<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>zh-CN<span class="w"> </span>-t<span class="w"> </span>en
 </pre></div>
 </div>
 <p>This will:</p>
 <ol class="arabic simple">
-<li><p>Auto-detect the source language</p></li>
-<li><p>Translate to English</p></li>
+<li><p>Translate Chinese to English</p></li>
 <li><p>Update files in-place</p></li>
 <li><p>Create <code class="docutils literal notranslate"><span class="pre">.backup</span></code> backup files</p></li>
 </ol>
@@ -167,7 +166,7 @@ Found 25 translatable units in 5 files
 </pre></div>
 </div>
 <p><strong>Translate</strong>:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>langlint<span class="w"> </span>fix<span class="w"> </span>example.py<span class="w"> </span>-s<span class="w"> </span>zh<span class="w"> </span>-t<span class="w"> </span>en
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>langlint<span class="w"> </span>fix<span class="w"> </span>example.py<span class="w"> </span>-s<span class="w"> </span>zh-CN<span class="w"> </span>-t<span class="w"> </span>en
 </pre></div>
 </div>
 <p><strong>After</strong>:</p>
@@ -189,7 +188,7 @@ Found 25 translatable units in 5 files
 langlint<span class="w"> </span>scan<span class="w"> </span>src/
 
 <span class="c1"># Translate all Python files</span>
-langlint<span class="w"> </span>fix<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>zh<span class="w"> </span>-t<span class="w"> </span>en
+langlint<span class="w"> </span>fix<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>zh-CN<span class="w"> </span>-t<span class="w"> </span>en
 </pre></div>
 </div>
 </section>

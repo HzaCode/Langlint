@@ -31,13 +31,13 @@ Translate files to a new directory (preserves originals):
 
 .. code-block:: bash
 
-   langlint translate path/to/files -s auto -t en -o output/
+   langlint translate src/ -s zh-CN -t en -o output/
 
 This will:
 
-1. Auto-detect the source language
-2. Translate to English
-3. Save results to the ``output/`` directory
+1. Translate Chinese to English
+2. Save results to the ``output/`` directory
+3. Preserve original files
 
 fix
 ~~~
@@ -46,14 +46,13 @@ Translate files in-place (creates automatic backups):
 
 .. code-block:: bash
 
-   langlint fix path/to/files -s auto -t en
+   langlint fix src/ -s zh-CN -t en
 
 This will:
 
-1. Auto-detect the source language
-2. Translate to English
-3. Update files in-place
-4. Create ``.backup`` backup files
+1. Translate Chinese to English
+2. Update files in-place
+3. Create ``.backup`` backup files
 
 Simple Example
 --------------
@@ -76,7 +75,7 @@ Let's translate a Python file with Chinese comments:
 
 .. code-block:: bash
 
-   langlint fix example.py -s zh -t en
+   langlint fix example.py -s zh-CN -t en
 
 **After**:
 
@@ -102,7 +101,7 @@ Internationalize a Project
    langlint scan src/
 
    # Translate all Python files
-   langlint fix src/ -s zh -t en
+   langlint fix src/ -s zh-CN -t en
 
 Multi-language Support
 ~~~~~~~~~~~~~~~~~~~~~~

@@ -267,10 +267,10 @@ langlint<span class="w"> </span>scan<span class="w"> </span>.<span class="w"> </
 </ul>
 <p>Examples:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Basic translation</span>
-langlint<span class="w"> </span>translate<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>zh<span class="w"> </span>-t<span class="w"> </span>en<span class="w"> </span>-o<span class="w"> </span>output/
+langlint<span class="w"> </span>translate<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>zh-CN<span class="w"> </span>-t<span class="w"> </span>en<span class="w"> </span>-o<span class="w"> </span>output/
 
 <span class="c1"># Dry run</span>
-langlint<span class="w"> </span>translate<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>zh<span class="w"> </span>-t<span class="w"> </span>en<span class="w"> </span>--dry-run
+langlint<span class="w"> </span>translate<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>zh-CN<span class="w"> </span>-t<span class="w"> </span>en<span class="w"> </span>--dry-run
 
 <span class="c1"># With specific translator (google or mock only)</span>
 langlint<span class="w"> </span>translate<span class="w"> </span>src/<span class="w"> </span>--translator<span class="w"> </span>google
@@ -292,10 +292,10 @@ langlint<span class="w"> </span>translate<span class="w"> </span>src/<span class
 </ul>
 <p>Examples:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Basic fix</span>
-langlint<span class="w"> </span>fix<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>zh<span class="w"> </span>-t<span class="w"> </span>en
+langlint<span class="w"> </span>fix<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>zh-CN<span class="w"> </span>-t<span class="w"> </span>en
 
 <span class="c1"># With specific translator (google or mock only)</span>
-langlint<span class="w"> </span>fix<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>zh<span class="w"> </span>-t<span class="w"> </span>en<span class="w"> </span>--translator<span class="w"> </span>google
+langlint<span class="w"> </span>fix<span class="w"> </span>src/<span class="w"> </span>-s<span class="w"> </span>zh-CN<span class="w"> </span>-t<span class="w"> </span>en<span class="w"> </span>--translator<span class="w"> </span>google
 </pre></div>
 </div>
 </section>
@@ -306,10 +306,10 @@ langlint<span class="w"> </span>fix<span class="w"> </span>src/<span class="w"> 
 <h3>Batch Processing<a class="headerlink" href="#batch-processing" title="Link to this heading"></a></h3>
 <p>Process multiple files efficiently:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Translate all Python files</span>
-langlint<span class="w"> </span>fix<span class="w"> </span>**/*.py<span class="w"> </span>-s<span class="w"> </span>zh<span class="w"> </span>-t<span class="w"> </span>en
+langlint<span class="w"> </span>fix<span class="w"> </span>**/*.py<span class="w"> </span>-s<span class="w"> </span>zh-CN<span class="w"> </span>-t<span class="w"> </span>en
 
 <span class="c1"># Translate specific directories</span>
-langlint<span class="w"> </span>fix<span class="w"> </span>src/<span class="w"> </span>tests/<span class="w"> </span>docs/<span class="w"> </span>-s<span class="w"> </span>zh<span class="w"> </span>-t<span class="w"> </span>en
+langlint<span class="w"> </span>fix<span class="w"> </span>src/<span class="w"> </span>tests/<span class="w"> </span>docs/<span class="w"> </span>-s<span class="w"> </span>zh-CN<span class="w"> </span>-t<span class="w"> </span>en
 </pre></div>
 </div>
 </section>
@@ -352,7 +352,7 @@ langlint<span class="w"> </span>scan<span class="w"> </span>.<span class="w"> </
 <span class="c1"># Translate files</span>
 <span class="n">result</span> <span class="o">=</span> <span class="n">langlint_py</span><span class="o">.</span><span class="n">translate</span><span class="p">(</span>
     <span class="s2">&quot;example.py&quot;</span><span class="p">,</span>
-    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;zh&quot;</span><span class="p">,</span>
+    <span class="n">source</span><span class="o">=</span><span class="s2">&quot;zh-CN&quot;</span><span class="p">,</span>
     <span class="n">target</span><span class="o">=</span><span class="s2">&quot;en&quot;</span><span class="p">,</span>
     <span class="n">translator</span><span class="o">=</span><span class="s2">&quot;google&quot;</span><span class="p">,</span>
     <span class="n">output</span><span class="o">=</span><span class="s2">&quot;example_en.py&quot;</span><span class="p">,</span>

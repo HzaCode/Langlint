@@ -103,16 +103,16 @@ Translate files to a new directory.
    langlint translate src/ -t en -o output/
 
    # Specify source language
-   langlint translate src/ -s zh -t en -o output/
+   langlint translate src/ -s zh-CN -t en -o output/
 
    # Dry run to preview
-   langlint translate src/ -s zh -t en --dry-run
+   langlint translate src/ -s zh-CN -t en --dry-run
 
    # With exclusions
-   langlint translate . -s zh -t en -o output/ -e "**/test_*"
+   langlint translate . -s zh-CN -t en -o output/ -e "**/test_*"
 
    # Use mock translator for testing
-   langlint translate src/ -s zh -t en --translator mock
+   langlint translate src/ -s zh-CN -t en --translator mock
 
 fix
 ~~~
@@ -143,13 +143,13 @@ Translate files in-place (creates automatic backups).
    langlint fix src/ -t en
 
    # Specify source language
-   langlint fix src/ -s zh -t en
+   langlint fix src/ -s zh-CN -t en
 
    # With specific translator
-   langlint fix src/ -s zh -t en --translator google
+   langlint fix src/ -s zh-CN -t en --translator google
 
    # With custom patterns
-   langlint fix . -s zh -t en -i "**/*.py" -e "**/test_*"
+   langlint fix . -s zh-CN -t en -i "**/*.py" -e "**/test_*"
 
 **Note:** The fix command will prompt for confirmation before modifying files. Backup files with ``.backup`` extension are created automatically.
 
