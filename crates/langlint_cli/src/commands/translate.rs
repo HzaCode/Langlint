@@ -44,8 +44,8 @@ pub async fn execute(
 
     // Read file
     let path_obj = Path::new(path);
-    let content = fs::read_to_string(path_obj)
-        .with_context(|| format!("Failed to read file: {}", path))?;
+    let content =
+        fs::read_to_string(path_obj).with_context(|| format!("Failed to read file: {}", path))?;
 
     if verbose {
         println!("{} File loaded ({} bytes)", "✓".green(), content.len());
@@ -60,11 +60,7 @@ pub async fn execute(
         return Ok(());
     }
 
-    println!(
-        "{} Found {} translatable units",
-        "✓".green(),
-        unit_count
-    );
+    println!("{} Found {} translatable units", "✓".green(), unit_count);
 
     // Translate units (with parallel processing for better performance)
     let progress = if !verbose && !dry_run {
@@ -112,12 +108,7 @@ pub async fn execute(
                     translated_units.push(result);
                 }
                 Err(e) => {
-                    eprintln!(
-                        "{} Failed to translate unit {}: {}",
-                        "✗".red(),
-                        i + 1,
-                        e
-                    );
+                    eprintln!("{} Failed to translate unit {}: {}", "✗".red(), i + 1, e);
                     // Continue with next unit
                 }
             }
@@ -154,7 +145,7 @@ pub async fn execute(
 
     // Write output
     let output_path = output.unwrap_or(path);
-    
+
     if output_path != path {
         // Writing to different file
         fs::write(output_path, &reconstructed_content)
@@ -169,10 +160,10 @@ pub async fn execute(
         let backup_path = format!("{}.backup", path);
         fs::copy(path, &backup_path)
             .with_context(|| format!("Failed to create backup: {}", backup_path))?;
-        
+
         fs::write(output_path, &reconstructed_content)
             .with_context(|| format!("Failed to write to: {}", output_path))?;
-        
+
         println!(
             "{} File translated in-place (backup: {})",
             "✓".green(),

@@ -24,20 +24,23 @@ pub async fn execute(
 ) -> Result<()> {
     // Load config to get backup preference (if not overridden by CLI)
     let config = Config::find_and_load().unwrap_or_default();
-    
+
     // Command line --no-backup flag overrides config file
     let should_backup = if no_backup {
-        false  // Explicit --no-backup flag
+        false // Explicit --no-backup flag
     } else {
-        config.backup  // Use config file setting (default: true)
+        config.backup // Use config file setting (default: true)
     };
-    
+
     if verbose {
         println!("{} {}", "Fixing (in-place translate):".bold().cyan(), path);
         println!("  Source language: {}", source);
         println!("  Target language: {}", target);
         println!("  Translator: {}", translator_name);
-        println!("  Backup: {}", if should_backup { "enabled" } else { "disabled" });
+        println!(
+            "  Backup: {}",
+            if should_backup { "enabled" } else { "disabled" }
+        );
     }
 
     // Create translator
@@ -52,10 +55,10 @@ pub async fn execute(
     }
 
     let path_obj = Path::new(path);
-    
+
     // Collect files to translate
     let files = collect_files(path_obj)?;
-    
+
     if files.is_empty() {
         println!("{} No translatable files found", "!".yellow());
         return Ok(());
@@ -68,11 +71,17 @@ pub async fn execute(
     // Confirm before proceeding
     if !yes && !files.is_empty() {
         if should_backup {
-            println!("\n{} About to translate {} files in-place (backups will be created)", 
-                "⚠".yellow(), files.len());
+            println!(
+                "\n{} About to translate {} files in-place (backups will be created)",
+                "⚠".yellow(),
+                files.len()
+            );
         } else {
-            println!("\n{} About to translate {} files in-place (⚠️  NO BACKUP will be created)", 
-                "⚠".yellow(), files.len());
+            println!(
+                "\n{} About to translate {} files in-place (⚠️  NO BACKUP will be created)",
+                "⚠".yellow(),
+                files.len()
+            );
         }
         println!("  Press Enter to continue, Ctrl+C to cancel...");
         let mut input = String::new();
@@ -96,7 +105,16 @@ pub async fn execute(
         let filename = file_path.file_name().unwrap().to_string_lossy();
         pb.set_message(format!("Translating {}", filename));
 
-        match translate_file(file_path, source, target, translator.as_ref(), should_backup, verbose).await {
+        match translate_file(
+            file_path,
+            source,
+            target,
+            translator.as_ref(),
+            should_backup,
+            verbose,
+        )
+        .await
+        {
             Ok(units) => {
                 if units > 0 {
                     translated_count += 1;
@@ -137,11 +155,15 @@ pub async fn execute(
     }
 
     if should_backup {
-        println!("\n{} Translation complete! Backups created with .backup extension", 
-            "✓".green().bold());
+        println!(
+            "\n{} Translation complete! Backups created with .backup extension",
+            "✓".green().bold()
+        );
     } else {
-        println!("\n{} Translation complete! (No backups created)", 
-            "✓".green().bold());
+        println!(
+            "\n{} Translation complete! (No backups created)",
+            "✓".green().bold()
+        );
     }
 
     Ok(())
@@ -178,7 +200,9 @@ async fn translate_file(
     }
 
     // Translate all units
-    let texts: Vec<String> = parse_result.units.iter()
+    let texts: Vec<String> = parse_result
+        .units
+        .iter()
         .map(|u| u.content.clone())
         .collect();
 
@@ -197,15 +221,15 @@ async fn translate_file(
         let backup_path = format!("{}.backup", path.display());
         fs::copy(path, &backup_path)
             .with_context(|| format!("Failed to create backup: {}", backup_path))?;
-        
+
         if verbose {
             println!("  {} Backup created: {}", "✓".green(), backup_path);
         }
     }
 
     // Reconstruct file with translations
-    let parser = get_parser_for_file(&path_str)
-        .ok_or_else(|| anyhow::anyhow!("No parser available"))?;
+    let parser =
+        get_parser_for_file(&path_str).ok_or_else(|| anyhow::anyhow!("No parser available"))?;
     let reconstructed = parser.reconstruct(&content, &translated_units, &path_str)?;
 
     // Write back to original file
@@ -257,10 +281,33 @@ fn should_translate(path: &Path) -> bool {
         let ext_str = ext.to_string_lossy();
         matches!(
             ext_str.as_ref(),
-            "py" | "js" | "ts" | "jsx" | "tsx" | "rs" | "go" | "java" | 
-            "c" | "cpp" | "h" | "hpp" | "cs" | "php" | "rb" | "sh" | "bash" |
-            "sql" | "r" | "R" | "m" | "scala" | "kt" | "swift" | "dart" | 
-            "lua" | "vim" | "ipynb"
+            "py" | "js"
+                | "ts"
+                | "jsx"
+                | "tsx"
+                | "rs"
+                | "go"
+                | "java"
+                | "c"
+                | "cpp"
+                | "h"
+                | "hpp"
+                | "cs"
+                | "php"
+                | "rb"
+                | "sh"
+                | "bash"
+                | "sql"
+                | "r"
+                | "R"
+                | "m"
+                | "scala"
+                | "kt"
+                | "swift"
+                | "dart"
+                | "lua"
+                | "vim"
+                | "ipynb"
         )
     } else {
         false

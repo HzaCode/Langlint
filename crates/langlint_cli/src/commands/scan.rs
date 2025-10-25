@@ -25,10 +25,10 @@ pub async fn execute(
     }
 
     let path_obj = Path::new(path);
-    
+
     // Collect files to scan
     let files = collect_files(path_obj, include.as_ref(), exclude.as_ref())?;
-    
+
     if verbose {
         println!("{} {} files found", "Total:".bold(), files.len());
     }
@@ -46,15 +46,11 @@ pub async fn execute(
             Ok(result) => {
                 let units_count = result.units.len();
                 total_units += units_count;
-                
+
                 if verbose && units_count > 0 {
-                    println!(
-                        "  {} {} translatable units",
-                        "Found:".green(),
-                        units_count
-                    );
+                    println!("  {} {} translatable units", "Found:".green(), units_count);
                 }
-                
+
                 all_results.push((file_path.clone(), result));
             }
             Err(e) => {
@@ -78,7 +74,7 @@ pub async fn execute(
 
     // Output results
     let output_content = format_results(&all_results, format, verbose)?;
-    
+
     // Write to file or stdout
     if let Some(output_path) = output {
         fs::write(output_path, &output_content)
@@ -130,7 +126,7 @@ fn collect_files(
         let entry = entry?;
         if entry.file_type().is_file() {
             let file_path = entry.path();
-            
+
             // Apply include/exclude patterns
             if should_include_file(file_path, include, exclude) {
                 files.push(file_path.to_path_buf());
@@ -177,7 +173,7 @@ async fn scan_file(path: &Path) -> Result<ParseResult> {
         .with_context(|| format!("Failed to read file: {}", path.display()))?;
 
     let path_str = path.to_string_lossy();
-    
+
     // Try Python parser first
     let python_parser = PythonParser::new();
     if python_parser.can_parse(&path_str, Some(&content)) {
@@ -214,7 +210,9 @@ fn filter_by_unit_types(
         .map(|(path, mut result)| {
             result.units.retain(|unit| {
                 let unit_type_str = format!("{:?}", unit.unit_type).to_lowercase();
-                types.iter().any(|t| unit_type_str.contains(&t.to_lowercase()))
+                types
+                    .iter()
+                    .any(|t| unit_type_str.contains(&t.to_lowercase()))
             });
             (path, result)
         })
@@ -340,7 +338,7 @@ fn format_text(results: &[(PathBuf, ParseResult)], verbose: bool) -> Result<Stri
                     "    Location: line {}, column {}\n",
                     unit.line_number, unit.column_number
                 ));
-                
+
                 // Truncate long content
                 let content = if unit.content.len() > 100 {
                     format!("{}...", &unit.content[..100])
@@ -354,4 +352,3 @@ fn format_text(results: &[(PathBuf, ParseResult)], verbose: bool) -> Result<Stri
 
     Ok(output)
 }
-

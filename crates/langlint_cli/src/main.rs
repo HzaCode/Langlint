@@ -6,7 +6,7 @@ use colored::Colorize;
 
 mod commands;
 
-use commands::{scan, translate, fix};
+use commands::{fix, scan, translate};
 
 /// Langlint - Intelligent translation management for code and documentation
 #[derive(Parser)]
@@ -159,23 +159,23 @@ async fn main() -> Result<()> {
             )
             .await
         }
-        Commands::Fix { 
-            path, 
-            source, 
-            target, 
-            translator, 
+        Commands::Fix {
+            path,
+            source,
+            target,
+            translator,
             yes,
             no_backup,
         } => {
             fix::execute(
-                &path, 
-                &source, 
-                &target, 
-                &translator, 
+                &path,
+                &source,
+                &target,
+                &translator,
                 yes,
                 no_backup,
-                &cli.format, 
-                cli.verbose
+                &cli.format,
+                cli.verbose,
             )
             .await
         }
