@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "langlint"
-version = "1.0.0"
+version = "1.0.1"
 description = "A scalable, domain-agnostic platform for automated translation and standardization of structured text in scientific collaboration"
 authors = [{name = "Zhiang He", email = "ang@hezhiang.com"}]
 maintainers = [{name = "Zhiang He", email = "ang@hezhiang.com"}]

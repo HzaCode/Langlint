@@ -5,7 +5,7 @@ All core functionality is implemented in Rust (langlint_py).
 This Python package provides a CLI wrapper for ease of use.
 """
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __author__ = "Zhiang He"
 __email__ = "ang@hezhiang.com"
 __license__ = "MIT"
