@@ -52,7 +52,7 @@ venv/
 
 # Rust
 target/
-Cargo.lock
+# Note: Cargo.lock is tracked for this binary/CLI project to ensure reproducible builds
 
 # Backup files
 *.backup
