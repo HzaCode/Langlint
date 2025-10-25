@@ -924,6 +924,15 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
+## 🔒 Privacy
+
+LangLint respects your privacy. We follow a **local-first** approach:
+- ✅ No telemetry, tracking, or analytics
+- ✅ Your code stays on your machine
+- ✅ Translation data only sent to APIs you explicitly choose to use
+
+For complete details, see our [Privacy Policy](PRIVACY.md).
+
 ## 📞 Contact & Links
 
 - **Homepage**: [https://github.com/HzaCode/Langlint](https://github.com/HzaCode/Langlint)
