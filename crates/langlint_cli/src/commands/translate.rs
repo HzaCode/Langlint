@@ -137,17 +137,19 @@ pub async fn execute(
     }
 
     // Reconstruct file with translations
-    let mut reconstructed_content = content.clone();
-
-    // Replace units with translations (in reverse order to preserve positions)
-    for (unit, translation) in parse_result
-        .units
-        .iter()
-        .zip(translated_units.iter())
-        .rev()
-    {
-        reconstructed_content = reconstructed_content.replace(&unit.content, &translation.translated_text);
+    // Create translated units with updated content
+    let mut translated_result_units = Vec::new();
+    for (unit, translation) in parse_result.units.iter().zip(translated_units.iter()) {
+        let mut translated_unit = unit.clone();
+        translated_unit.content = translation.translated_text.clone();
+        translated_result_units.push(translated_unit);
     }
+
+    // Use parser's reconstruct method for proper handling
+    let parser = get_parser_for_file(path)?;
+    let reconstructed_content = parser
+        .reconstruct(&content, &translated_result_units, path)
+        .with_context(|| "Failed to reconstruct file with translations")?;
 
     // Write output
     let output_path = output.unwrap_or(path);

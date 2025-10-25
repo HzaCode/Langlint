@@ -139,12 +139,20 @@ impl Parser for PythonParser {
                 if let Some(docstring_text) = caps.get(1) {
                     let text = docstring_text.as_str().trim();
                     if self.is_translatable(text) {
+                        // Detect quote style
+                        let quote_style = if line.trim_start().starts_with(r#"""""#) {
+                            r#"""""#
+                        } else {
+                            "'''"
+                        };
+                        
                         let mut unit = TranslatableUnit::new(
                             text.to_string(),
                             UnitType::Docstring,
                             line_num,
                             1,
                         )
+                        .with_metadata(serde_json::json!({"quote_style": quote_style}))
                         .with_context(format!("Docstring at line {}", line_num))
                         .with_priority(Priority::High);
 
@@ -215,7 +223,11 @@ impl Parser for PythonParser {
                             start_line,
                             1,  // column
                         )
-                        .with_metadata(serde_json::json!({"span": span, "end_line": end_line}))
+                        .with_metadata(serde_json::json!({
+                            "span": span,
+                            "end_line": end_line,
+                            "quote_style": quote
+                        }))
                         .with_context(format!("Multi-line docstring at lines {}-{}", start_line, end_line))
                         .with_priority(Priority::High);
 
@@ -267,7 +279,20 @@ impl Parser for PythonParser {
             }
             // Replace docstrings
             else if unit.unit_type == UnitType::Docstring {
-                let quote_style = if line.contains(r#"""""#) { r#"""""# } else { "'''" };
+                // Get quote style from metadata, or detect from line
+                let quote_style = unit.metadata.as_ref()
+                    .and_then(|m| m.get("quote_style"))
+                    .and_then(|q| q.as_str())
+                    .map(|s| s.to_string())
+                    .unwrap_or_else(|| {
+                        // Fallback: detect from line
+                        if line.contains(r#"""""#) {
+                            r#"""""#.to_string()
+                        } else {
+                            "'''".to_string()
+                        }
+                    });
+                
                 let indent = line.chars().take_while(|c| c.is_whitespace()).collect::<String>();
                 
                 // Check if it's multi-line (has span metadata)
