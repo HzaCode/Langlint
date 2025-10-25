@@ -86,7 +86,8 @@ impl NotebookParser {
     /// Check if text is translatable (not code, URL, etc.)
     fn is_translatable(&self, text: &str) -> bool {
         // Skip short texts
-        if text.len() < 3 {
+        let char_count = text.chars().count();
+        if char_count < 3 {
             return false;
         }
 
@@ -108,8 +109,18 @@ impl NotebookParser {
         }
 
         // Skip if mostly non-alphabetic
-        let alpha_count = text.chars().filter(|c| c.is_alphabetic()).count();
-        if alpha_count < text.len() / 2 {
+        // Count alphabetic chars AND CJK characters (Chinese, Japanese, Korean)
+        let alpha_count = text
+            .chars()
+            .filter(|c| {
+                c.is_alphabetic() ||
+            ('\u{4E00}'..='\u{9FFF}').contains(c) ||  // CJK Unified Ideographs
+            ('\u{3400}'..='\u{4DBF}').contains(c) ||  // CJK Extension A
+            ('\u{3040}'..='\u{30FF}').contains(c) ||  // Hiragana + Katakana
+            ('\u{AC00}'..='\u{D7AF}').contains(c) // Hangul
+            })
+            .count();
+        if alpha_count < char_count / 2 {
             return false;
         }
 
@@ -235,7 +246,8 @@ mod tests {
     #[test]
     fn test_is_translatable() {
         let parser = NotebookParser::new();
-        assert!(parser.is_translatable("This is a comment"));
+        assert!(parser.is_translatable("\u{8FD9}\u{662F}\u{4E00}\u{4E2A}\u{6CE8}\u{91CA}")); // 这是一个注释
+        assert!(!parser.is_translatable("This is a comment")); // English filtered
         assert!(!parser.is_translatable("import numpy as np"));
         assert!(!parser.is_translatable("x = 5"));
         assert!(!parser.is_translatable("https://example.com"));
@@ -259,7 +271,7 @@ mod tests {
     #[test]
     fn test_extract_code_comment() {
         let parser = NotebookParser::new();
-        let notebook_json = "{\"cells\":[{\"cell_type\":\"code\",\"source\":[\"# comment\"]}]}";
+        let notebook_json = "{\"cells\":[{\"cell_type\":\"code\",\"source\":[\"# \u{8FD9}\u{662F}\u{6CE8}\u{91CA}\"]}]}"; // 这是注释
         let result = parser.extract_units(notebook_json, "test.ipynb").unwrap();
         assert!(!result.units.is_empty());
     }
@@ -283,7 +295,7 @@ mod tests {
     #[test]
     fn test_extract_multiline_source() {
         let parser = NotebookParser::new();
-        let notebook_json = "{\"cells\":[{\"cell_type\":\"code\",\"source\":[\"# comment\"]}]}";
+        let notebook_json = "{\"cells\":[{\"cell_type\":\"code\",\"source\":[\"# \u{591A}\u{884C}\u{6CE8}\u{91CA}\"]}]}"; // 多行注释
         let result = parser.extract_units(notebook_json, "test.ipynb").unwrap();
         assert!(!result.units.is_empty());
     }

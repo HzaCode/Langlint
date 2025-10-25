@@ -345,7 +345,7 @@ mod tests {
     fn test_extract_javascript_comment() {
         let parser = GenericCodeParser::new();
         let content = r#"
-// This is a comment
+// 这是一个注释
 function foo() {
     return 42;
 }
@@ -353,15 +353,15 @@ function foo() {
 
         let result = parser.extract_units(content, "test.js").unwrap();
         assert!(!result.units.is_empty());
-        assert!(result.units[0].content.contains("This is a comment"));
+        assert!(result.units[0].content.contains("这是一个注释"));
     }
 
     #[test]
     fn test_extract_multiline_comment() {
         let parser = GenericCodeParser::new();
         let content = r#"
-/* This is a 
-   multi-line comment */
+/* 这是一个
+   多行注释 */
 function foo() {
     return 42;
 }
@@ -375,7 +375,8 @@ function foo() {
     fn test_is_translatable() {
         let parser = GenericCodeParser::new();
 
-        assert!(parser.is_translatable("This is a normal comment"));
+        assert!(parser.is_translatable("这是一个普通注释"));
+        assert!(!parser.is_translatable("This is a normal comment")); // English filtered
         assert!(!parser.is_translatable("TODO"));
         assert!(!parser.is_translatable("http://example.com"));
         assert!(!parser.is_translatable("a")); // Too short
@@ -384,10 +385,10 @@ function foo() {
     #[test]
     fn test_extract_go_comment() {
         let parser = GenericCodeParser::new();
-        let content = r#"// Package comment
+        let content = r#"// 包注释
 package main
 func main() {
-    // Function comment
+    // 函数注释
     println("Hello")
 }
 "#;
@@ -455,14 +456,14 @@ int main() {
     #[test]
     fn test_reconstruct_simple() {
         let parser = GenericCodeParser::new();
-        let original = "// Old\ncode();";
+        let original = "// 旧注释\ncode();";
         let mut result = parser.extract_units(original, "test.js").unwrap();
         if let Some(unit) = result.units.first_mut() {
-            unit.content = "New".to_string();
+            unit.content = "新注释".to_string();
         }
         let reconstructed = parser
             .reconstruct(original, &result.units, "test.js")
             .unwrap();
-        assert!(reconstructed.contains("New"));
+        assert!(reconstructed.contains("新注释"));
     }
 }
