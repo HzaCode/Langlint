@@ -362,6 +362,10 @@ class PythonParser(Parser):
         if self._is_url_or_email(text):
             return False
 
+        # Only translate text containing non-English (non-ASCII) characters
+        if not self._contains_non_english(text):
+            return False
+
         return True
 
     def _is_mostly_code(self, text: str) -> bool:
@@ -603,6 +607,19 @@ class PythonParser(Parser):
         email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
 
         return bool(re.match(url_pattern, text.strip()) or re.match(email_pattern, text.strip()))
+
+    def _contains_non_english(self, text: str) -> bool:
+        """
+        Check if text contains non-English (non-ASCII) characters.
+
+        Args:
+            text: Text to check
+
+        Returns:
+            True if the text contains non-ASCII characters
+        """
+        # Check if any character is outside the ASCII range (0-127)
+        return any(ord(char) > 127 for char in text)
 
     def _rebuild_string_token(self, original_token: str, translated_content: str) -> str:
         """
