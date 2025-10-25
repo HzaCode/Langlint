@@ -76,11 +76,20 @@ jobs:
         WHEEL=$(find target/wheels -name "langlint-*.whl" | head -n 1)
         if [ -f "$WHEEL" ]; then
           echo "Installing $WHEEL"
-          pip install "$WHEEL"
+          pip install --force-reinstall "$WHEEL"
         else
           echo "ERROR: Wheel file not found!"
           exit 1
         fi
+    
+    - name: Verify installation (debug)
+      run: |
+        echo "Python packages:"
+        pip list | grep langlint
+        echo "Trying to import langlint_py:"
+        python -c "import langlint_py; print('✓ langlint_py imported successfully'); print('Version:', langlint_py.version())" || echo "✗ Failed to import langlint_py"
+        echo "Trying to import langlint:"
+        python -c "import langlint; print('HAS_RUST:', langlint.HAS_RUST)"
     
     - name: Run Python tests with coverage
       run: pytest tests/ --cov=langlint --cov-report=term --cov-report=xml
