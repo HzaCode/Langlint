@@ -84,7 +84,17 @@ impl GenericCodeParser {
             return false;
         }
 
+        // Only translate text containing non-ASCII (non-English) characters
+        if !self.contains_non_ascii(text) {
+            return false;
+        }
+
         true
+    }
+
+    /// Check if text contains non-ASCII characters
+    fn contains_non_ascii(&self, text: &str) -> bool {
+        text.chars().any(|c| c as u32 > 127)
     }
 }
 
