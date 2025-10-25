@@ -8,22 +8,22 @@ use std::path::{Path, PathBuf};
 pub struct Config {
     #[serde(default)]
     pub include: Vec<String>,
-    
+
     #[serde(default)]
     pub exclude: Vec<String>,
-    
+
     #[serde(default = "default_source_lang")]
     pub source_lang: Vec<String>,
-    
+
     #[serde(default = "default_target_lang")]
     pub target_lang: String,
-    
+
     #[serde(default = "default_translator")]
     pub translator: String,
-    
+
     #[serde(default)]
     pub dry_run: bool,
-    
+
     #[serde(default = "default_backup")]
     pub backup: bool,
 }
@@ -218,7 +218,7 @@ mod tests {
         let config = Config::default();
         let json = serde_json::to_string_pretty(&config).unwrap();
         let deserialized: Config = serde_json::from_str(&json).unwrap();
-        
+
         assert_eq!(config.translator, deserialized.translator);
         assert_eq!(config.target_lang, deserialized.target_lang);
     }
@@ -247,7 +247,7 @@ mod tests {
     fn test_load_from_yaml() {
         let temp_dir = TempDir::new().unwrap();
         let config_path = temp_dir.path().join("test.yaml");
-        
+
         let yaml_content = r#"
 translator: openai
 target_lang: zh-CN
@@ -257,9 +257,9 @@ source_lang:
 dry_run: true
 backup: false
 "#;
-        
+
         fs::write(&config_path, yaml_content).unwrap();
-        
+
         let config = Config::load_from_file(&config_path).unwrap();
         assert_eq!(config.translator, "openai");
         assert_eq!(config.target_lang, "zh-CN");
@@ -272,7 +272,7 @@ backup: false
     fn test_load_from_toml() {
         let temp_dir = TempDir::new().unwrap();
         let config_path = temp_dir.path().join("test.toml");
-        
+
         let toml_content = r#"
 translator = "deepl"
 target_lang = "ja"
@@ -280,9 +280,9 @@ source_lang = ["en"]
 dry_run = false
 backup = true
 "#;
-        
+
         fs::write(&config_path, toml_content).unwrap();
-        
+
         let config = Config::load_from_file(&config_path).unwrap();
         assert_eq!(config.translator, "deepl");
         assert_eq!(config.target_lang, "ja");
@@ -295,9 +295,9 @@ backup = true
     fn test_load_unsupported_format() {
         let temp_dir = TempDir::new().unwrap();
         let config_path = temp_dir.path().join("test.json");
-        
+
         fs::write(&config_path, "{}").unwrap();
-        
+
         let result = Config::load_from_file(&config_path);
         assert!(result.is_err());
     }
@@ -312,14 +312,14 @@ backup = true
     fn test_find_and_load_no_config() {
         // Save current directory
         let current_dir = std::env::current_dir().unwrap();
-        
+
         // Change to a temporary directory with no config files
         let temp_dir = TempDir::new().unwrap();
         std::env::set_current_dir(temp_dir.path()).unwrap();
-        
+
         let config = Config::find_and_load().unwrap();
         assert_eq!(config.translator, "google"); // Should use defaults
-        
+
         // Restore directory
         std::env::set_current_dir(current_dir).unwrap();
     }
@@ -329,14 +329,14 @@ backup = true
         assert_eq!(default_source_lang(), vec!["auto".to_string()]);
         assert_eq!(default_target_lang(), "en");
         assert_eq!(default_translator(), "google");
-        assert_eq!(default_backup(), true);
+        assert!(default_backup());
     }
 
     #[test]
     fn test_config_clone() {
         let config = Config::default();
         let cloned = config.clone();
-        
+
         assert_eq!(config.translator, cloned.translator);
         assert_eq!(config.target_lang, cloned.target_lang);
     }
@@ -345,9 +345,8 @@ backup = true
     fn test_config_debug() {
         let config = Config::default();
         let debug_str = format!("{:?}", config);
-        
+
         assert!(debug_str.contains("Config"));
         assert!(debug_str.contains("google"));
     }
 }
-
