@@ -471,6 +471,10 @@ class GenericCodeParser(Parser):
         if re.match(r'^https?://|^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', text.strip()):
             return False
 
+        # Only translate text containing non-English (non-ASCII) characters
+        if not self._contains_non_english(text):
+            return False
+
         return True
 
     def _is_mostly_code(self, text: str) -> bool:
@@ -574,3 +578,16 @@ class GenericCodeParser(Parser):
         }
 
         return language_names.get(ext, 'Unknown')
+
+    def _contains_non_english(self, text: str) -> bool:
+        """
+        Check if text contains non-English (non-ASCII) characters.
+
+        Args:
+            text: Text to check
+
+        Returns:
+            True if the text contains non-ASCII characters
+        """
+        # Check if any character is outside the ASCII range (0-127)
+        return any(ord(char) > 127 for char in text)
