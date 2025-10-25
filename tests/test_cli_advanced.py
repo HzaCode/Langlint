@@ -40,7 +40,9 @@ def test_cli_translate_with_dry_run(sample_file):
          "--source", "en", "--target", "zh", 
          "--dry-run"],
         capture_output=True,
-        text=True
+        text=True,
+        encoding='utf-8',
+        errors='ignore'
     )
     assert result.returncode == 0
     assert "Dry run" in result.stdout or "dry run" in result.stdout.lower()
@@ -82,10 +84,12 @@ def test_cli_fix_with_yes(sample_file):
          "--source", "en", "--target", "zh",
          "--yes"],
         capture_output=True,
-        text=True
+        text=True,
+        encoding='utf-8',
+        errors='ignore'
     )
     assert result.returncode == 0
-    assert "Fixed" in result.stdout or "OK" in result.stdout
+    assert "fixed" in result.stdout.lower() or "translated" in result.stdout.lower()
 
 
 def test_cli_fix_with_translator(sample_file):

@@ -28,39 +28,88 @@ from .translators.mock_translator import MockTranslator, MockConfig
 
 # Global console instance
 # Use force_terminal=True and legacy_windows=False to avoid gbk encoding issues on Windows
-console = Console(force_terminal=True, legacy_windows=False)
+# Force UTF-8 output for better compatibility
+import sys
+console = Console(force_terminal=True, legacy_windows=False, file=sys.stderr)
 
 
 @click.group()
 @click.version_option(version="1.0.0", prog_name="langlint")
-@click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
 @click.option('--config', '-c', type=click.Path(exists=True), help='Path to configuration file')
 @click.pass_context
-def cli(ctx: click.Context, verbose: bool, config: Optional[str]) -> None:
+def cli(ctx: click.Context, config: Optional[str]) -> None:
     """
     LangLint: A scalable, domain-agnostic platform for automated translation
     and standardization of structured text in scientific collaboration.
     """
     ctx.ensure_object(dict)
-    ctx.obj['verbose'] = verbose
     ctx.obj['config'] = config
 
 
 @cli.command()
 @click.argument('path', type=click.Path(exists=True))
 @click.option('--output', '-o', type=click.Path(), help='Output file for results')
-@click.option('--format', 'output_format', type=click.Choice(['json', 'yaml', 'csv']), default='json', help='Output format')
+@click.option('--format', '-f', 'output_format', type=click.Choice(['json', 'yaml', 'csv', 'text']), default='json', help='Output format')
+@click.option('--verbose', '-v', is_flag=True, help='Enable verbose output')
 @click.option('--include', '-i', multiple=True, help='Include patterns')
 @click.option('--exclude', '-e', multiple=True, help='Exclude patterns')
 @click.pass_context
-def scan(ctx: click.Context, path: str, output: Optional[str], output_format: str, include: tuple, exclude: tuple) -> None:
+def scan(ctx: click.Context, path: str, output: Optional[str], output_format: str, verbose: bool, include: tuple, exclude: tuple) -> None:
     """
     Scan files for translatable text without translating.
 
     PATH: Path to file or directory to scan
     """
     try:
-        # Load configuration
+        # Try to use Rust implementation for better performance
+        try:
+            import langlint_py
+            import json
+            
+            # Prepare exclude patterns
+            exclude_list = list(exclude) if exclude else []
+            
+            # Call Rust implementation
+            result_json = langlint_py.scan(
+                path,
+                format=output_format,
+                verbose=verbose,
+                exclude=exclude_list
+            )
+            
+            # Output results
+            if output:
+                Path(output).write_text(result_json, encoding='utf-8')
+                print(f"Results written to {output}")
+            else:
+                # Output based on format
+                if output_format == 'json':
+                    print(result_json)
+                elif output_format == 'text':
+                    # For text format, check if result is JSON or plain text
+                    try:
+                        result = json.loads(result_json)
+                        # Display nicely for text format
+                        print(f"\nFiles scanned: {result['files_scanned']}")
+                        print(f"Total units: {result['total_units']}")
+                        
+                        if verbose:
+                            for file_result in result.get('results', []):
+                                print(f"  {file_result['file']}: {file_result['units']} units")
+                    except json.JSONDecodeError:
+                        # Already in text format from Rust
+                        print(result_json)
+                else:
+                    # For yaml, csv etc., output JSON (can be converted later)
+                    print(result_json)
+            
+            return
+            
+        except ImportError:
+            # Fall back to Python implementation
+            console.print("[yellow]Warning:[/yellow] Rust module not available, using Python implementation")
+        
+        # Python fallback
         config = Config.load(ctx.obj['config'])
 
         # Override with CLI options
@@ -85,10 +134,10 @@ def scan(ctx: click.Context, path: str, output: Optional[str], output_format: st
 
 @cli.command()
 @click.argument('path', type=click.Path(exists=True))
-@click.option('--translator', '-t', type=click.Choice(['openai', 'deepl', 'google', 'mock']), default='google', help='Translation service to use (default: google, free)')
-@click.option('--source-lang', '-s', default='auto', help='Source language code (default: auto-detect)')
-@click.option('--target-lang', '-l', default='en', help='Target language code (default: en)')
+@click.option('--source', '-s', default='auto', help='Source language code (default: auto-detect)')
+@click.option('--target', '-t', default='en', help='Target language code (default: en)')
 @click.option('--output', '-o', type=click.Path(), help='Output directory for translated files')
+@click.option('--translator', default='google', type=click.Choice(['openai', 'deepl', 'google', 'mock']), help='Translation service to use (default: google, free)')
 @click.option('--dry-run', is_flag=True, help='Show what would be translated without making changes')
 @click.option('--backup', is_flag=True, default=True, help='Create backup of original files')
 @click.option('--include', '-i', multiple=True, help='Include patterns')
@@ -97,10 +146,10 @@ def scan(ctx: click.Context, path: str, output: Optional[str], output_format: st
 def translate(
     ctx: click.Context,
     path: str,
-    translator: str,
-    source_lang: str,
-    target_lang: str,
+    source: str,
+    target: str,
     output: Optional[str],
+    translator: str,
     dry_run: bool,
     backup: bool,
     include: tuple,
@@ -112,7 +161,41 @@ def translate(
     PATH: Path to file or directory to translate
     """
     try:
-        # Load configuration
+        # Try to use Rust implementation for better performance  
+        try:
+            import langlint_py
+            import json
+            
+            # Call Rust implementation
+            result_json = langlint_py.translate(
+                path,
+                source=source,
+                target=target,
+                translator=translator,
+                output=output,
+                dry_run=dry_run
+            )
+            
+            # Parse and display results
+            result = json.loads(result_json)
+            
+            if result.get('status') == 'success':
+                print("\n✓ Translation complete!")
+                print(f"Translated: {result.get('translated', 0)} units")
+                if dry_run:
+                    print("Dry run completed (no changes made)")
+                if output:
+                    print(f"Output: {output}")
+            else:
+                print(f"{result.get('message', 'No translatable units found')}")
+            
+            return
+            
+        except ImportError:
+            # Fall back to Python implementation
+            console.print("[yellow]Warning:[/yellow] Rust module not available, using Python implementation")
+        
+        # Python fallback
         config = Config.load(ctx.obj['config'])
 
         # Override with CLI options
@@ -120,9 +203,9 @@ def translate(
             config.include = list(include)
         if exclude:
             config.exclude = list(exclude)
-        if source_lang != 'auto':
-            config.source_lang = [source_lang]
-        config.target_lang = target_lang
+        if source != 'auto':
+            config.source_lang = [source]
+        config.target_lang = target
         config.dry_run = dry_run
         config.backup = backup
 
@@ -131,7 +214,7 @@ def translate(
         translator_instance = _create_translator(translator, config)
 
         # Translate files
-        asyncio.run(_translate_files(dispatcher, translator_instance, path, output, ctx, source_lang, target_lang))
+        asyncio.run(_translate_files(dispatcher, translator_instance, path, output, ctx, source, target))
 
     except Exception as e:
         console.print(f"[red]Error: {e}[/red]")
@@ -140,18 +223,22 @@ def translate(
 
 @cli.command()
 @click.argument('path', type=click.Path(exists=True))
-@click.option('--translator', '-t', type=click.Choice(['openai', 'deepl', 'google', 'mock']), default='google', help='Translation service to use (default: google, free)')
-@click.option('--source-lang', '-s', default='auto', help='Source language code (default: auto-detect)')
-@click.option('--target-lang', '-l', default='en', help='Target language code (default: en)')
+@click.option('--source', '-s', default='auto', help='Source language code (default: auto-detect)')
+@click.option('--target', '-t', default='en', help='Target language code (default: en)')
+@click.option('--translator', default='google', type=click.Choice(['openai', 'deepl', 'google', 'mock']), help='Translation service to use (default: google, free)')
+@click.option('--yes', '-y', is_flag=True, help='Skip confirmation prompt')
+@click.option('--no-backup', is_flag=True, help='Disable automatic backup')
 @click.option('--include', '-i', multiple=True, help='Include patterns')
 @click.option('--exclude', '-e', multiple=True, help='Exclude patterns')
 @click.pass_context
 def fix(
     ctx: click.Context,
     path: str,
+    source: str,
+    target: str,
     translator: str,
-    source_lang: str,
-    target_lang: str,
+    yes: bool,
+    no_backup: bool,
     include: tuple,
     exclude: tuple
 ) -> None:
@@ -161,7 +248,39 @@ def fix(
     PATH: Path to file or directory to fix
     """
     try:
-        # Load configuration
+        # Try to use Rust implementation for better performance
+        try:
+            import langlint_py
+            import json
+            
+            # Call Rust implementation (in-place translation, no output directory)
+            result_json = langlint_py.translate(
+                path,
+                source=source,
+                target=target,
+                translator=translator,
+                output=None,  # In-place translation
+                dry_run=False
+            )
+            
+            # Parse and display results
+            result = json.loads(result_json)
+            
+            if result.get('status') == 'success':
+                print("\n✓ Files fixed!")
+                print(f"Translated: {result.get('translated', 0)} units")
+                if not no_backup:
+                    print("Backups created with .backup extension")
+            else:
+                print(f"{result.get('message', 'No translatable units found')}")
+            
+            return
+            
+        except ImportError:
+            # Fall back to Python implementation
+            console.print("[yellow]Warning:[/yellow] Rust module not available, using Python implementation")
+        
+        # Python fallback
         config = Config.load(ctx.obj['config'])
 
         # Override with CLI options
@@ -169,18 +288,18 @@ def fix(
             config.include = list(include)
         if exclude:
             config.exclude = list(exclude)
-        if source_lang != 'auto':
-            config.source_lang = [source_lang]
-        config.target_lang = target_lang
+        if source != 'auto':
+            config.source_lang = [source]
+        config.target_lang = target
         config.dry_run = False
-        config.backup = True
+        config.backup = not no_backup
 
         # Initialize dispatcher and translator
         dispatcher = Dispatcher(config)
         translator_instance = _create_translator(translator, config)
 
         # Fix files
-        asyncio.run(_fix_files(dispatcher, translator_instance, path, ctx, source_lang, target_lang))
+        asyncio.run(_fix_files(dispatcher, translator_instance, path, ctx, source, target))
 
     except Exception as e:
         console.print(f"[red]Error: {e}[/red]")
