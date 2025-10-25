@@ -1,60 +1,44 @@
 """
-LangLint: A scalable, domain-agnostic platform for automated translation
-and standardization of structured text in scientific collaboration.
+LangLint: High-performance, Rust-powered translation toolkit.
 
-This package provides a pluggable parser architecture for detecting,
-translating, and standardizing text in various file types including
-source code, documentation, configuration files, and Jupyter Notebooks.
+All core functionality is implemented in Rust (langlint_py).
+This Python package provides a CLI wrapper for ease of use.
 """
 
 __version__ = "1.0.0"
-__author__ = "LangLint Team"
-__email__ = "langlint@example.com"
+__author__ = "Zhiang He"
+__email__ = "ang@hezhiang.com"
 __license__ = "MIT"
 
-from .core.dispatcher import Dispatcher
-from .parsers.base import Parser, TranslatableUnit
-from .translators.base import Translator
+# Import Rust module
+try:
+    import langlint_py
+    HAS_RUST = True
+    
+    # Expose Rust functions
+    scan = langlint_py.scan
+    translate = langlint_py.translate
+    version = langlint_py.version
+    
+except ImportError as e:
+    import warnings
+    warnings.warn(
+        f"Failed to import Rust module (langlint_py): {e}\n"
+        "Please reinstall: pip install langlint",
+        UserWarning
+    )
+    HAS_RUST = False
+    scan = None
+    translate = None
+    version = lambda: __version__
+
+# Import CLI main function
 from .cli import main
 
 __all__ = [
-    "Dispatcher",
-    "Parser",
-    "TranslatableUnit",
-    "Translator",
-    "main",
-    "version",
     "scan",
     "translate",
+    "version",
+    "main",
+    "HAS_RUST",
 ]
-
-
-def version() -> str:
-    """Get the version of LangLint."""
-    return __version__
-
-
-def scan(path: str, **kwargs) -> dict:
-    """Scan files for translatable content."""
-    try:
-        # Try to use Rust module if available
-        import langlint_py
-        return langlint_py.scan(path, **kwargs)
-    except ImportError:
-        # Fallback to Python implementation
-        import warnings
-        warnings.warn("Failed to import Rust module, using Python fallback", UserWarning)
-        raise RuntimeError("Rust module not built")
-
-
-def translate(path: str, source_lang: str, target_lang: str, **kwargs) -> dict:
-    """Translate files."""
-    try:
-        # Try to use Rust module if available
-        import langlint_py
-        return langlint_py.translate(path, source_lang, target_lang, **kwargs)
-    except ImportError:
-        # Fallback to Python implementation
-        import warnings
-        warnings.warn("Failed to import Rust module, using Python fallback", UserWarning)
-        raise RuntimeError("Rust module not built")
