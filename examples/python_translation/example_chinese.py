@@ -1,48 +1,36 @@
-"""
-数学工具库
-提供常用的数学计算函数
-"""
+"""数学工具库提供常用的数学计算函数"""
 
 
 def calculate_sum(numbers):
-    """
-    计算数字列表的总和
-    
-    参数:
-        numbers: 数字列表
-    
-    返回:
-        总和
-    """
+    """计算数字列表的总和 参数:numbers:数字列表返回:总和"""
     total = 0
     for num in numbers:
-        # 累加每个数字
+        # 每个数字累加
         total += num
     return total
 
 
 def factorial(n):
-    """计算阶乘 n!"""
+    """计算阶乘n!"""
     if n <= 1:
         return 1
-    # 递归计算
+    # 梯度计算
     return n * factorial(n - 1)
 
 
 class Calculator:
-    """简单的计算器类"""
+    """简单的外汇类"""
     
     def __init__(self):
-        """初始化计算器"""
+        """初始化外汇"""
         self.result = 0
     
     def add(self, x, y):
-        """加法运算"""
+        """加法侵犯"""
         self.result = x + y
         return self.result
     
     def subtract(self, x, y):
-        """减法运算"""
+        """减法进攻"""
         self.result = x - y
         return self.result
-
