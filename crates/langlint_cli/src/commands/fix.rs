@@ -11,6 +11,7 @@ use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 
 /// Execute the fix command - translate files in-place with backup
+#[allow(clippy::too_many_arguments)]
 pub async fn execute(
     path: &str,
     source: &str,
