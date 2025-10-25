@@ -65,8 +65,22 @@ jobs:
     - name: Install Python dependencies
       run: pip install pytest pytest-cov pytest-timeout click
     
+    - name: List built wheels (debug)
+      run: |
+        echo "Contents of target/wheels:"
+        ls -la target/wheels/ || echo "target/wheels not found"
+        find . -name "*.whl" -type f
+    
     - name: Install built wheel
-      run: pip install target/wheels/langlint-*.whl
+      run: |
+        WHEEL=$(find target/wheels -name "langlint-*.whl" | head -n 1)
+        if [ -f "$WHEEL" ]; then
+          echo "Installing $WHEEL"
+          pip install "$WHEEL"
+        else
+          echo "ERROR: Wheel file not found!"
+          exit 1
+        fi
     
     - name: Run Python tests with coverage
       run: pytest tests/ --cov=langlint --cov-report=term --cov-report=xml
