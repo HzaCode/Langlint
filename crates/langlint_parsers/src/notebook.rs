@@ -214,7 +214,7 @@ mod tests {
         let notebook_json = "{\"cells\":[{\"cell_type\":\"markdown\",\"source\":[\"# Test\"]},{\"cell_type\":\"code\",\"source\":[\"# Comment\"]}]}";
 
         let result = parser.extract_units(notebook_json, "test.ipynb").unwrap();
-        assert!(result.units.len() >= 1);
+        assert!(!result.units.is_empty());
     }
 
     #[test]
@@ -261,7 +261,7 @@ mod tests {
         let parser = NotebookParser::new();
         let notebook_json = "{\"cells\":[{\"cell_type\":\"markdown\",\"source\":[\"text\"]},{\"cell_type\":\"code\",\"source\":[\"// comment\"]}]}";
         let result = parser.extract_units(notebook_json, "test.ipynb").unwrap();
-        assert!(result.units.len() >= 1);
+        assert!(!result.units.is_empty());
     }
 
     #[test]
