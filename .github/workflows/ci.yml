@@ -66,12 +66,14 @@ jobs:
       run: pip install pytest pytest-cov pytest-timeout click
     
     - name: List built wheels (debug)
+      shell: bash
       run: |
         echo "Contents of target/wheels:"
         ls -la target/wheels/ || echo "target/wheels not found"
         find . -name "*.whl" -type f
     
     - name: Install built wheel
+      shell: bash
       run: |
         WHEEL=$(find target/wheels -name "langlint-*.whl" | head -n 1)
         if [ -f "$WHEEL" ]; then
@@ -83,6 +85,7 @@ jobs:
         fi
     
     - name: Verify installation (debug)
+      shell: bash
       run: |
         echo "Python packages:"
         pip list | grep langlint
