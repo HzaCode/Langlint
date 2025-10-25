@@ -7,7 +7,8 @@ use langlint_core::ParseResult;
 use langlint_parsers::{GenericCodeParser, NotebookParser, Parser, PythonParser};
 use langlint_translators::{GoogleTranslator, MockTranslator, Translator};
 use std::fs;
-use std::path::Path;
+use std::path::{Path, PathBuf};
+use walkdir::WalkDir;
 
 /// Execute the translate command
 #[allow(clippy::too_many_arguments)]
@@ -42,141 +43,281 @@ pub async fn execute(
         println!("{} Translator created", "✓".green());
     }
 
-    // Read file
     let path_obj = Path::new(path);
-    let content =
-        fs::read_to_string(path_obj).with_context(|| format!("Failed to read file: {}", path))?;
 
-    if verbose {
-        println!("{} File loaded ({} bytes)", "✓".green(), content.len());
-    }
+    // Collect files to translate
+    let files = collect_files(path_obj)?;
 
-    // Parse file to extract translatable units
-    let parse_result = parse_file(path, &content)?;
-    let unit_count = parse_result.units.len();
-
-    if unit_count == 0 {
-        println!("{} No translatable units found", "!".yellow());
+    if files.is_empty() {
+        println!("{} No translatable files found", "!".yellow());
         return Ok(());
     }
 
-    println!("{} Found {} translatable units", "✓".green(), unit_count);
+    if verbose {
+        println!("{} {} files found", "Total:".bold(), files.len());
+    }
 
-    // Translate units (with parallel processing for better performance)
-    let progress = if !verbose && !dry_run {
-        let pb = ProgressBar::new(unit_count as u64);
-        pb.set_style(
-            ProgressStyle::default_bar()
-                .template("{spinner:.green} [{bar:40.cyan/blue}] {pos}/{len} {msg}")
-                .unwrap()
-                .progress_chars("#>-"),
-        );
-        Some(pb)
-    } else {
-        None
-    };
+    // Setup progress bar
+    let pb = ProgressBar::new(files.len() as u64);
+    pb.set_style(
+        ProgressStyle::default_bar()
+            .template("{spinner:.green} [{bar:40.cyan/blue}] {pos}/{len} {msg}")
+            .unwrap()
+            .progress_chars("=>-"),
+    );
 
-    let mut translated_units = Vec::new();
-    for (i, unit) in parse_result.units.iter().enumerate() {
-        if let Some(ref pb) = progress {
-            pb.set_message(format!("Translating unit {}/{}", i + 1, unit_count));
-        }
+    let mut translated_count = 0;
+    let mut error_count = 0;
+    let mut total_units = 0;
 
-        if verbose {
-            println!(
-                "\n{} Translating unit {}/{}: {:?}",
-                "→".blue(),
-                i + 1,
-                unit_count,
-                unit.unit_type
-            );
-            let preview = if unit.content.len() > 60 {
-                format!("{}...", &unit.content[..60])
+    for file_path in &files {
+        let filename = file_path.file_name().unwrap().to_string_lossy();
+        pb.set_message(format!("Translating {}", filename));
+
+        // Determine output path for this file
+        let output_file_path = if let Some(output_dir) = output {
+            // Calculate relative path from input to maintain directory structure
+            let relative_path = if path_obj.is_dir() {
+                file_path.strip_prefix(path_obj).unwrap_or(file_path)
             } else {
-                unit.content.clone()
+                file_path.file_name().map(Path::new).unwrap_or(file_path)
             };
-            println!("  Original: {}", preview.dimmed());
-        }
+            PathBuf::from(output_dir).join(relative_path)
+        } else {
+            file_path.clone()
+        };
 
-        if !dry_run {
-            match translator.translate(&unit.content, source, target).await {
-                Ok(result) => {
+        match translate_single_file(
+            file_path,
+            &output_file_path,
+            source,
+            target,
+            translator.as_ref(),
+            dry_run,
+            verbose,
+        )
+        .await
+        {
+            Ok(units) => {
+                if units > 0 {
+                    translated_count += 1;
+                    total_units += units;
                     if verbose {
-                        println!("  Translated: {}", result.translated_text.green());
-                        println!("  Confidence: {:.2}", result.confidence);
+                        pb.println(format!(
+                            "{} {} → {} ({} units)",
+                            "✓".green(),
+                            file_path.display(),
+                            output_file_path.display(),
+                            units
+                        ));
                     }
-                    translated_units.push(result);
                 }
-                Err(e) => {
-                    eprintln!("{} Failed to translate unit {}: {}", "✗".red(), i + 1, e);
-                    // Continue with next unit
-                }
+            }
+            Err(e) => {
+                error_count += 1;
+                pb.println(format!(
+                    "{} Failed to translate {}: {}",
+                    "✗".red(),
+                    file_path.display(),
+                    e
+                ));
             }
         }
 
-        if let Some(ref pb) = progress {
-            pb.inc(1);
-        }
+        pb.inc(1);
     }
 
-    if let Some(pb) = progress {
-        pb.finish_with_message("Translation complete");
+    pb.finish_with_message("Translation complete");
+
+    // Summary
+    println!("\n{}", "Summary:".bold().green());
+    println!("  Files processed: {}", files.len());
+    println!("  Files translated: {}", translated_count);
+    println!("  Total units translated: {}", total_units);
+    if error_count > 0 {
+        println!("  {} Errors: {}", "⚠".yellow(), error_count);
     }
 
     if dry_run {
         println!("\n{} Dry run completed (no changes made)", "✓".green());
-        return Ok(());
+    } else if let Some(output_dir) = output {
+        println!(
+            "\n{} Translation complete! Files written to: {}",
+            "✓".green().bold(),
+            output_dir
+        );
+    } else {
+        println!(
+            "\n{} Translation complete! Files overwritten (backups created with .backup extension)",
+            "✓".green().bold()
+        );
+    }
+
+    Ok(())
+}
+
+/// Translate a single file
+async fn translate_single_file(
+    input_path: &Path,
+    output_path: &Path,
+    source: &str,
+    target: &str,
+    translator: &dyn Translator,
+    dry_run: bool,
+    verbose: bool,
+) -> Result<usize> {
+    // Read file
+    let content = fs::read_to_string(input_path)
+        .with_context(|| format!("Failed to read file: {}", input_path.display()))?;
+
+    let path_str = input_path.to_string_lossy();
+
+    // Parse file to extract translatable units
+    let parse_result = parse_file(&path_str, &content)?;
+    let unit_count = parse_result.units.len();
+
+    if unit_count == 0 {
+        if verbose {
+            println!("  {} No translatable units", "→".dimmed());
+        }
+        return Ok(0);
+    }
+
+    if verbose {
+        println!("  Found {} translatable units", unit_count);
+    }
+
+    if dry_run {
+        return Ok(unit_count);
+    }
+
+    // Translate all units
+    let texts: Vec<String> = parse_result
+        .units
+        .iter()
+        .map(|u| u.content.clone())
+        .collect();
+
+    let translations = translator.translate_batch(&texts, source, target).await?;
+
+    // Create new units with translations
+    let mut translated_units = parse_result.units.clone();
+    for (i, trans) in translations.iter().enumerate() {
+        if i < translated_units.len() {
+            translated_units[i].content = trans.translated_text.clone();
+        }
     }
 
     // Reconstruct file with translations
-    // Create translated units with updated content
-    let mut translated_result_units = Vec::new();
-    for (unit, translation) in parse_result.units.iter().zip(translated_units.iter()) {
-        let mut translated_unit = unit.clone();
-        translated_unit.content = translation.translated_text.clone();
-        translated_result_units.push(translated_unit);
+    let parser = get_parser_for_file(&path_str)?;
+    let reconstructed = parser.reconstruct(&content, &translated_units, &path_str)?;
+
+    // Create output directory if needed
+    if let Some(parent) = output_path.parent() {
+        fs::create_dir_all(parent)
+            .with_context(|| format!("Failed to create directory: {}", parent.display()))?;
     }
 
-    // Use parser's reconstruct method for proper handling
-    let parser = get_parser_for_file(path)?;
-    let reconstructed_content = parser
-        .reconstruct(&content, &translated_result_units, path)
-        .with_context(|| "Failed to reconstruct file with translations")?;
-
-    // Write output
-    let output_path = output.unwrap_or(path);
-
-    if output_path != path {
-        // Writing to different file
-        fs::write(output_path, &reconstructed_content)
-            .with_context(|| format!("Failed to write to: {}", output_path))?;
-        println!(
-            "{} Translated file written to: {}",
-            "✓".green(),
-            output_path
-        );
-    } else {
-        // Overwriting original file - create backup first
-        let backup_path = format!("{}.backup", path);
-        fs::copy(path, &backup_path)
+    // If output path is the same as input path, create backup
+    if output_path == input_path {
+        let backup_path = format!("{}.backup", input_path.display());
+        fs::copy(input_path, &backup_path)
             .with_context(|| format!("Failed to create backup: {}", backup_path))?;
 
-        fs::write(output_path, &reconstructed_content)
-            .with_context(|| format!("Failed to write to: {}", output_path))?;
-
-        println!(
-            "{} File translated in-place (backup: {})",
-            "✓".green(),
-            backup_path
-        );
+        if verbose {
+            println!("  {} Backup created: {}", "✓".green(), backup_path);
+        }
     }
 
-    // Summary
-    println!("\n{}", "Summary:".bold().green());
-    println!("  Units translated: {}", translated_units.len());
-    println!("  File: {}", output_path);
+    // Write output
+    fs::write(output_path, reconstructed)
+        .with_context(|| format!("Failed to write to: {}", output_path.display()))?;
 
-    Ok(())
+    Ok(unit_count)
+}
+
+/// Collect files to translate
+fn collect_files(path: &Path) -> Result<Vec<PathBuf>> {
+    let mut files = Vec::new();
+
+    if path.is_file() {
+        if should_translate(path) {
+            files.push(path.to_path_buf());
+        }
+        return Ok(files);
+    }
+
+    let root_path = path.to_path_buf();
+
+    // Walk directory
+    for entry in WalkDir::new(path)
+        .follow_links(true)
+        .into_iter()
+        .filter_entry(|e| {
+            // Don't filter the root directory itself
+            if e.path() == root_path {
+                return true;
+            }
+            
+            let name = e.file_name().to_string_lossy();
+            let should_include = !name.starts_with('.')
+                && name != "node_modules"
+                && name != "target"
+                && name != "__pycache__"
+                && name != "venv"
+                && name != ".venv"
+                && name != "build"
+                && name != "dist";
+            
+            should_include
+        })
+    {
+        let entry = entry?;
+        if entry.file_type().is_file() && should_translate(entry.path()) {
+            files.push(entry.path().to_path_buf());
+        }
+    }
+
+    Ok(files)
+}
+
+/// Check if a file should be translated
+fn should_translate(path: &Path) -> bool {
+    if let Some(ext) = path.extension() {
+        let ext_str = ext.to_string_lossy();
+        matches!(
+            ext_str.as_ref(),
+            "py" | "js"
+                | "ts"
+                | "jsx"
+                | "tsx"
+                | "rs"
+                | "go"
+                | "java"
+                | "c"
+                | "cpp"
+                | "h"
+                | "hpp"
+                | "cs"
+                | "php"
+                | "rb"
+                | "sh"
+                | "bash"
+                | "sql"
+                | "r"
+                | "R"
+                | "m"
+                | "scala"
+                | "kt"
+                | "swift"
+                | "dart"
+                | "lua"
+                | "vim"
+                | "ipynb"
+        )
+    } else {
+        false
+    }
 }
 
 /// Parse a file and extract translatable units
@@ -208,4 +349,104 @@ fn get_parser_for_file(path: &str) -> Result<Box<dyn Parser>> {
     }
 
     anyhow::bail!("No suitable parser found for file: {}", path)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+    use tempfile::TempDir;
+
+    #[test]
+    fn test_should_translate() {
+        assert!(should_translate(Path::new("test.py")));
+        assert!(should_translate(Path::new("test.js")));
+        assert!(should_translate(Path::new("test.rs")));
+        assert!(should_translate(Path::new("test.ipynb")));
+        assert!(!should_translate(Path::new("test.txt")));
+        assert!(!should_translate(Path::new("README.md")));
+    }
+
+    #[test]
+    fn test_get_parser_for_file() {
+        assert!(get_parser_for_file("test.py").is_ok());
+        assert!(get_parser_for_file("test.js").is_ok());
+        assert!(get_parser_for_file("test.ipynb").is_ok());
+        assert!(get_parser_for_file("test.txt").is_err());
+    }
+
+    #[test]
+    fn test_collect_files_single_file() {
+        let temp_dir = TempDir::new().unwrap();
+        let file_path = temp_dir.path().join("test.py");
+        fs::write(&file_path, "# test").unwrap();
+
+        let files = collect_files(&file_path).unwrap();
+        assert_eq!(files.len(), 1);
+        assert_eq!(files[0], file_path);
+    }
+
+    #[test]
+    fn test_collect_files_directory() {
+        let temp_dir = TempDir::new().unwrap();
+        
+        // Create test files
+        fs::write(temp_dir.path().join("test1.py"), "# test1").unwrap();
+        fs::write(temp_dir.path().join("test2.js"), "// test2").unwrap();
+        fs::write(temp_dir.path().join("readme.txt"), "readme").unwrap(); // Should be ignored
+
+        let files = collect_files(temp_dir.path()).unwrap();
+        assert_eq!(files.len(), 2); // Only .py and .js files
+    }
+
+    #[test]
+    fn test_collect_files_ignores_hidden_directories() {
+        let temp_dir = TempDir::new().unwrap();
+        
+        // Create a hidden directory
+        let hidden_dir = temp_dir.path().join(".hidden");
+        fs::create_dir(&hidden_dir).unwrap();
+        fs::write(hidden_dir.join("test.py"), "# hidden").unwrap();
+        
+        // Create a normal file
+        fs::write(temp_dir.path().join("test.py"), "# visible").unwrap();
+
+        let files = collect_files(temp_dir.path()).unwrap();
+        assert_eq!(files.len(), 1); // Only visible file
+    }
+
+    #[test]
+    fn test_collect_files_ignores_common_directories() {
+        let temp_dir = TempDir::new().unwrap();
+        
+        // Create ignored directories
+        for dir_name in &["node_modules", "__pycache__", "target", "venv"] {
+            let ignored_dir = temp_dir.path().join(dir_name);
+            fs::create_dir(&ignored_dir).unwrap();
+            fs::write(ignored_dir.join("test.py"), "# ignored").unwrap();
+        }
+        
+        // Create a normal file
+        fs::write(temp_dir.path().join("test.py"), "# visible").unwrap();
+
+        let files = collect_files(temp_dir.path()).unwrap();
+        assert_eq!(files.len(), 1); // Only visible file
+    }
+
+    #[test]
+    fn test_collect_files_nested_directories() {
+        let temp_dir = TempDir::new().unwrap();
+        
+        // Create nested structure
+        let src_dir = temp_dir.path().join("src");
+        let utils_dir = src_dir.join("utils");
+        fs::create_dir_all(&utils_dir).unwrap();
+        
+        fs::write(temp_dir.path().join("main.py"), "# main").unwrap();
+        fs::write(src_dir.join("lib.py"), "# lib").unwrap();
+        fs::write(utils_dir.join("helper.py"), "# helper").unwrap();
+
+        let files = collect_files(temp_dir.path()).unwrap();
+        assert_eq!(files.len(), 3); // All .py files in all directories
+    }
 }

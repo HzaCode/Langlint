@@ -730,6 +730,7 @@ dependencies = [
  "langlint_translators",
  "serde",
  "serde_json",
+ "tempfile",
  "tokio",
  "walkdir",
 ]
