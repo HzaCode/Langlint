@@ -19,7 +19,19 @@
 
 </div>
 
- **LangLint** is a high-performance, extensible, **Rust-powered, code-aware translation and linting toolkit** for code comments and documentation. It keeps multilingual scientific software docs consistent and reproducible, supporting **FAIR** and open-science practices.
+**A high-performance, Rust-powered toolkit for translating code comments and documentation. LangLint helps make scientific software more accessible and reusable for a global audience, fostering better international collaboration in open science.**
+
+## Overview
+
+LangLint is a code-aware translation and linting tool designed to enhance the accessibility of multilingual scientific software. Its core function is to accurately translate code comments and docstrings, making the source code understandable to a wider audience. By removing language barriers, the tool directly improves the **reusability** of software—a key principle of open science. This is especially valuable for international research teams, where clear communication is essential for collaboration and reproducibility.
+
+## Key Features
+
+*   **High-Performance Translation**: Powered by Rust, LangLint is 10-50x faster than pure Python implementations, ensuring rapid and efficient processing of large codebases.
+*   **Broad Language Support**: Supports over 100 language pairs and 28+ programming file types, making it a versatile tool for diverse software projects.
+*   **Syntax-Aware**: Intelligently distinguishes between comments, docstrings, and code, preserving the integrity of the source code during translation.
+*   **Seamless CI/CD Integration**: Designed to be integrated into continuous integration workflows, much like code formatters (e.g., Ruff), to automate and enforce documentation standards.
+*   **Promotes Open Science**: By making code easier to understand for an international community, LangLint directly contributes to the reusability and collaborative potential of research software.
 
 
 
