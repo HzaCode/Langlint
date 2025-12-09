@@ -16,6 +16,7 @@
 [![codecov](https://codecov.io/gh/HzaCode/Langlint/branch/main/graph/badge.svg)](https://codecov.io/gh/HzaCode/Langlint)
 [![Documentation](https://img.shields.io/badge/docs-passing-brightgreen.svg)](https://hzacode.github.io/Langlint/)
 [![Downloads](https://static.pepy.tech/badge/langlint?style=flat-square)](https://pepy.tech/project/langlint)
+[![Awesome i18n](https://awesome.re/badge.svg)](https://github.com/oh-jon-paul/awesome-i18n#python)
 
 </div>
 
