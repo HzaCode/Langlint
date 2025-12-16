@@ -3,9 +3,9 @@
 <img src="langlint_lightning_logo.png" alt="LangLint Logo" width="200"/>
 
 
-# LangLint
-
 **Breaking Language Barriers in Global Collaboration** 🚀 · **Now 10–50× Faster with Rust**
+
+[![Featured in Awesome Static Analysis](https://img.shields.io/badge/Featured%20in-Awesome%20Static%20Analysis%20⭐%2014k+-2B5BAE?style=for-the-badge&logo=github&logoColor=white)](https://github.com/analysis-tools-dev/static-analysis)
 
 [![PyPI](https://img.shields.io/pypi/v/langlint.svg)](https://pypi.org/project/langlint/)
 [![Python](https://img.shields.io/badge/python-3.8%2B-blue.svg)](https://www.python.org/)
