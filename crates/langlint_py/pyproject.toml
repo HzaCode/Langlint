@@ -4,7 +4,7 @@ build-backend = "maturin"
 
 [project]
 name = "langlint"
-version = "1.0.1"
+version = "1.0.3"
 description = "High-performance automated translation platform powered by Rust"
 authors = [{name = "Zhiang He", email = "ang@hezhiang.com"}]
 license = {text = "MIT"}
@@ -23,7 +23,7 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Rust",
 ]
-dependencies = []
+dependencies = ["click>=8.0.0"]
 
 [project.scripts]
 langlint = "langlint.cli:main"
@@ -34,11 +34,14 @@ Repository = "https://github.com/HzaCode/Langlint.git"
 Issues = "https://github.com/HzaCode/Langlint/issues"
 
 [tool.maturin]
-python-source = "../.."
+python-source = "python"
+python-packages = ["langlint"]
 module-name = "langlint_py"
-include = [
-    { path = "../../langlint/__init__.py", format = ["sdist", "wheel"] },
-    { path = "../../langlint/cli.py", format = ["sdist", "wheel"] },
-    { path = "../../langlint/py.typed", format = ["sdist", "wheel"] }
+strip = true
+exclude = [
+    "**/*.pdb",
+    "**/*.d",
+    "**/*.lib",
+    "**/*.exp"
 ]
 

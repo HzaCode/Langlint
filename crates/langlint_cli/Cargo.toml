@@ -1,6 +1,6 @@
 [package]
 name = "langlint_cli"
-version = "1.0.0"
+version.workspace = true
 edition = "2021"
 
 [[bin]]

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "langlint"
-version = "1.0.1"
+version = "1.0.3"
 description = "A scalable, domain-agnostic platform for automated translation and standardization of structured text in scientific collaboration"
 authors = [{name = "Zhiang He", email = "ang@hezhiang.com"}]
 maintainers = [{name = "Zhiang He", email = "ang@hezhiang.com"}]
@@ -84,7 +84,9 @@ line-length = 100
 target-version = "py38"
 
 [tool.mypy]
-python_version = "3.8"
+python_version = "3.9"
+files = ["langlint", "tests"]
+exclude = '(^|.*[\\/])(setup\.py$|(docs|docs_source|crates|target|dist|manuscript)([\\/]|$))'
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = false

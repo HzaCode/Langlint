@@ -78,8 +78,8 @@ def test_scan_command_execution():
     else:
         # Use existing example file instead of langlint/__init__.py
         result = runner.invoke(cli, ['scan', 'examples/python_translation/example_chinese.py'])
-        # Should run without crashing
-        assert result.exit_code in [0, 1]  # 0 or error code
+    # Should run without crashing
+    assert result.exit_code in [0, 1]  # 0 or error code
 
 
 def test_translate_command_execution():
@@ -115,11 +115,12 @@ def test_main_invokes_cli():
     """Test that main() invokes the CLI"""
     from click.testing import CliRunner
     from langlint.cli import cli
+    import langlint
     
     # Invoke main through CLI runner (this tests the cli() function at line 74)
     runner = CliRunner()
     result = runner.invoke(cli, ['--version'])
-    assert '1.0.0' in result.output
+    assert langlint.__version__ in result.output
     assert result.exit_code == 0
 
 

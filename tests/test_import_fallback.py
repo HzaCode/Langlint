@@ -25,7 +25,7 @@ def test_import_error_fallback():
             assert not langlint.HAS_RUST
             assert langlint.scan is None
             assert langlint.translate is None
-            assert langlint.version() == "1.0.1"
+            assert langlint.version() == "1.0.3"
                 
     finally:
         # Restore original modules

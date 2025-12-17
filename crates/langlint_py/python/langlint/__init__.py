@@ -12,15 +12,13 @@ __license__ = "MIT"
 
 # Import Rust module
 try:
-    from typing import Any, cast
     import langlint_py
     HAS_RUST = True
     
     # Expose Rust functions
-    _rust: Any = cast(Any, langlint_py)
-    scan = _rust.scan
-    translate = _rust.translate
-    version = _rust.version
+    scan = langlint_py.scan
+    translate = langlint_py.translate
+    version = langlint_py.version
     
 except ImportError as e:
     import warnings

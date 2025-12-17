@@ -517,7 +517,7 @@ def foo():
         assert!(!parser.is_translatable("This is a normal comment"));
         assert!(!parser.is_translatable("Calculate the sum of numbers"));
         assert!(!parser.is_translatable("   Text with spaces   "));
-        
+
         // Should not be translatable (technical terms)
         assert!(!parser.is_translatable("TODO"));
         assert!(!parser.is_translatable("FIXME"));

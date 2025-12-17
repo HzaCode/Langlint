@@ -9,15 +9,12 @@ import sys
 import subprocess
 import shutil
 from pathlib import Path
-from typing import Callable, Optional
 import click
 
 try:
-    from importlib.metadata import version as _importlib_version
+    from importlib.metadata import version as _pkg_version
 except ImportError:
-    _pkg_version: Optional[Callable[[str], str]] = None
-else:
-    _pkg_version = _importlib_version
+    _pkg_version = None
 
 
 def _cli_version() -> str:
@@ -35,14 +32,14 @@ def _rust_cli_filename() -> str:
 
 def find_rust_cli():
     """Find the Rust CLI binary."""
-    bundled_binary = Path(__file__).with_name(_rust_cli_filename())
-    if bundled_binary.exists():
-        return str(bundled_binary)
+    package_binary = Path(__file__).parent / _rust_cli_filename()
+    if package_binary.exists():
+        return str(package_binary)
 
     site_root_binary = Path(__file__).resolve().parent.parent / _rust_cli_filename()
     if site_root_binary.exists():
         return str(site_root_binary)
-
+    
     repo_root = Path(__file__).parent.parent
     dev_binary = repo_root / "target" / "release" / _rust_cli_filename()
     if dev_binary.exists():
@@ -65,6 +62,9 @@ def find_rust_cli():
             resolved = None
 
         if current_entry is not None and resolved is not None and resolved == current_entry:
+            continue
+
+        if candidate == "langlint" and not str(cli_path).lower().endswith(".exe"):
             continue
 
         return cli_path

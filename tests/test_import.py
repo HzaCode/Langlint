@@ -11,7 +11,7 @@ def test_import_langlint():
 def test_version():
     """Test that version is correctly set"""
     import langlint
-    assert langlint.__version__ == "1.0.1"
+    assert langlint.__version__ == "1.0.3"
 
 
 def test_import_rust_module():
@@ -21,7 +21,7 @@ def test_import_rust_module():
         assert scan is not None
         assert translate is not None
         assert version is not None
-        assert version() == "1.0.1"
+        assert version() == "1.0.3"
     except ImportError:
         pytest.skip("Rust module not built")
 

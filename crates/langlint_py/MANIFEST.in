@@ -1,7 +1,3 @@
 include ../../langlint/*.py
+include ../../langlint/py.typed
 recursive-include ../../langlint *.py
-
-
-
-
-

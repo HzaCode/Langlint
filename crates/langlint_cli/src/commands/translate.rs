@@ -258,7 +258,7 @@ fn collect_files(path: &Path) -> Result<Vec<PathBuf>> {
             if e.path() == root_path {
                 return true;
             }
-            
+
             let name = e.file_name().to_string_lossy();
             !name.starts_with('.')
                 && name != "node_modules"
@@ -387,7 +387,7 @@ mod tests {
     #[test]
     fn test_collect_files_directory() {
         let temp_dir = TempDir::new().unwrap();
-        
+
         // Create test files
         fs::write(temp_dir.path().join("test1.py"), "# test1").unwrap();
         fs::write(temp_dir.path().join("test2.js"), "// test2").unwrap();
@@ -400,12 +400,12 @@ mod tests {
     #[test]
     fn test_collect_files_ignores_hidden_directories() {
         let temp_dir = TempDir::new().unwrap();
-        
+
         // Create a hidden directory
         let hidden_dir = temp_dir.path().join(".hidden");
         fs::create_dir(&hidden_dir).unwrap();
         fs::write(hidden_dir.join("test.py"), "# hidden").unwrap();
-        
+
         // Create a normal file
         fs::write(temp_dir.path().join("test.py"), "# visible").unwrap();
 
@@ -416,14 +416,14 @@ mod tests {
     #[test]
     fn test_collect_files_ignores_common_directories() {
         let temp_dir = TempDir::new().unwrap();
-        
+
         // Create ignored directories
         for dir_name in &["node_modules", "__pycache__", "target", "venv"] {
             let ignored_dir = temp_dir.path().join(dir_name);
             fs::create_dir(&ignored_dir).unwrap();
             fs::write(ignored_dir.join("test.py"), "# ignored").unwrap();
         }
-        
+
         // Create a normal file
         fs::write(temp_dir.path().join("test.py"), "# visible").unwrap();
 
@@ -434,12 +434,12 @@ mod tests {
     #[test]
     fn test_collect_files_nested_directories() {
         let temp_dir = TempDir::new().unwrap();
-        
+
         // Create nested structure
         let src_dir = temp_dir.path().join("src");
         let utils_dir = src_dir.join("utils");
         fs::create_dir_all(&utils_dir).unwrap();
-        
+
         fs::write(temp_dir.path().join("main.py"), "# main").unwrap();
         fs::write(src_dir.join("lib.py"), "# lib").unwrap();
         fs::write(utils_dir.join("helper.py"), "# helper").unwrap();
