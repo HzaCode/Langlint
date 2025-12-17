@@ -8,7 +8,6 @@ version = "1.0.3"
 description = "High-performance automated translation platform powered by Rust"
 authors = [{name = "Zhiang He", email = "ang@hezhiang.com"}]
 license = {text = "MIT"}
-readme = "../../README.md"
 requires-python = ">=3.8"
 keywords = ["translation", "i18n", "localization", "rust", "cli", "automation", "markdown", "glossary"]
 classifiers = [
